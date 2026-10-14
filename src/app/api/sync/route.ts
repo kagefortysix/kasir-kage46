@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerDatabase, saveServerDatabase } from "@/lib/serverDb";
+import { getServerDatabase, saveServerDatabase, resetServerDatabase, loadDemoServerDatabase } from "@/lib/serverDb";
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,9 +40,42 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    if (!body || !body.data) {
+    if (!body) {
       return NextResponse.json(
-        { error: "Invalid payload: 'data' field is required" },
+        { error: "Invalid payload" },
+        { status: 400 }
+      );
+    }
+
+    // Handle dedicated database reset action
+    if (body.action === "reset") {
+      const updated = resetServerDatabase(body.keepOwnerUser);
+      return NextResponse.json({
+        success: true,
+        action: "reset",
+        lastModified: updated.lastModified,
+        version: updated.version,
+        initialized: updated.initialized,
+        data: updated,
+      });
+    }
+
+    // Handle reload demo data action
+    if (body.action === "load_demo") {
+      const updated = loadDemoServerDatabase();
+      return NextResponse.json({
+        success: true,
+        action: "load_demo",
+        lastModified: updated.lastModified,
+        version: updated.version,
+        initialized: updated.initialized,
+        data: updated,
+      });
+    }
+
+    if (!body.data) {
+      return NextResponse.json(
+        { error: "Invalid payload: 'data' or 'action' field is required" },
         { status: 400 }
       );
     }
@@ -65,3 +98,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

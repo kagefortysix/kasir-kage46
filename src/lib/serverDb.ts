@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { ServerPOSDatabase, SharedPOSData } from "@/types/pos";
+import { ServerPOSDatabase, SharedPOSData, UserAccount } from "@/types/pos";
 import { 
   initialUsers, 
   initialSettings, 
@@ -111,16 +111,16 @@ export function saveServerDatabase(
   const updated: ServerPOSDatabase = {
     ...current,
     ...incoming,
-    users: incoming.users || current.users,
-    settings: incoming.settings || current.settings,
-    products: incoming.products || current.products,
-    ingredients: incoming.ingredients || current.ingredients,
-    customers: incoming.customers || current.customers,
-    orders: incoming.orders || current.orders,
-    expenses: incoming.expenses || current.expenses,
+    users: incoming.users !== undefined ? incoming.users : current.users,
+    settings: incoming.settings !== undefined ? incoming.settings : current.settings,
+    products: incoming.products !== undefined ? incoming.products : current.products,
+    ingredients: incoming.ingredients !== undefined ? incoming.ingredients : current.ingredients,
+    customers: incoming.customers !== undefined ? incoming.customers : current.customers,
+    orders: incoming.orders !== undefined ? incoming.orders : current.orders,
+    expenses: incoming.expenses !== undefined ? incoming.expenses : current.expenses,
     currentShift: incoming.currentShift !== undefined ? incoming.currentShift : current.currentShift,
-    shiftHistory: incoming.shiftHistory || current.shiftHistory,
-    stockOpnames: incoming.stockOpnames || current.stockOpnames,
+    shiftHistory: incoming.shiftHistory !== undefined ? incoming.shiftHistory : current.shiftHistory,
+    stockOpnames: incoming.stockOpnames !== undefined ? incoming.stockOpnames : current.stockOpnames,
     version: (current.version || 1) + 1,
     lastModified: Date.now(),
     initialized: markInitialized ? true : current.initialized,
@@ -128,6 +128,60 @@ export function saveServerDatabase(
 
   writeDatabaseFile(updated);
   return updated;
+}
+
+/**
+ * Completely resets server database to empty state (0 products, 0 orders, etc.)
+ * Preserves the active owner account so owner does not get locked out.
+ */
+export function resetServerDatabase(keepOwnerUser?: UserAccount | null): ServerPOSDatabase {
+  const current = getServerDatabase();
+  const ownerUser = keepOwnerUser || current.users.find((u) => u.role === "owner") || initialUsers[0];
+
+  const emptyDb: ServerPOSDatabase = {
+    version: (current.version || 1) + 1,
+    lastModified: Date.now(),
+    initialized: true,
+    users: [ownerUser],
+    settings: initialSettings,
+    products: [],
+    ingredients: [],
+    customers: [],
+    orders: [],
+    expenses: [],
+    currentShift: null,
+    shiftHistory: [],
+    stockOpnames: [],
+  };
+
+  writeDatabaseFile(emptyDb);
+  return emptyDb;
+}
+
+/**
+ * Resets server database back to full mock demo data
+ */
+export function loadDemoServerDatabase(): ServerPOSDatabase {
+  const current = getServerDatabase();
+
+  const demoDb: ServerPOSDatabase = {
+    version: (current.version || 1) + 1,
+    lastModified: Date.now(),
+    initialized: true,
+    users: initialUsers,
+    settings: initialSettings,
+    products: initialProducts,
+    ingredients: initialIngredients,
+    customers: initialCustomers,
+    orders: initialOrders,
+    expenses: initialExpenses,
+    currentShift: initialShift,
+    shiftHistory: [],
+    stockOpnames: initialOpnameRecords,
+  };
+
+  writeDatabaseFile(demoDb);
+  return demoDb;
 }
 
 /**
@@ -157,3 +211,4 @@ export function restoreServerDatabase(backup: any): ServerPOSDatabase {
   writeDatabaseFile(restored);
   return restored;
 }
+

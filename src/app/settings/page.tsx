@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { usePosStore } from "@/store/usePosStore";
 import { StoreSettings, UserAccount, AppLanguage } from "@/types/pos";
+import { initialSettings } from "@/data/mockData";
 import { UserFormModal } from "@/components/auth/UserFormModal";
 import { useTranslation } from "@/lib/translations";
 import { 
@@ -112,17 +113,17 @@ export default function SettingsPage() {
     setFormData((prev) => ({ ...prev, language: newLang }));
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (confirm(t.settings.confirmReset)) {
-      resetAllData();
-      setFormData(settings);
+      setFormData(initialSettings);
+      await resetAllData();
     }
   };
 
-  const handleLoadDemo = () => {
+  const handleLoadDemo = async () => {
     if (confirm(t.settings.confirmLoadDemo)) {
-      loadDemoData();
-      setFormData(settings);
+      setFormData(initialSettings);
+      await loadDemoData();
     }
   };
 

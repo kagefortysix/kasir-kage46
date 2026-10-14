@@ -1,6 +1,6 @@
 "use client";
 
-import { SharedPOSData, SyncStatus } from "@/types/pos";
+import { SharedPOSData, SyncStatus, UserAccount } from "@/types/pos";
 import { initialUsers } from "@/data/mockData";
 
 let storeGetter: (() => any) | null = null;
@@ -57,12 +57,12 @@ class SyncService {
 
     // 3. Setup event listeners for tab focus and online events
     window.addEventListener("focus", () => {
-      this.pullUpdates(true);
+      this.pullUpdates(false);
     });
 
     window.addEventListener("online", () => {
       this.setStatus("syncing");
-      this.pullUpdates(true);
+      this.pullUpdates(false);
     });
 
     window.addEventListener("offline", () => {
@@ -71,7 +71,7 @@ class SyncService {
 
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
-        this.pullUpdates();
+        this.pullUpdates(false);
       }
     });
   }
@@ -243,6 +243,71 @@ class SyncService {
       return true;
     } catch (err) {
       console.warn("[SyncService] Failed to push data to server:", err);
+      this.setStatus("offline");
+      return false;
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+
+  /**
+   * Resets server database to clean empty state (0 products, orders, etc.)
+   */
+  public async resetAllDataOnServer(keepOwnerUser?: UserAccount | null): Promise<boolean> {
+    if (typeof window === "undefined") return false;
+    this.setStatus("syncing");
+    this.isSyncing = true;
+
+    try {
+      const res = await fetch("/api/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "reset",
+          keepOwnerUser,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const json = await res.json();
+      this.lastModified = json.lastModified || Date.now();
+      this.setStatus("synced");
+      return true;
+    } catch (err) {
+      console.warn("[SyncService] Failed to reset data on server:", err);
+      this.setStatus("offline");
+      return false;
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+
+  /**
+   * Reloads demo mock data into server database
+   */
+  public async loadDemoDataOnServer(): Promise<boolean> {
+    if (typeof window === "undefined") return false;
+    this.setStatus("syncing");
+    this.isSyncing = true;
+
+    try {
+      const res = await fetch("/api/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "load_demo",
+        }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const json = await res.json();
+      this.lastModified = json.lastModified || Date.now();
+      this.setStatus("synced");
+      return true;
+    } catch (err) {
+      console.warn("[SyncService] Failed to load demo data on server:", err);
       this.setStatus("offline");
       return false;
     } finally {

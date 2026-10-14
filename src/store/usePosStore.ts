@@ -67,8 +67,8 @@ interface PosState {
   // Store Settings
   settings: StoreSettings;
   updateSettings: (newSettings: Partial<StoreSettings>) => void;
-  resetAllData: () => void;
-  loadDemoData: () => void;
+  resetAllData: () => Promise<void>;
+  loadDemoData: () => Promise<void>;
 
   // Products
   products: Product[];
@@ -307,10 +307,11 @@ export const usePosStore = create<PosState>()(
           "success"
         );
       },
-      resetAllData: () => {
+      resetAllData: async () => {
+        const ownerUser = get().users.find((u) => u.role === "owner") || initialUsers[0];
         set({
-          users: [initialUsers[0]], // Tetap simpan akun Master Owner
-          currentUser: initialUsers[0],
+          users: [ownerUser], // Tetap simpan akun Master Owner
+          currentUser: ownerUser,
           role: "owner",
           language: "id",
           products: [], // Kosongkan produk
@@ -326,9 +327,13 @@ export const usePosStore = create<PosState>()(
           cart: [], // Kosongkan keranjang
           discountNominal: 0,
         });
+
+        // Immediately update server database file on disk and sync timestamps
+        await syncService.resetAllDataOnServer(ownerUser);
+
         get().addToast("Semua data demo telah dikosongkan. Sistem bersih siap diisi data riil toko!", "info");
       },
-      loadDemoData: () => {
+      loadDemoData: async () => {
         set({
           users: initialUsers,
           currentUser: initialUsers[0],
@@ -347,6 +352,10 @@ export const usePosStore = create<PosState>()(
           cart: [],
           discountNominal: 0,
         });
+
+        // Immediately reload demo data on server disk and sync timestamps
+        await syncService.loadDemoDataOnServer();
+
         get().addToast("Data contoh demo berhasil dimuat kembali!", "success");
       },
 
@@ -788,8 +797,8 @@ export const usePosStore = create<PosState>()(
         const target = state.orders.find((o) => o.id === orderId);
         if (!target) return;
 
-        let updatedIngredients = [...state.ingredients];
-        let updatedProducts = [...state.products];
+        const updatedIngredients = [...state.ingredients];
+        const updatedProducts = [...state.products];
 
         if (restoreStock && target.status === "completed") {
           target.items.forEach((item) => {
@@ -1001,19 +1010,19 @@ export const usePosStore = create<PosState>()(
           }
 
           return {
-            users: incoming.users || state.users,
+            users: incoming.users !== undefined ? incoming.users : state.users,
             currentUser: updatedCurrentUser,
             role: updatedCurrentUser ? updatedCurrentUser.role : state.role,
-            settings: incoming.settings || state.settings,
+            settings: incoming.settings !== undefined ? incoming.settings : state.settings,
             taxEnabled: incoming.settings?.taxEnabled !== undefined ? incoming.settings.taxEnabled : state.taxEnabled,
-            products: incoming.products || state.products,
-            ingredients: incoming.ingredients || state.ingredients,
-            customers: incoming.customers || state.customers,
-            orders: incoming.orders || state.orders,
-            expenses: incoming.expenses || state.expenses,
+            products: incoming.products !== undefined ? incoming.products : state.products,
+            ingredients: incoming.ingredients !== undefined ? incoming.ingredients : state.ingredients,
+            customers: incoming.customers !== undefined ? incoming.customers : state.customers,
+            orders: incoming.orders !== undefined ? incoming.orders : state.orders,
+            expenses: incoming.expenses !== undefined ? incoming.expenses : state.expenses,
             currentShift: incoming.currentShift !== undefined ? incoming.currentShift : state.currentShift,
-            shiftHistory: incoming.shiftHistory || state.shiftHistory,
-            stockOpnames: incoming.stockOpnames || state.stockOpnames,
+            shiftHistory: incoming.shiftHistory !== undefined ? incoming.shiftHistory : state.shiftHistory,
+            stockOpnames: incoming.stockOpnames !== undefined ? incoming.stockOpnames : state.stockOpnames,
             lastSyncedAt: Date.now(),
             syncStatus: "synced",
           };
