@@ -29,7 +29,7 @@ Click the button below to test the live application directly in your browser:
 
 **KASIR POS KAGE46** is a modern, high-performance web-based Point of Sale (POS) system specifically built for **F&B businesses, Specialty Coffee Shops, Artisan Kitchens, and Restaurants**.
 
-It delivers lightning-fast order taking, **automated Recipe & COGS (HPP) Costing**, warehouse inventory tracking, real-time Net Profit reporting, and a **Centralized Server Database** that seamlessly synchronizes in real-time across cashier desktop PCs and mobile devices via local Wi-Fi or Cloudflare Tunnel.
+It delivers lightning-fast order taking, **automated Recipe & COGS (HPP) Costing**, warehouse inventory tracking, real-time Net Profit reporting, and a **Centralized Server Database** that seamlessly synchronizes in real-time across cashier desktop PCs and mobile devices via local Wi-Fi.
 
 ---
 
@@ -121,7 +121,7 @@ It delivers lightning-fast order taking, **automated Recipe & COGS (HPP) Costing
 ### 12. 🔄 Centralized Server Database & Multi-Device Sync
 - **Single Source of Truth**: Data safely stored in local server JSON (`data/pos_database.json`) with atomic writes and rolling backups (`.bak.json`).
 - **Real-Time Synchronization**: Orders placed by waiters on mobile phones appear immediately on the cashier PC; new menu items added on PC appear on waiters' phones.
-- **Multi-Device Ready**: Works over local store Wi-Fi (LAN) and globally via **Cloudflare Tunnel**.
+- **Multi-Device Ready**: Works over local store Wi-Fi.
 
 ---
 
@@ -169,13 +169,6 @@ Open your browser at: **[http://localhost:3000](http://localhost:3000)**
    ```
    http://YOUR_PC_IP:3000
    ```
-
-### Internet Access via Cloudflare Tunnel
-1. Start the tunnel on your cashier PC:
-   ```bash
-   cloudflared tunnel --url http://localhost:3000
-   ```
-2. Open the generated HTTPS URL on any mobile device.
 
 ---
 

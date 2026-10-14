@@ -29,7 +29,7 @@ Klik tombol di bawah ini untuk mencoba aplikasi secara langsung tanpa perlu inst
 
 **KASIR POS KAGE46** adalah aplikasi kasir pintar (*Point of Sale*) modern berbasis web yang dirancang khusus untuk bisnis **F&B, Kedai Kopi (*Specialty Coffee*), Artisan Kitchen, dan Restoran**. 
 
-Sistem ini menggabungkan pencatatan pesanan kasir super cepat, kalkulasi **HPP & Resep Otomatis**, kontrol stok gudang, laporan laba bersih riil, serta **Database Server Terpusat** yang otomatis tersinkronisasi antar perangkat (PC kasir dan smartphone pelayan di meja pelanggan via Wi-Fi lokal maupun Cloudflare Tunnel).
+Sistem ini menggabungkan pencatatan pesanan kasir super cepat, kalkulasi **HPP & Resep Otomatis**, kontrol stok gudang, laporan laba bersih riil, serta **Database Server Terpusat** yang otomatis tersinkronisasi antar perangkat (PC kasir dan smartphone pelayan di meja pelanggan via Wi-Fi lokal).
 
 ---
 
@@ -122,7 +122,7 @@ Sistem ini menggabungkan pencatatan pesanan kasir super cepat, kalkulasi **HPP &
 ### 12. 🔄 Database Server Terpusat & Sinkronisasi Multi-Device
 - **Single Source of Truth**: Data toko tersimpan di server lokal PC (`data/pos_database.json`) dengan atomic write & rolling backup (`.bak.json`).
 - **Sinkronisasi Otomatis Real-Time**: Pesanan meja dari HP pelayan langsung muncul di PC kasir; menu baru dari PC langsung tampil di HP pelayan.
-- **Multi-Device Ready**: Bekerja mulus melalui jaringan Wi-Fi lokal (LAN) maupun di luar toko menggunakan **Cloudflare Tunnel**.
+- **Multi-Device Ready**: Bekerja mulus melalui jaringan Wi-Fi lokal (LAN).
 
 ---
 
@@ -173,13 +173,6 @@ Buka peramban di: **[http://localhost:3000](http://localhost:3000)**
    ```
    http://192.168.1.9:3000
    ```
-
-### Opsi B: Akses Jarak Jauh via Cloudflare Tunnel
-1. Jalankan tunnel di komputer kasir:
-   ```bash
-   cloudflared tunnel --url http://localhost:3000
-   ```
-2. Buka URL HTTPS publik yang dihasilkan di smartphone manapun (misal: `https://xxxx.trycloudflare.com`).
 
 ---
 
