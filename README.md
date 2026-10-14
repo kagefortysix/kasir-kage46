@@ -10,6 +10,12 @@
 
 ---
 
+🌐 **Pilih Bahasa / Choose Language:**  
+[![Bahasa Indonesia](https://img.shields.io/badge/🇮🇩_Bahasa-Indonesia-red?style=for-the-badge)](README.md)
+[![English](https://img.shields.io/badge/🇬🇧_Language-English-blue?style=for-the-badge)](README.en.md)
+
+---
+
 ### 🚀 Coba Aplikasi Langsung (Live Demo)
 Klik tombol di bawah ini untuk mencoba aplikasi secara langsung tanpa perlu instalasi:
 

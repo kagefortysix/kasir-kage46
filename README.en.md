@@ -10,6 +10,12 @@
 
 ---
 
+🌐 **Language / Pilih Bahasa:**  
+[![English](https://img.shields.io/badge/🇬🇧_Language-English-blue?style=for-the-badge)](README.en.md)
+[![Bahasa Indonesia](https://img.shields.io/badge/🇮🇩_Bahasa-Indonesia-red?style=for-the-badge)](README.md)
+
+---
+
 ### 🚀 Try It Live (Web Demo)
 Click the button below to test the live application directly in your browser:
 
