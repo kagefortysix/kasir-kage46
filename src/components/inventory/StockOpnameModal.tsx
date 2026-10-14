@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Ingredient, StockOpnameRecord } from "@/types/pos";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { X, ClipboardCheck, AlertTriangle } from "lucide-react";
 
 interface StockOpnameModalProps {
@@ -12,6 +13,7 @@ interface StockOpnameModalProps {
 
 export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, onClose }) => {
   const { ingredients, recordStockOpname, currentShift } = usePosStore();
+  const { t, isEnglish } = useTranslation();
 
   const [selectedIngredientId, setSelectedIngredientId] = useState<string>(
     ingredient?.id || ingredients[0]?.id || ""
@@ -36,7 +38,7 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
       ingredientId: activeIngredient.id,
       actualStock,
       reason,
-      recordedBy: currentShift?.cashierName || "Petugas Gudang / Kasir",
+      recordedBy: currentShift?.cashierName || (isEnglish ? "Inventory Staff / Cashier" : "Petugas Gudang / Kasir"),
       note,
     });
 
@@ -55,10 +57,10 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Stock Opname & Penyesuaian
+                {t.stockOpnameModal.title}
               </h2>
               <p className="text-xs text-slate-500">
-                Pencatatan selisih fisik, tumpah (spillage), atau rusak
+                {t.stockOpnameModal.subtitle}
               </p>
             </div>
           </div>
@@ -73,7 +75,7 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Pilih Bahan Baku
+              {t.stockOpnameModal.selectIngredientLabel}
             </label>
             <select
               value={selectedIngredientId}
@@ -82,11 +84,11 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
                 const target = ingredients.find((i) => i.id === e.target.value);
                 if (target) setActualStock(target.currentStock);
               }}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             >
               {ingredients.map((ing) => (
                 <option key={ing.id} value={ing.id}>
-                  {ing.name} (Stok Sistem: {ing.currentStock} {ing.unit})
+                  {ing.name} ({t.stockOpnameModal.systemStockLabel} {ing.currentStock} {ing.unit})
                 </option>
               ))}
             </select>
@@ -94,7 +96,7 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
 
           {/* Current System Stock Badge */}
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 flex justify-between items-center text-xs dark:border-slate-800 dark:bg-slate-800/40">
-            <span className="text-slate-500">Stok di Sistem Kasir:</span>
+            <span className="text-slate-500">{t.stockOpnameModal.systemStockLabel}</span>
             <span className="font-bold text-slate-900 dark:text-white">
               {systemStock} {activeIngredient?.unit}
             </span>
@@ -103,7 +105,7 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
           {/* Actual Physical Counted Stock */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Stok Fisik Terhitung Saat Ini ({activeIngredient?.unit})
+              {t.stockOpnameModal.actualStockLabel.replace("{unit}", activeIngredient?.unit || "")}
             </label>
             <input
               type="number"
@@ -117,7 +119,7 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
 
           {/* Selisih Indicator */}
           <div className="flex items-center justify-between rounded-xl p-2.5 text-xs font-bold bg-slate-100 dark:bg-slate-800">
-            <span className="text-slate-500">Selisih Penyesuaian:</span>
+            <span className="text-slate-500">{t.stockOpnameModal.varianceLabel}</span>
             <span
               className={
                 difference === 0
@@ -127,40 +129,44 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
                   : "text-rose-600"
               }
             >
-              {difference > 0 ? `+${difference}` : difference} {activeIngredient?.unit}
-              {difference < 0 ? " (Berkurang)" : difference > 0 ? " (Bertambah)" : " (Sesuai)"}
+              {difference > 0 ? `+${difference}` : difference} {activeIngredient?.unit}{" "}
+              {difference < 0
+                ? t.stockOpnameModal.varianceDecreased
+                : difference > 0
+                ? t.stockOpnameModal.varianceIncreased
+                : t.stockOpnameModal.varianceBalanced}
             </span>
           </div>
 
           {/* Reason */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Alasan Penyesuaian
+              {t.stockOpnameModal.reasonLabel}
             </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value as StockOpnameRecord["reason"])}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             >
-              <option value="Spillage (Tumpah)">Spillage (Tumpah saat pembuatan)</option>
-              <option value="Kadaluarsa">Kadaluarsa (Expired)</option>
-              <option value="Rusak / Basi">Rusak / Basi / Cacat Kemasan</option>
-              <option value="Selisih Hitung">Selisih Hitung Opname Harian</option>
-              <option value="Lainnya">Lainnya</option>
+              <option value="Spillage (Tumpah)">{t.stockOpnameModal.reasonSpillage}</option>
+              <option value="Kadaluarsa">{t.stockOpnameModal.reasonExpired}</option>
+              <option value="Rusak / Basi">{t.stockOpnameModal.reasonDamaged}</option>
+              <option value="Selisih Hitung">{t.stockOpnameModal.reasonAudit}</option>
+              <option value="Lainnya">{t.stockOpnameModal.reasonOther}</option>
             </select>
           </div>
 
           {/* Notes */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Catatan Detail
+              {t.stockOpnameModal.noteLabel}
             </label>
             <input
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Contoh: Susu tumpah saat steam latte rush hour sore"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              placeholder={t.stockOpnameModal.notePlaceholder}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
 
@@ -170,13 +176,13 @@ export const StockOpnameModal: React.FC<StockOpnameModalProps> = ({ ingredient, 
               onClick={onClose}
               className="flex-1 rounded-xl border border-slate-200 bg-slate-100 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
             >
-              Batal
+              {t.stockOpnameModal.cancelBtn}
             </button>
             <button
               type="submit"
               className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition"
             >
-              Simpan Opname
+              {t.stockOpnameModal.submitBtn}
             </button>
           </div>
         </form>

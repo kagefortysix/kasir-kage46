@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
 import { formatRupiah } from "@/lib/utils";
 import { PaymentMethod } from "@/types/pos";
+import { useTranslation } from "@/lib/translations";
 import { 
   CreditCard, 
   Banknote, 
@@ -32,6 +33,8 @@ export const CheckoutModal: React.FC = () => {
     completeCheckout 
   } = usePosStore();
 
+  const { t, isEnglish } = useTranslation();
+
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [cashGiven, setCashGiven] = useState<number>(0);
 
@@ -47,15 +50,15 @@ export const CheckoutModal: React.FC = () => {
   const change = Math.max(0, activeCashGiven - total);
 
   const quickNominals = [
-    { label: "Uang Pas", value: total },
+    { label: isEnglish ? "Exact Amount" : "Uang Pas", value: total },
     { label: "Rp 20.000", value: 20000 },
     { label: "Rp 50.000", value: 50000 },
     { label: "Rp 100.000", value: 100000 },
     { label: "Rp 200.000", value: 200000 },
-  ].filter((item) => item.value >= total || item.label === "Uang Pas");
+  ].filter((item) => item.value >= total || item.label === (isEnglish ? "Exact Amount" : "Uang Pas"));
 
   const handlePay = () => {
-    const cashier = currentShift?.cashierName || "Kasir Utama";
+    const cashier = currentShift?.cashierName || (isEnglish ? "Head Cashier" : "Kasir Utama");
     completeCheckout(paymentMethod, activeCashGiven, cashier);
   };
 
@@ -67,10 +70,13 @@ export const CheckoutModal: React.FC = () => {
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              Pembayaran & Checkout
+              {isEnglish ? "Checkout & Payment" : "Pembayaran & Checkout"}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {orderType === "dine_in" ? `Dine-In (${tableNumber})` : "Takeaway"} • {cart.length} Jenis Menu
+              {orderType === "dine_in"
+                ? `${isEnglish ? "Dine-In" : "Dine-In"} (${tableNumber})`
+                : isEnglish ? "Takeaway" : "Takeaway"}{" "}
+              • {cart.length} {isEnglish ? "Items" : "Jenis Menu"}
             </p>
           </div>
           <button
@@ -84,20 +90,28 @@ export const CheckoutModal: React.FC = () => {
         {/* Total Bill Banner */}
         <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-5 py-4 text-white flex items-center justify-between">
           <div>
-            <div className="text-xs text-emerald-100 font-medium">Total Tagihan Pesanan</div>
+            <div className="text-xs text-emerald-100 font-medium">
+              {isEnglish ? "Total Order Bill" : "Total Tagihan Pesanan"}
+            </div>
             <div className="text-2xl font-black font-mono">{formatRupiah(total)}</div>
           </div>
           <div className="text-right text-xs text-emerald-100">
-            <div>Subtotal: {formatRupiah(subtotal)}</div>
-            {discountNominal > 0 && <div>Diskon: -{formatRupiah(discountNominal)}</div>}
-            {taxNominal > 0 && <div>PPN: +{formatRupiah(taxNominal)}</div>}
+            <div>{isEnglish ? "Subtotal:" : "Subtotal:"} {formatRupiah(subtotal)}</div>
+            {discountNominal > 0 && (
+              <div>{isEnglish ? "Discount:" : "Diskon:"} -{formatRupiah(discountNominal)}</div>
+            )}
+            {taxNominal > 0 && (
+              <div>{isEnglish ? "VAT:" : "PPN:"} +{formatRupiah(taxNominal)}</div>
+            )}
           </div>
         </div>
 
         {/* Quick Tax & Total Modifier Bar */}
         <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/70 px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Pajak Transaksi:</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+              {isEnglish ? "Transaction Tax:" : "Pajak Transaksi:"}
+            </span>
             <button
               type="button"
               onClick={() => setTaxEnabled(!taxEnabled)}
@@ -118,7 +132,15 @@ export const CheckoutModal: React.FC = () => {
                   }`}
                 />
               </div>
-              <span>{taxEnabled ? `PPN ${settings.taxPercentage}% Aktif` : "PPN Nonaktif (Bebas Pajak)"}</span>
+              <span>
+                {taxEnabled
+                  ? isEnglish
+                    ? `VAT ${settings.taxPercentage}% Active`
+                    : `PPN ${settings.taxPercentage}% Aktif`
+                  : isEnglish
+                  ? "Tax Inactive (Tax Free)"
+                  : "PPN Nonaktif (Bebas Pajak)"}
+              </span>
             </button>
           </div>
           <div className="text-right text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
@@ -132,16 +154,18 @@ export const CheckoutModal: React.FC = () => {
           {/* Link to Customer */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Pelanggan (Opsional)
+              {isEnglish ? "Customer (Optional)" : "Pelanggan (Opsional)"}
             </label>
             <div className="relative">
               <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
               <select
                 value={selectedCustomerId || ""}
                 onChange={(e) => setSelectedCustomerId(e.target.value || undefined)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               >
-                <option value="">-- Tamu Walk-in --</option>
+                <option value="">
+                  {isEnglish ? "-- Walk-in Guest --" : "-- Tamu Walk-in --"}
+                </option>
                 {customers.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name} ({c.phone})
@@ -154,7 +178,7 @@ export const CheckoutModal: React.FC = () => {
           {/* Payment Method Tabs */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Pilih Metode Pembayaran
+              {isEnglish ? "Select Payment Method" : "Pilih Metode Pembayaran"}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button
@@ -167,7 +191,7 @@ export const CheckoutModal: React.FC = () => {
                 }`}
               >
                 <Banknote className="h-5 w-5 mb-1 text-emerald-600 dark:text-emerald-400" />
-                <span>Tunai (Cash)</span>
+                <span>{isEnglish ? "Cash" : "Tunai (Cash)"}</span>
               </button>
 
               <button
@@ -193,7 +217,7 @@ export const CheckoutModal: React.FC = () => {
                 }`}
               >
                 <Building2 className="h-5 w-5 mb-1 text-sky-600" />
-                <span>Transfer Bank</span>
+                <span>{isEnglish ? "Bank Transfer" : "Transfer Bank"}</span>
               </button>
 
               <button
@@ -216,7 +240,7 @@ export const CheckoutModal: React.FC = () => {
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40 space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Uang Tunai Diterima (Rp)
+                  {isEnglish ? "Cash Received (Rp)" : "Uang Tunai Diterima (Rp)"}
                 </label>
                 <input
                   type="number"
@@ -230,7 +254,9 @@ export const CheckoutModal: React.FC = () => {
 
               {/* Shortcut buttons */}
               <div>
-                <div className="text-[11px] text-slate-500 mb-1 font-medium">Pecahan Cepat:</div>
+                <div className="text-[11px] text-slate-500 mb-1 font-medium">
+                  {isEnglish ? "Quick Cash:" : "Pecahan Cepat:"}
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {quickNominals.map((item, idx) => (
                     <button
@@ -252,7 +278,7 @@ export const CheckoutModal: React.FC = () => {
               {/* Kembalian Display */}
               <div className="flex items-center justify-between rounded-xl bg-emerald-50 p-3 border border-emerald-200 dark:border-emerald-900/40 dark:bg-emerald-950/30">
                 <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300">
-                  Uang Kembalian (Change):
+                  {isEnglish ? "Change Due:" : "Uang Kembalian (Change):"}
                 </span>
                 <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono">
                   {formatRupiah(change)}
@@ -289,7 +315,9 @@ export const CheckoutModal: React.FC = () => {
                 {settings.qrisMerchantName}
               </div>
               <div className="text-[11px] text-slate-500 mt-0.5">
-                Scan via GoPay, OVO, Dana, BCA Mobile, ShopeePay, dll.
+                {isEnglish
+                  ? "Scan via any QRIS payment app (GoPay, OVO, Dana, Mobile Banking, etc.)"
+                  : "Scan via GoPay, OVO, Dana, BCA Mobile, ShopeePay, dll."}
               </div>
             </div>
           )}
@@ -297,14 +325,20 @@ export const CheckoutModal: React.FC = () => {
           {paymentMethod === "transfer" && (
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40 text-xs space-y-2">
               <div className="font-bold text-slate-800 dark:text-white">
-                Informasi Rekening Outlet KAGE46:
+                {isEnglish
+                  ? `Outlet Bank Account Details (${settings.storeName}):`
+                  : `Informasi Rekening Outlet ${settings.storeName}:`}
               </div>
               <div className="rounded-xl bg-white p-3 border border-slate-200 dark:border-slate-700 dark:bg-[#111827] space-y-1 font-mono">
                 <div className="text-slate-500 text-[11px] font-sans">Bank:</div>
                 <div className="font-bold text-slate-900 dark:text-white">{settings.bankAccount.bankName}</div>
-                <div className="text-slate-500 text-[11px] font-sans mt-2">Nomor Rekening:</div>
+                <div className="text-slate-500 text-[11px] font-sans mt-2">
+                  {isEnglish ? "Account Number:" : "Nomor Rekening:"}
+                </div>
                 <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{settings.bankAccount.accountNumber}</div>
-                <div className="text-slate-500 text-[11px] font-sans mt-2">Atas Nama:</div>
+                <div className="text-slate-500 text-[11px] font-sans mt-2">
+                  {isEnglish ? "Account Holder:" : "Atas Nama:"}
+                </div>
                 <div className="font-semibold text-slate-800 dark:text-slate-200">{settings.bankAccount.holderName}</div>
               </div>
             </div>
@@ -313,10 +347,12 @@ export const CheckoutModal: React.FC = () => {
           {paymentMethod === "card" && (
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40 text-xs text-slate-600 dark:text-slate-300">
               <p className="font-semibold text-slate-800 dark:text-white mb-1">
-                Mesin EDC / Terminal Kartu:
+                {isEnglish ? "EDC Machine / Card Terminal:" : "Mesin EDC / Terminal Kartu:"}
               </p>
               <p className="text-[11px]">
-                Gesek atau tap kartu Debit / Kredit pelanggan pada mesin EDC kasir, pastikan struk transaksi EDC berhasil keluar sebelum menekan tombol konfirmasi.
+                {isEnglish
+                  ? "Swipe or tap customer's Debit / Credit card on the EDC machine. Ensure the EDC receipt is printed before confirming."
+                  : "Gesek atau tap kartu Debit / Kredit pelanggan pada mesin EDC kasir, pastikan struk transaksi EDC berhasil keluar sebelum menekan tombol konfirmasi."}
               </p>
             </div>
           )}
@@ -328,7 +364,7 @@ export const CheckoutModal: React.FC = () => {
               onClick={() => setCheckoutModalOpen(false)}
               className="flex-1 rounded-xl border border-slate-200 bg-slate-100 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
             >
-              Batal
+              {t.common.cancel}
             </button>
             <button
               type="button"
@@ -341,7 +377,7 @@ export const CheckoutModal: React.FC = () => {
               }`}
             >
               <CheckCircle className="h-4 w-4" />
-              <span>Selesaikan Transaksi & Cetak</span>
+              <span>{isEnglish ? "Complete Transaction & Print" : "Selesaikan Transaksi & Cetak"}</span>
             </button>
           </div>
 

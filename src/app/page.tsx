@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah } from "@/lib/utils";
 import { 
   TrendingUp, 
@@ -18,13 +19,15 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
+  const { t, isEnglish } = useTranslation();
   const { 
     orders, 
     expenses, 
     ingredients, 
     currentShift, 
     setShiftModalOpen, 
-    setExpenseModalOpen
+    setExpenseModalOpen,
+    settings
   } = usePosStore();
 
   const [period, setPeriod] = useState<"today" | "7d" | "30d">("today");
@@ -76,13 +79,13 @@ export default function DashboardPage() {
 
   // Simulated 7-day trend bars
   const trendData = [
-    { day: "Sen", sales: 480000, profit: 290000 },
-    { day: "Sel", chip: "620k", sales: 620000, profit: 375000 },
-    { day: "Rab", chip: "550k", sales: 550000, profit: 330000 },
-    { day: "Kam", chip: "740k", sales: 740000, profit: 460000 },
-    { day: "Jum", chip: "890k", sales: 890000, profit: 540000 },
-    { day: "Sab", chip: "1.2M", sales: 1250000, profit: 790000 },
-    { day: "Hari Ini", sales: totalOmset || 640000, profit: netProfit || 380000 },
+    { day: t.dashboard.daysMon, sales: 480000, profit: 290000 },
+    { day: t.dashboard.daysTue, chip: "620k", sales: 620000, profit: 375000 },
+    { day: t.dashboard.daysWed, chip: "550k", sales: 550000, profit: 330000 },
+    { day: t.dashboard.daysThu, chip: "740k", sales: 740000, profit: 460000 },
+    { day: t.dashboard.daysFri, chip: "890k", sales: 890000, profit: 540000 },
+    { day: t.dashboard.daysSat, chip: "1.2M", sales: 1250000, profit: 790000 },
+    { day: t.dashboard.daysToday, sales: totalOmset || 640000, profit: netProfit || 380000 },
   ];
   const maxSale = Math.max(...trendData.map((d) => d.sales));
 
@@ -91,62 +94,62 @@ export default function DashboardPage() {
       <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full pb-24 lg:pb-12">
         
         {/* Welcome & Top Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                Dashboard Overview
+                {t.dashboard.pageTitle}
               </h1>
               <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                Outlet KAGE46
+                {settings?.storeName || (isEnglish ? "Outlet" : "Toko")}
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Ringkasan performa penjualan harian, laba bersih riil, dan aktivitas kasir.
+              {t.dashboard.pageSubtitle}
             </p>
           </div>
 
           {/* Quick Period Buttons & POS shortcut */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="flex rounded-xl border border-slate-200 bg-white p-1 text-xs font-semibold dark:border-slate-800 dark:bg-[#111827] shadow-2xs">
               <button
                 onClick={() => setPeriod("today")}
-                className={`rounded-lg px-3 py-1.5 transition ${
+                className={`rounded-lg px-2.5 sm:px-3 py-1.5 transition ${
                   period === "today"
                     ? "bg-emerald-600 text-white font-bold"
                     : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
                 }`}
               >
-                Hari Ini
+                {t.dashboard.today}
               </button>
               <button
                 onClick={() => setPeriod("7d")}
-                className={`rounded-lg px-3 py-1.5 transition ${
+                className={`rounded-lg px-2.5 sm:px-3 py-1.5 transition ${
                   period === "7d"
                     ? "bg-emerald-600 text-white font-bold"
                     : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
                 }`}
               >
-                7 Hari
+                {t.dashboard.days7}
               </button>
               <button
                 onClick={() => setPeriod("30d")}
-                className={`rounded-lg px-3 py-1.5 transition ${
+                className={`rounded-lg px-2.5 sm:px-3 py-1.5 transition ${
                   period === "30d"
                     ? "bg-emerald-600 text-white font-bold"
                     : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
                 }`}
               >
-                30 Hari
+                {t.dashboard.days30}
               </button>
             </div>
 
             <Link
               href="/pos"
-              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition"
+              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition shrink-0"
             >
               <ShoppingCart className="h-4 w-4" />
-              <span>Buka Kasir POS</span>
+              <span>{t.dashboard.openPos}</span>
             </Link>
           </div>
         </div>
@@ -158,7 +161,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xs dark:border-slate-800 dark:bg-[#111827] transition-all hover:border-slate-300">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Omset Penjualan
+                {t.dashboard.salesRevenue}
               </span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
                 <TrendingUp className="h-4 w-4" />
@@ -169,7 +172,7 @@ export default function DashboardPage() {
             </div>
             <div className="mt-1 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
               <ArrowUpRight className="h-3.5 w-3.5" />
-              <span>+18.4% dari kemarin</span>
+              <span>+18.4% {t.dashboard.fromYesterday}</span>
             </div>
           </div>
 
@@ -177,17 +180,17 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xs dark:border-slate-800 dark:bg-[#111827] transition-all hover:border-slate-300">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Pesanan Sukses
+                {t.dashboard.successfulOrders}
               </span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-400">
                 <Receipt className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-3 text-2xl font-black text-slate-900 dark:text-white">
-              {completedOrders.length} Pesanan
+              {completedOrders.length} {t.dashboard.ordersUnit}
             </div>
             <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Rata-rata: <span className="font-bold text-slate-700 dark:text-slate-200 font-mono">{formatRupiah(averageTicket)}</span> / nota
+              {t.dashboard.averagePerReceipt} <span className="font-bold text-slate-700 dark:text-slate-200 font-mono">{formatRupiah(averageTicket)}</span> {t.dashboard.perReceipt}
             </div>
           </div>
 
@@ -195,7 +198,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xs dark:border-slate-800 dark:bg-[#111827] transition-all hover:border-slate-300">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Laba Bersih Riil
+                {t.dashboard.realNetProfit}
               </span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-100 text-teal-700 dark:bg-teal-950/60 dark:text-teal-400">
                 <DollarSign className="h-4 w-4" />
@@ -205,7 +208,7 @@ export default function DashboardPage() {
               {formatRupiah(netProfit)}
             </div>
             <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Laba Kotor: {formatRupiah(grossProfit)} • Beban: {formatRupiah(totalExpenses)}
+              {t.dashboard.grossProfitLabel} {formatRupiah(grossProfit)} • {t.dashboard.expensesLabel} {formatRupiah(totalExpenses)}
             </div>
           </div>
 
@@ -213,7 +216,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xs dark:border-slate-800 dark:bg-[#111827] transition-all hover:border-slate-300">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Uang Laci Kasir
+                {t.dashboard.cashDrawerFloat}
               </span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400">
                 <Wallet className="h-4 w-4" />
@@ -224,13 +227,13 @@ export default function DashboardPage() {
             </div>
             <div className="mt-1 flex items-center justify-between text-xs">
               <span className="text-slate-500">
-                {currentShift ? `Kasir: ${currentShift.cashierName}` : "Shift Tutup"}
+                {currentShift ? `${t.dashboard.cashierPrefix} ${currentShift.cashierName}` : t.dashboard.shiftClosed}
               </span>
               <button
                 onClick={() => setShiftModalOpen(true)}
                 className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
               >
-                Kelola &rarr;
+                {t.dashboard.manageShift}
               </button>
             </div>
           </div>
@@ -238,56 +241,56 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Action Shortcuts */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
           <Link
             href="/pos"
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] transition"
+            className="flex items-center gap-2.5 sm:gap-3 rounded-2xl border border-slate-200 bg-white p-3 sm:p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] transition min-w-0"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white font-bold">
-              <ShoppingCart className="h-5 w-5" />
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white font-bold">
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900 dark:text-white">Transaksi POS</div>
-              <div className="text-[11px] text-slate-500">Katalog menu & kasir</div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{t.dashboard.posShortcut}</div>
+              <div className="text-[10px] sm:text-[11px] text-slate-500 truncate">{t.dashboard.posShortcutDesc}</div>
             </div>
           </Link>
 
           <button
             onClick={() => setExpenseModalOpen(true)}
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] text-left transition"
+            className="flex items-center gap-2.5 sm:gap-3 rounded-2xl border border-slate-200 bg-white p-3 sm:p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] text-left transition min-w-0"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white font-bold">
-              <PlusCircle className="h-5 w-5" />
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white font-bold">
+              <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900 dark:text-white">Catat Pengeluaran</div>
-              <div className="text-[11px] text-slate-500">Belanja es, LPG, dll.</div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{t.dashboard.expenseShortcut}</div>
+              <div className="text-[10px] sm:text-[11px] text-slate-500 truncate">{t.dashboard.expenseShortcutDesc}</div>
             </div>
           </button>
 
           <Link
             href="/transactions"
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] transition"
+            className="flex items-center gap-2.5 sm:gap-3 rounded-2xl border border-slate-200 bg-white p-3 sm:p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] transition min-w-0"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-600 text-white font-bold">
-              <Receipt className="h-5 w-5" />
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-sky-600 text-white font-bold">
+              <Receipt className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900 dark:text-white">Open Bill ({openBills.length})</div>
-              <div className="text-[11px] text-slate-500">Meja belum lunas</div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{t.dashboard.openBillShortcut} ({openBills.length})</div>
+              <div className="text-[10px] sm:text-[11px] text-slate-500 truncate">{t.dashboard.openBillShortcutDesc}</div>
             </div>
           </Link>
 
           <Link
             href="/inventory"
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] transition"
+            className="flex items-center gap-2.5 sm:gap-3 rounded-2xl border border-slate-200 bg-white p-3 sm:p-3.5 shadow-2xs hover:border-emerald-500 dark:border-slate-800 dark:bg-[#111827] transition min-w-0"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold">
-              <Package className="h-5 w-5" />
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold">
+              <Package className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900 dark:text-white">Stock Opname</div>
-              <div className="text-[11px] text-slate-500">Penyesuaian stok bahan</div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{t.dashboard.opnameShortcut}</div>
+              <div className="text-[10px] sm:text-[11px] text-slate-500 truncate">{t.dashboard.opnameShortcutDesc}</div>
             </div>
           </Link>
         </div>
@@ -300,18 +303,18 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Tren Penjualan & Laba 7 Hari Terakhir
+                  {t.dashboard.trendChartTitle}
                 </h3>
-                <p className="text-xs text-slate-500">Performa mingguan coffee shop & kitchen</p>
+                <p className="text-xs text-slate-500">{t.dashboard.trendChartSubtitle}</p>
               </div>
               <div className="flex items-center gap-3 text-xs">
                 <div className="flex items-center gap-1.5">
                   <span className="h-3 w-3 rounded-sm bg-emerald-600" />
-                  <span className="text-slate-600 dark:text-slate-300">Omset</span>
+                  <span className="text-slate-600 dark:text-slate-300">{t.dashboard.legendRevenue}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="h-3 w-3 rounded-sm bg-teal-500" />
-                  <span className="text-slate-600 dark:text-slate-300">Laba Bersih</span>
+                  <span className="text-slate-600 dark:text-slate-300">{t.dashboard.legendProfit}</span>
                 </div>
               </div>
             </div>
@@ -360,16 +363,16 @@ export default function DashboardPage() {
           {/* Payment Methods Breakdown */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs dark:border-slate-800 dark:bg-[#111827]">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Metode Pembayaran
+              {t.dashboard.paymentMethodsTitle}
             </h3>
-            <p className="text-xs text-slate-500 pb-4">Distribusi transaksi pelanggan</p>
+            <p className="text-xs text-slate-500 pb-4">{t.dashboard.paymentMethodsSubtitle}</p>
 
             <div className="space-y-3.5 pt-1">
               {[
-                { label: "QRIS Instant", key: "qris", color: "bg-rose-500" },
-                { label: "Tunai (Cash)", key: "cash", color: "bg-emerald-600" },
-                { label: "Transfer Bank", key: "transfer", color: "bg-sky-500" },
-                { label: "Debit / Kartu EDC", key: "card", color: "bg-indigo-500" },
+                { label: t.dashboard.paymentQris, key: "qris", color: "bg-rose-500" },
+                { label: t.dashboard.paymentCash, key: "cash", color: "bg-emerald-600" },
+                { label: t.dashboard.paymentTransfer, key: "transfer", color: "bg-sky-500" },
+                { label: t.dashboard.paymentCard, key: "card", color: "bg-indigo-500" },
               ].map((m) => {
                 const amount = paymentCounts[m.key] || 0;
                 const percentage = totalOmset > 0 ? Math.round((amount / totalOmset) * 100) : 0;
@@ -395,9 +398,9 @@ export default function DashboardPage() {
               })}
             </div>
 
-            <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-850">
+            <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/60">
               <div className="font-bold text-slate-900 dark:text-white">
-                Peringatan Stok Rendah ({criticalIngredients.length})
+                {t.dashboard.lowStockAlertTitle} ({criticalIngredients.length})
               </div>
               {criticalIngredients.length > 0 ? (
                 <ul className="mt-1 space-y-1 text-[11px] text-rose-700 dark:text-rose-400">
@@ -409,7 +412,7 @@ export default function DashboardPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="mt-1 text-[11px] text-slate-500">Semua bahan baku dalam batas aman.</p>
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">{t.dashboard.allStockSafe}</p>
               )}
             </div>
 
@@ -422,15 +425,17 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                Menu Terlaris (Top Selling Items)
+                {t.dashboard.topSellingTitle}
               </h3>
-              <p className="text-xs text-slate-500">Menu paling diminati pelanggan KAGE46</p>
+              <p className="text-xs text-slate-500">
+                {t.dashboard.topSellingSubtitle.replace("{store}", settings?.storeName || (isEnglish ? "outlet" : "toko"))}
+              </p>
             </div>
             <Link
               href="/products"
               className="text-xs font-bold text-emerald-600 hover:underline dark:text-emerald-400"
             >
-              Lihat Katalog Resep &rarr;
+              {t.dashboard.viewRecipeCatalog}
             </Link>
           </div>
 
@@ -438,15 +443,15 @@ export default function DashboardPage() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider dark:border-slate-800">
-                  <th className="py-2.5">Menu</th>
-                  <th className="py-2.5">Kategori</th>
-                  <th className="py-2.5 text-center">Porsi Terjual</th>
-                  <th className="py-2.5 text-right">Total Omset</th>
+                  <th className="py-2.5">{t.dashboard.thMenu}</th>
+                  <th className="py-2.5">{t.dashboard.thCategory}</th>
+                  <th className="py-2.5 text-center">{t.dashboard.thSoldQty}</th>
+                  <th className="py-2.5 text-right">{t.dashboard.thTotalRevenue}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {topItems.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-850">
+                  <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                     <td className="py-3 font-bold text-slate-900 dark:text-white flex items-center gap-2">
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                         #{idx + 1}
@@ -459,7 +464,7 @@ export default function DashboardPage() {
                       </span>
                     </td>
                     <td className="py-3 text-center font-bold text-slate-900 dark:text-white">
-                      {item.quantity} porsi
+                      {item.quantity} {t.dashboard.portionUnit}
                     </td>
                     <td className="py-3 text-right font-black text-emerald-600 dark:text-emerald-400 font-mono">
                       {formatRupiah(item.totalRevenue)}

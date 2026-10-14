@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { 
   Coffee, 
   User, 
@@ -17,7 +18,8 @@ import {
 } from "lucide-react";
 
 export const LoginScreen: React.FC = () => {
-  const { login, isDarkMode, toggleDarkMode } = usePosStore();
+  const { login, isDarkMode, toggleDarkMode, settings } = usePosStore();
+  const { t } = useTranslation();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +33,7 @@ export const LoginScreen: React.FC = () => {
 
     const cleanUser = username.trim();
     if (!cleanUser || !password) {
-      setErrorMessage("Silakan isi username dan password Anda.");
+      setErrorMessage(t.auth.emptyFieldsErr);
       return;
     }
 
@@ -40,7 +42,7 @@ export const LoginScreen: React.FC = () => {
       const success = login(cleanUser, password);
       setLoading(false);
       if (!success) {
-        setErrorMessage("Username atau password salah, atau akun ini telah dinonaktifkan oleh Owner.");
+        setErrorMessage(t.auth.invalidErr);
       }
     }, 250);
   };
@@ -54,7 +56,7 @@ export const LoginScreen: React.FC = () => {
           type="button"
           onClick={toggleDarkMode}
           className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur-md hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:bg-slate-800 transition-all"
-          title={isDarkMode ? "Beralih ke Light Mode" : "Beralih ke Dark Mode"}
+          title={isDarkMode ? t.header.switchThemeLight : t.header.switchThemeDark}
           aria-label="Toggle Theme"
         >
           {isDarkMode ? (
@@ -85,7 +87,7 @@ export const LoginScreen: React.FC = () => {
 
           <div className="flex items-center justify-center gap-2">
             <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-              KAGE<span className="text-emerald-600 dark:text-emerald-500">46</span>
+              {settings?.storeName || "KASIR POS"}
             </span>
             <span className="rounded-md bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 px-2 py-0.5 text-[10px] font-extrabold tracking-wider">
               POS PRO
@@ -93,12 +95,12 @@ export const LoginScreen: React.FC = () => {
           </div>
 
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-            Specialty Coffee & Eatery System
+            {settings?.tagline || "Point of Sale System"}
           </p>
 
           <div className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60">
             <Database className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-            <span>Sistem Kasir Lokal Mandiri (Offline Ready)</span>
+            <span>{t.auth.offlineBadge}</span>
           </div>
         </div>
 
@@ -106,10 +108,10 @@ export const LoginScreen: React.FC = () => {
         <div className="pt-5 pb-2 text-center">
           <h1 className="text-base font-bold text-slate-900 dark:text-white flex items-center justify-center gap-1.5">
             <Lock className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-            <span>Masuk ke Akun Kasir / Owner</span>
+            <span>{t.auth.screenTitle}</span>
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Masukkan username dan kata sandi Anda untuk mengakses mesin kasir
+            {t.auth.screenSubtitle}
           </p>
         </div>
 
@@ -125,7 +127,7 @@ export const LoginScreen: React.FC = () => {
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              Username Kasir / Owner
+              {t.auth.usernameLabel}
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
@@ -135,7 +137,7 @@ export const LoginScreen: React.FC = () => {
                 autoFocus
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Masukkan username Anda..."
+                placeholder={t.auth.usernamePlaceholder}
                 className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 pl-10 pr-4 py-2.5 text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none transition"
               />
             </div>
@@ -143,7 +145,7 @@ export const LoginScreen: React.FC = () => {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              Kata Sandi (Password)
+              {t.auth.passwordLabel}
             </label>
             <div className="relative">
               <KeyRound className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
@@ -152,7 +154,7 @@ export const LoginScreen: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Masukkan kata sandi..."
+                placeholder={t.auth.passwordPlaceholder}
                 className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 pl-10 pr-10 py-2.5 text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none transition"
               />
               <button
@@ -170,14 +172,18 @@ export const LoginScreen: React.FC = () => {
             disabled={loading}
             className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 py-3 text-xs font-black text-white shadow-lg shadow-emerald-600/25 active:scale-[0.99] transition disabled:opacity-50"
           >
-            <span>{loading ? "Memverifikasi Kredensial..." : "Masuk ke Kasir KAGE46"}</span>
+            <span>
+              {loading
+                ? t.auth.loadingVerify
+                : t.auth.submitBtn.replace("{store}", settings?.storeName || "Kasir")}
+            </span>
             {!loading && <ArrowRight className="h-4 w-4" />}
           </button>
         </form>
 
         <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 text-center">
           <p className="text-[11px] text-slate-400 dark:text-slate-500">
-            KAGE46 Smart Point of Sale • Hak Cipta Terlindungi
+            {t.auth.copyright.replace("{store}", settings?.storeName || "Smart POS")}
           </p>
         </div>
 

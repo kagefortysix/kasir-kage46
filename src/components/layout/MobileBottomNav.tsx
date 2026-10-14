@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import {
   ShoppingCart,
   Receipt,
@@ -16,6 +17,7 @@ import {
 export const MobileBottomNav: React.FC = () => {
   const pathname = usePathname();
   const { cart, orders, currentUser } = usePosStore();
+  const { t, isEnglish } = useTranslation();
 
   const isOwner = currentUser?.role === "owner";
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -34,7 +36,7 @@ export const MobileBottomNav: React.FC = () => {
           }`}
         >
           <LayoutDashboard className="h-5 w-5 mb-0.5" />
-          <span>Dashboard</span>
+          <span>{t.nav.dashboard}</span>
         </Link>
 
         <Link
@@ -53,7 +55,7 @@ export const MobileBottomNav: React.FC = () => {
               </span>
             )}
           </div>
-          <span>Kasir POS</span>
+          <span>{isEnglish ? "POS" : "Kasir POS"}</span>
         </Link>
 
         <Link
@@ -72,7 +74,7 @@ export const MobileBottomNav: React.FC = () => {
               </span>
             )}
           </div>
-          <span>Transaksi</span>
+          <span>{isEnglish ? "Orders" : "Transaksi"}</span>
         </Link>
 
         {isOwner ? (
@@ -86,7 +88,7 @@ export const MobileBottomNav: React.FC = () => {
               }`}
             >
               <Coffee className="h-5 w-5 mb-0.5" />
-              <span>Produk</span>
+              <span>{isEnglish ? "Products" : "Produk"}</span>
             </Link>
 
             <Link
@@ -98,7 +100,7 @@ export const MobileBottomNav: React.FC = () => {
               }`}
             >
               <Package className="h-5 w-5 mb-0.5" />
-              <span>Stok</span>
+              <span>{isEnglish ? "Stock" : "Stok"}</span>
             </Link>
           </>
         ) : (
@@ -111,7 +113,7 @@ export const MobileBottomNav: React.FC = () => {
             }`}
           >
             <Users className="h-5 w-5 mb-0.5" />
-            <span>Pelanggan</span>
+            <span>{isEnglish ? "Customers" : "Pelanggan"}</span>
           </Link>
         )}
 

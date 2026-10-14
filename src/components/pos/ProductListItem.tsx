@@ -4,6 +4,7 @@ import React from "react";
 import { Product } from "@/types/pos";
 import { usePosStore } from "@/store/usePosStore";
 import { formatRupiah } from "@/lib/utils";
+import { useTranslation } from "@/lib/translations";
 import { Plus, AlertTriangle, Sparkles } from "lucide-react";
 
 interface ProductListItemProps {
@@ -12,9 +13,21 @@ interface ProductListItemProps {
 
 export const ProductListItem: React.FC<ProductListItemProps> = ({ product }) => {
   const { addToCart } = usePosStore();
+  const { isEnglish } = useTranslation();
 
   const isLowStock = product.stock <= (product.minStockAlert ?? 10);
   const isOutOfStock = product.stock <= 0;
+
+  const getCategoryLabel = (cat: string) => {
+    if (!isEnglish) return cat;
+    switch (cat) {
+      case "Kopi": return "Coffee";
+      case "Non-Kopi": return "Non-Coffee";
+      case "Makanan": return "Food";
+      case "Camilan": return "Snacks";
+      default: return cat;
+    }
+  };
 
   const getCategoryBadge = (cat: string) => {
     switch (cat) {
@@ -41,7 +54,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product }) => 
       className={`group flex items-center justify-between gap-3 rounded-xl border border-slate-200/90 bg-white px-3.5 py-2.5 shadow-2xs hover:border-emerald-500 hover:shadow-xs dark:border-slate-800 dark:bg-[#111827] transition-all select-none cursor-pointer ${
         isOutOfStock
           ? "opacity-50 grayscale cursor-not-allowed"
-          : "active:scale-[0.99] hover:bg-slate-50/50 dark:hover:bg-slate-850"
+          : "active:scale-[0.99] hover:bg-slate-50/50 dark:hover:bg-slate-800/60"
       }`}
     >
       {/* Left: SKU, Name & Category */}
@@ -55,16 +68,18 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product }) => 
               product.category
             )}`}
           >
-            {product.category}
+            {getCategoryLabel(product.category)}
           </span>
           {isLowStock && !isOutOfStock && (
             <span className="text-[10px] text-amber-600 dark:text-amber-400 flex items-center gap-0.5 font-semibold">
               <AlertTriangle className="h-2.5 w-2.5" />
-              <span>Sisa {product.stock}</span>
+              <span>{isEnglish ? `Left ${product.stock}` : `Sisa ${product.stock}`}</span>
             </span>
           )}
           {isOutOfStock && (
-            <span className="text-[10px] text-rose-600 font-bold">Habis</span>
+            <span className="text-[10px] text-rose-600 font-bold">
+              {isEnglish ? "Out" : "Habis"}
+            </span>
           )}
         </div>
 

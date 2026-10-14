@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
 import { formatRupiah, formatDate, formatTime } from "@/lib/utils";
+import { useTranslation } from "@/lib/translations";
 import { 
   Printer, 
   Share2, 
@@ -25,6 +26,8 @@ export const ReceiptModal: React.FC = () => {
     addToast 
   } = usePosStore();
 
+  const { t, isEnglish } = useTranslation();
+
   const [receiptWidth, setReceiptWidth] = useState<"58mm" | "80mm">(settings.receiptSize || "58mm");
   const [copiedWA, setCopiedWA] = useState(false);
   const [showAndroidGuide, setShowAndroidGuide] = useState(false);
@@ -40,11 +43,15 @@ export const ReceiptModal: React.FC = () => {
     text += `${settings.address}\n`;
     text += `Telp: ${settings.phone}\n`;
     text += `--------------------------------\n`;
-    text += `No. Invoice : ${order.invoiceNumber}\n`;
-    text += `Waktu       : ${formatDate(order.timestamp)}\n`;
-    text += `Kasir       : ${order.cashierName}\n`;
-    text += `Tipe Order  : ${order.orderType === "dine_in" ? `Dine-In (${order.tableNumber})` : "Takeaway"}\n`;
-    if (order.customerName) text += `Pelanggan   : ${order.customerName}\n`;
+    text += `${isEnglish ? "Invoice No  : " : "No. Invoice : "}${order.invoiceNumber}\n`;
+    text += `${isEnglish ? "Time        : " : "Waktu       : "}${formatDate(order.timestamp)}\n`;
+    text += `${isEnglish ? "Cashier     : " : "Kasir       : "}${order.cashierName}\n`;
+    text += `${isEnglish ? "Order Type  : " : "Tipe Order  : "}${
+      order.orderType === "dine_in"
+        ? `${isEnglish ? "Dine-In" : "Dine-In"} (${order.tableNumber})`
+        : isEnglish ? "Takeaway" : "Takeaway"
+    }\n`;
+    if (order.customerName) text += `${isEnglish ? "Customer    : " : "Pelanggan   : "}${order.customerName}\n`;
     text += `--------------------------------\n`;
     order.items.forEach((item) => {
       text += `${item.name}\n`;
@@ -53,13 +60,13 @@ export const ReceiptModal: React.FC = () => {
     });
     text += `--------------------------------\n`;
     text += `Subtotal    : ${formatRupiah(order.subtotal)}\n`;
-    if (order.discountNominal > 0) text += `Diskon      : -${formatRupiah(order.discountNominal)}\n`;
-    if (order.taxNominal > 0) text += `PPN (${settings.taxPercentage}%)    : ${formatRupiah(order.taxNominal)}\n`;
+    if (order.discountNominal > 0) text += `${isEnglish ? "Discount    : -" : "Diskon      : -"}${formatRupiah(order.discountNominal)}\n`;
+    if (order.taxNominal > 0) text += `${isEnglish ? "VAT" : "PPN"} (${settings.taxPercentage}%)    : ${formatRupiah(order.taxNominal)}\n`;
     text += `*TOTAL       : ${formatRupiah(order.total)}*\n`;
     text += `--------------------------------\n`;
-    text += `Pembayaran  : ${order.paymentMethod.toUpperCase()}\n`;
-    text += `Bayar       : ${formatRupiah(order.amountPaid)}\n`;
-    text += `Kembalian   : ${formatRupiah(order.changeAmount)}\n`;
+    text += `${isEnglish ? "Payment     : " : "Pembayaran  : "}${order.paymentMethod.toUpperCase()}\n`;
+    text += `${isEnglish ? "Paid        : " : "Bayar       : "}${formatRupiah(order.amountPaid)}\n`;
+    text += `${isEnglish ? "Change      : " : "Kembalian   : "}${formatRupiah(order.changeAmount)}\n`;
     text += `--------------------------------\n`;
     text += `${settings.receiptFooterMessage}\n`;
     text += `IG: ${settings.instagram} | WiFi: ${settings.wifiPassword}\n`;
@@ -73,20 +80,29 @@ export const ReceiptModal: React.FC = () => {
     const waUrl = phone ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
     
     window.open(waUrl, "_blank");
-    addToast("Membuka WhatsApp untuk mengirim struk digital", "info");
+    addToast(
+      isEnglish ? "Opening WhatsApp to send digital receipt..." : "Membuka WhatsApp untuk mengirim struk digital",
+      "info"
+    );
   };
 
   const handleCopyReceiptText = () => {
     const text = generateWhatsAppReceiptText();
     navigator.clipboard.writeText(text);
     setCopiedWA(true);
-    addToast("Teks struk berhasil disalin ke clipboard", "success");
+    addToast(
+      isEnglish ? "Receipt text copied to clipboard!" : "Teks struk berhasil disalin ke clipboard",
+      "success"
+    );
     setTimeout(() => setCopiedWA(false), 2000);
   };
 
   const handlePrint = () => {
     window.print();
-    addToast("Membuka dialog cetak struk...", "info");
+    addToast(
+      isEnglish ? "Opening print dialog..." : "Membuka dialog cetak struk...",
+      "info"
+    );
   };
 
   const handlePrintRawBT = () => {
@@ -99,7 +115,10 @@ export const ReceiptModal: React.FC = () => {
       }
       const base64 = btoa(binary);
       window.location.href = `rawbt:base64,${base64}`;
-      addToast("Mengirim struk ke aplikasi RawBT Bluetooth...", "info");
+      addToast(
+        isEnglish ? "Sending receipt to RawBT Bluetooth..." : "Mengirim struk ke aplikasi RawBT Bluetooth...",
+        "info"
+      );
     } catch {
       window.print();
     }
@@ -110,14 +129,16 @@ export const ReceiptModal: React.FC = () => {
       <div className="relative flex flex-col w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 max-h-[92vh] overflow-hidden">
         
         {/* Modal Top Bar */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
+        <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-emerald-500" />
             <div>
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                Transaksi Berhasil
+                {isEnglish ? "Transaction Successful" : "Transaksi Berhasil"}
               </h2>
-              <p className="text-[11px] text-slate-500">Pratinjau Struk Thermal</p>
+              <p className="text-[11px] text-slate-500">
+                {isEnglish ? "Thermal Receipt Preview" : "Pratinjau Struk Thermal"}
+              </p>
             </div>
           </div>
 
@@ -184,26 +205,28 @@ export const ReceiptModal: React.FC = () => {
             {/* Invoice Meta */}
             <div className="py-2.5 border-b border-dashed border-slate-300 text-[11px] font-mono space-y-0.5">
               <div className="flex justify-between">
-                <span>No. Inv:</span>
+                <span>{isEnglish ? "Inv No:" : "No. Inv:"}</span>
                 <span className="font-bold">{order.invoiceNumber}</span>
               </div>
               <div className="flex justify-between">
-                <span>Waktu:</span>
+                <span>{isEnglish ? "Time:" : "Waktu:"}</span>
                 <span>{formatDate(order.timestamp)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Kasir:</span>
+                <span>{isEnglish ? "Cashier:" : "Kasir:"}</span>
                 <span>{order.cashierName}</span>
               </div>
               <div className="flex justify-between">
-                <span>Tipe:</span>
+                <span>{isEnglish ? "Type:" : "Tipe:"}</span>
                 <span className="font-bold">
-                  {order.orderType === "dine_in" ? `Dine-In (${order.tableNumber})` : "Takeaway"}
+                  {order.orderType === "dine_in"
+                    ? `${isEnglish ? "Dine-In" : "Dine-In"} (${order.tableNumber})`
+                    : isEnglish ? "Takeaway" : "Takeaway"}
                 </span>
               </div>
               {order.customerName && (
                 <div className="flex justify-between text-slate-700">
-                  <span>Pelanggan:</span>
+                  <span>{isEnglish ? "Customer:" : "Pelanggan:"}</span>
                   <span className="font-semibold">{order.customerName}</span>
                 </div>
               )}
@@ -237,13 +260,13 @@ export const ReceiptModal: React.FC = () => {
               </div>
               {order.discountNominal > 0 && (
                 <div className="flex justify-between text-rose-600 font-bold">
-                  <span>Diskon:</span>
+                  <span>{isEnglish ? "Discount:" : "Diskon:"}</span>
                   <span>-{formatRupiah(order.discountNominal)}</span>
                 </div>
               )}
               {order.taxNominal > 0 && (
                 <div className="flex justify-between text-slate-600">
-                  <span>PPN ({settings.taxPercentage}%):</span>
+                  <span>{isEnglish ? "VAT" : "PPN"} ({settings.taxPercentage}%):</span>
                   <span>{formatRupiah(order.taxNominal)}</span>
                 </div>
               )}
@@ -256,15 +279,15 @@ export const ReceiptModal: React.FC = () => {
             {/* Payment Details */}
             <div className="py-2.5 border-b border-dashed border-slate-300 space-y-1 text-[11px] font-mono">
               <div className="flex justify-between">
-                <span>Metode:</span>
+                <span>{isEnglish ? "Method:" : "Metode:"}</span>
                 <span className="font-bold uppercase">{order.paymentMethod}</span>
               </div>
               <div className="flex justify-between">
-                <span>Bayar:</span>
+                <span>{isEnglish ? "Paid:" : "Bayar:"}</span>
                 <span>{formatRupiah(order.amountPaid)}</span>
               </div>
               <div className="flex justify-between font-bold">
-                <span>Kembalian:</span>
+                <span>{isEnglish ? "Change:" : "Kembalian:"}</span>
                 <span>{formatRupiah(order.changeAmount)}</span>
               </div>
             </div>
@@ -295,10 +318,12 @@ export const ReceiptModal: React.FC = () => {
           >
             <span className="flex items-center gap-1.5">
               <Smartphone className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Cara Cetak di HP / Tablet Android (Printer Bluetooth)</span>
+              <span>{isEnglish ? "How to Print on Android (Bluetooth Printer)" : "Cara Cetak di HP / Tablet Android (Printer Bluetooth)"}</span>
             </span>
             <span className="text-[11px] text-emerald-600 font-semibold underline">
-              {showAndroidGuide ? "Tutup Panduan" : "Lihat Panduan"}
+              {showAndroidGuide
+                ? isEnglish ? "Close Guide" : "Tutup Panduan"
+                : isEnglish ? "View Guide" : "Lihat Panduan"}
             </span>
           </button>
 
@@ -306,17 +331,42 @@ export const ReceiptModal: React.FC = () => {
             <div className="mt-2.5 p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] space-y-2 text-slate-600 dark:text-slate-300">
               <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                 <Bluetooth className="h-3.5 w-3.5 text-blue-500" />
-                <span>Langkah Menghubungkan Printer Bluetooth di Android:</span>
+                <span>{isEnglish ? "Steps to connect Bluetooth printer on Android:" : "Langkah Menghubungkan Printer Bluetooth di Android:"}</span>
               </div>
               <ol className="list-decimal list-inside space-y-1 pl-1 leading-relaxed">
-                <li>Nyalakan printer thermal & pasangkan (pairing) Bluetooth di menu Bluetooth Android Anda (PIN biasanya <b>0000</b> atau <b>1234</b>).</li>
-                <li>Install aplikasi gratis <b>RawBT Print Service</b> dari Google Play Store.</li>
-                <li>Buka aplikasi RawBT &gt; pilih printer Bluetooth Anda.</li>
-                <li>Di aplikasi kasir ini:
+                <li>
+                  {isEnglish
+                    ? "Turn on thermal printer & pair via Android Bluetooth menu (PIN is usually 0000 or 1234)."
+                    : "Nyalakan printer thermal & pasangkan (pairing) Bluetooth di menu Bluetooth Android Anda (PIN biasanya 0000 atau 1234)."}
+                </li>
+                <li>
+                  {isEnglish
+                    ? "Install the free RawBT Print Service app from Google Play Store."
+                    : "Install aplikasi gratis RawBT Print Service dari Google Play Store."}
+                </li>
+                <li>
+                  {isEnglish
+                    ? "Open RawBT app > select your Bluetooth printer."
+                    : "Buka aplikasi RawBT > pilih printer Bluetooth Anda."}
+                </li>
+                <li>
+                  {isEnglish ? "In this POS app:" : "Di aplikasi kasir ini:"}
                   <ul className="list-disc list-inside pl-4 mt-0.5 space-y-0.5 font-medium text-slate-800 dark:text-slate-200">
-                    <li>Klik tombol <b className="text-blue-600">"RawBT (BT)"</b> untuk cetak langsung 1-klik via bluetooth.</li>
-                    <li>Atau klik <b className="text-slate-900 dark:text-white">"Cetak Struk"</b> dan pilih printer RawBT pada dialog Android.</li>
-                    <li>Atau gunakan <b className="text-emerald-600">"WhatsApp"</b> untuk struk digital tanpa kertas.</li>
+                    <li>
+                      {isEnglish
+                        ? 'Click "RawBT (BT)" to print instantly with 1-click.'
+                        : 'Klik tombol "RawBT (BT)" untuk cetak langsung 1-klik via bluetooth.'}
+                    </li>
+                    <li>
+                      {isEnglish
+                        ? 'Or click "Print Receipt" and choose RawBT in the Android printer dialog.'
+                        : 'Atau klik "Cetak Struk" dan pilih printer RawBT pada dialog Android.'}
+                    </li>
+                    <li>
+                      {isEnglish
+                        ? 'Or use "WhatsApp" for paperless digital receipts.'
+                        : 'Atau gunakan "WhatsApp" untuk struk digital tanpa kertas.'}
+                    </li>
                   </ul>
                 </li>
               </ol>
@@ -330,17 +380,17 @@ export const ReceiptModal: React.FC = () => {
             type="button"
             onClick={handlePrint}
             className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 dark:bg-white dark:text-slate-900 text-white py-2.5 px-2 text-xs font-bold shadow hover:bg-slate-800 transition active:scale-95 cursor-pointer"
-            title="Cetak via dialog printer sistem (WiFi / USB / Default)"
+            title={isEnglish ? "Print via system dialog (WiFi / USB / Default)" : "Cetak via dialog printer sistem (WiFi / USB / Default)"}
           >
             <Printer className="h-4 w-4 shrink-0" />
-            <span>Cetak Struk</span>
+            <span>{isEnglish ? "Print Receipt" : "Cetak Struk"}</span>
           </button>
 
           <button
             type="button"
             onClick={handlePrintRawBT}
             className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 text-white py-2.5 px-2 text-xs font-bold shadow hover:bg-blue-700 transition active:scale-95 cursor-pointer"
-            title="Cetak cepat via aplikasi RawBT Bluetooth Android"
+            title={isEnglish ? "Quick print via Android RawBT Bluetooth app" : "Cetak cepat via aplikasi RawBT Bluetooth Android"}
           >
             <Bluetooth className="h-4 w-4 shrink-0" />
             <span>RawBT (BT)</span>
@@ -350,7 +400,7 @@ export const ReceiptModal: React.FC = () => {
             type="button"
             onClick={handleShareWhatsApp}
             className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-white py-2.5 px-2 text-xs font-bold shadow hover:bg-emerald-700 transition active:scale-95 cursor-pointer"
-            title="Kirim struk digital via WhatsApp ke pelanggan"
+            title={isEnglish ? "Send digital receipt via WhatsApp" : "Kirim struk digital via WhatsApp ke pelanggan"}
           >
             <Share2 className="h-4 w-4 shrink-0" />
             <span>WhatsApp</span>
@@ -360,10 +410,10 @@ export const ReceiptModal: React.FC = () => {
             type="button"
             onClick={handleCopyReceiptText}
             className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 py-2.5 px-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 transition active:scale-95 cursor-pointer"
-            title="Salin teks struk untuk di-paste ke aplikasi Bluetooth Print"
+            title={isEnglish ? "Copy receipt text to clipboard" : "Salin teks struk untuk di-paste ke aplikasi Bluetooth Print"}
           >
             <Copy className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span>{copiedWA ? "Tersalin!" : "Salin Teks"}</span>
+            <span>{copiedWA ? (isEnglish ? "Copied!" : "Tersalin!") : (isEnglish ? "Copy Text" : "Salin Teks")}</span>
           </button>
         </div>
 

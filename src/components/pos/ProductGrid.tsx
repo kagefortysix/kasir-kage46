@@ -6,6 +6,7 @@ import { ProductCategory, Product } from "@/types/pos";
 import { ProductCard } from "./ProductCard";
 import { ProductListItem } from "./ProductListItem";
 import { QuickAddProductModal } from "./QuickAddProductModal";
+import { useTranslation } from "@/lib/translations";
 import { 
   Search, 
   ScanBarcode, 
@@ -18,6 +19,7 @@ import {
 
 export const ProductGrid: React.FC = () => {
   const { products, setQuickAddModalOpen, addToCart, addToast } = usePosStore();
+  const { t, isEnglish } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>("Semua");
   const [searchQuery, setSearchQuery] = useState("");
   const [barcodeInput, setBarcodeInput] = useState("");
@@ -32,6 +34,25 @@ export const ProductGrid: React.FC = () => {
     "Makanan",
     "Camilan",
   ];
+
+  const getCategoryLabel = (cat: ProductCategory) => {
+    switch (cat) {
+      case "Semua":
+        return t.common.all;
+      case "Signature":
+        return "Signature";
+      case "Kopi":
+        return isEnglish ? "Coffee" : "Kopi";
+      case "Non-Kopi":
+        return isEnglish ? "Non-Coffee" : "Non-Kopi";
+      case "Makanan":
+        return isEnglish ? "Food" : "Makanan";
+      case "Camilan":
+        return isEnglish ? "Snacks" : "Camilan";
+      default:
+        return cat;
+    }
+  };
 
   // Filter products by category and search
   const filteredProducts = useMemo(() => {
@@ -56,26 +77,36 @@ export const ProductGrid: React.FC = () => {
       addToCart(found);
       setBarcodeInput("");
       setIsBarcodeOpen(false);
-      addToast(`SKU cocok: ${found.name} dimasukkan keranjang!`, "success");
+      addToast(
+        isEnglish
+          ? `SKU match: ${found.name} added to cart!`
+          : `SKU cocok: ${found.name} dimasukkan keranjang!`,
+        "success"
+      );
     } else {
-      addToast(`SKU/Barcode "${barcodeInput}" tidak ditemukan`, "error");
+      addToast(
+        isEnglish
+          ? `SKU/Barcode "${barcodeInput}" not found`
+          : `SKU/Barcode "${barcodeInput}" tidak ditemukan`,
+        "error"
+      );
     }
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden p-3 sm:p-4">
+    <div className="flex flex-col h-full overflow-hidden p-3 sm:p-4 w-full max-w-full min-w-0">
       
       {/* Top Search, Layout Mode Toggle & Fast Actions */}
-      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between pb-3">
+      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between pb-3 w-full max-w-full">
         
         {/* Search Input */}
-        <div className="relative flex-1">
+        <div className="relative flex-1 min-w-0 w-full">
           <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari menu atau kode SKU (Kopi Aren, Croissant)..."
+            placeholder={isEnglish ? "Search menu or SKU code (e.g. Latte, Croissant)..." : "Cari menu atau kode SKU (Kopi Aren, Croissant)..."}
             className="w-full rounded-xl border border-slate-200/90 bg-white pl-10 pr-9 py-2 text-xs sm:text-sm font-medium text-slate-900 shadow-2xs focus:border-emerald-500 focus:outline-none dark:border-slate-800 dark:bg-[#111827] dark:text-white transition-all"
           />
           {searchQuery && (
@@ -89,7 +120,7 @@ export const ProductGrid: React.FC = () => {
         </div>
 
         {/* Action Controls: Layout Switcher, Scan SKU, Quick Menu */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center justify-between sm:justify-end gap-1.5 shrink-0 w-full sm:w-auto">
           
           {/* Grid vs List Switcher */}
           <div className="flex items-center rounded-xl border border-slate-200 bg-white p-0.5 dark:border-slate-800 dark:bg-[#111827] shadow-2xs">
@@ -101,7 +132,7 @@ export const ProductGrid: React.FC = () => {
                   ? "bg-emerald-600 text-white shadow-2xs"
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
-              title="Grid Layout"
+              title={isEnglish ? "Grid Layout" : "Tampilan Grid"}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
               <span className="hidden md:inline">Grid</span>
@@ -115,7 +146,7 @@ export const ProductGrid: React.FC = () => {
                   ? "bg-emerald-600 text-white shadow-2xs"
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
-              title="List Layout"
+              title={isEnglish ? "List Layout" : "Tampilan List"}
             >
               <List className="h-3.5 w-3.5" />
               <span className="hidden md:inline">List</span>
@@ -144,7 +175,7 @@ export const ProductGrid: React.FC = () => {
             className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 active:scale-95 transition"
           >
             <Zap className="h-3.5 w-3.5 fill-white" />
-            <span>+ Menu Instan</span>
+            <span>{t.pos.quickProduct}</span>
           </button>
         </div>
 
@@ -162,20 +193,20 @@ export const ProductGrid: React.FC = () => {
             autoFocus
             value={barcodeInput}
             onChange={(e) => setBarcodeInput(e.target.value)}
-            placeholder="Scan barcode scanner atau ketik SKU (contoh: KGE-COF-01)..."
+            placeholder={isEnglish ? "Scan barcode or enter SKU (e.g. KGE-COF-01)..." : "Scan barcode scanner atau ketik SKU (contoh: KGE-COF-01)..."}
             className="flex-1 rounded-lg border border-emerald-300 bg-white px-2.5 py-1.5 text-xs font-mono text-slate-900 focus:outline-none dark:border-emerald-700 dark:bg-[#111827] dark:text-white"
           />
           <button
             type="submit"
             className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700"
           >
-            Tambah
+            {isEnglish ? "Add" : "Tambah"}
           </button>
         </form>
       )}
 
       {/* Category Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none select-none">
+      <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none select-none w-full max-w-full min-w-0">
         {categories.map((cat) => {
           const isActive = selectedCategory === cat;
           return (
@@ -188,7 +219,7 @@ export const ProductGrid: React.FC = () => {
                   : "bg-white text-slate-600 hover:bg-slate-100 dark:bg-[#111827] dark:text-slate-300 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800"
               }`}
             >
-              {cat}
+              {getCategoryLabel(cat)}
             </button>
           );
         })}
@@ -200,10 +231,12 @@ export const ProductGrid: React.FC = () => {
           <div className="flex flex-col items-center justify-center h-52 text-center">
             <Coffee className="h-9 w-9 text-slate-300 dark:text-slate-700 mb-2" />
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              Tidak ada menu ditemukan
+              {isEnglish ? "No menu items found" : "Tidak ada menu ditemukan"}
             </p>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Coba kata kunci lain atau gunakan tombol "+ Menu Instan".
+              {isEnglish
+                ? `Try another keyword or use the "${t.pos.quickProduct}" button.`
+                : `Coba kata kunci lain atau gunakan tombol "${t.pos.quickProduct}".`}
             </p>
           </div>
         ) : layoutMode === "grid" ? (

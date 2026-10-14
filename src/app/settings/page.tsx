@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { usePosStore } from "@/store/usePosStore";
-import { StoreSettings } from "@/types/pos";
+import { StoreSettings, UserAccount, AppLanguage } from "@/types/pos";
 import { UserFormModal } from "@/components/auth/UserFormModal";
+import { useTranslation } from "@/lib/translations";
 import { 
   Settings, 
   Store, 
@@ -23,7 +24,9 @@ import {
   ShieldCheck,
   Trash2,
   CheckCircle2,
-  Lock
+  Lock,
+  Edit2,
+  Languages
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -36,13 +39,18 @@ export default function SettingsPage() {
     currentUser, 
     toggleUserActive, 
     deleteUser, 
-    addToast 
+    addToast,
+    language,
+    setLanguage
   } = usePosStore();
+
+  const { t, isEnglish } = useTranslation();
 
   const isOwner = currentUser?.role === "owner";
 
   const [formData, setFormData] = useState<StoreSettings>(settings);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState<UserAccount | null>(null);
 
   useEffect(() => {
     setFormData(settings);
@@ -53,24 +61,69 @@ export default function SettingsPage() {
     updateSettings(formData);
   };
 
+  const handleStoreNameChange = (newName: string) => {
+    const oldName = formData.storeName;
+    let newFooter = formData.receiptFooterMessage;
+    let newWifi = formData.wifiName;
+    let newQris = formData.qrisMerchantName;
+
+    // Auto-update receipt footer message if it contains old name or legacy 'KAGE46'
+    if (oldName && newFooter.includes(oldName)) {
+      newFooter = newFooter.replaceAll(oldName, newName);
+    } else if (newFooter.includes("KAGE46")) {
+      newFooter = newFooter.replaceAll("KAGE46", newName);
+    }
+
+    // Auto-update WiFi SSID if it follows standard pattern or legacy 'KAGE46_GUEST'
+    const oldClean = oldName.replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
+    const newClean = newName.replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
+    if (newWifi === `${oldClean}_GUEST` || newWifi === "KAGE46_GUEST") {
+      newWifi = newClean ? `${newClean}_GUEST` : "";
+    }
+
+    // Auto-update QRIS merchant name
+    if (oldName && newQris.includes(oldName)) {
+      newQris = newQris.replaceAll(oldName, newName);
+    } else if (newQris.includes("KAGE46")) {
+      newQris = newQris.replaceAll("KAGE46", newName);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      storeName: newName,
+      receiptFooterMessage: newFooter,
+      wifiName: newWifi,
+      qrisMerchantName: newQris,
+    }));
+  };
+
+  const handleLanguageChange = (newLang: AppLanguage) => {
+    setLanguage(newLang);
+    setFormData((prev) => ({ ...prev, language: newLang }));
+  };
+
   const handleReset = () => {
-    if (confirm("KOSONGKAN SEMUA DATA DEMO?\n\nSemua produk, bahan baku stok gudang, riwayat transaksi pesanan, dan kontak pelanggan akan dikosongkan total (0) agar siap diisi dengan data toko riil Anda.")) {
+    if (confirm(t.settings.confirmReset)) {
       resetAllData();
       setFormData(settings);
     }
   };
 
   const handleLoadDemo = () => {
-    if (confirm("Muat kembali contoh data demo simulasi (menu kopi & makanan, stok gudang, pesanan)?")) {
+    if (confirm(t.settings.confirmLoadDemo)) {
       loadDemoData();
       setFormData(settings);
     }
   };
 
   const handleDeleteUserAccount = (userId: string, userName: string) => {
-    if (confirm(`Hapus akun kasir "${userName}"? Kasir ini tidak akan bisa login lagi.`)) {
+    const confirmMsg = t.settings.deleteAccountConfirm.replace("{name}", userName);
+    if (confirm(confirmMsg)) {
       deleteUser(userId);
-      addToast(`Akun kasir "${userName}" berhasil dihapus.`, "info");
+      addToast(
+        language === "en" ? `Account "${userName}" deleted successfully.` : `Akun kasir "${userName}" berhasil dihapus.`,
+        "info"
+      );
     }
   };
 
@@ -79,35 +132,145 @@ export default function SettingsPage() {
       <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto w-full pb-24 lg:pb-12">
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <span>Pengaturan Toko & Manajemen Akun</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-2">
+              <span>{t.settings.pageTitle}</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Identitas outlet KAGE46, akun kasir/karyawan, dan format printer thermal struk.
+              {formData.storeName || settings.storeName || "KASIR POS"} — {t.settings.pageSubtitle}
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={handleLoadDemo}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 transition"
-              title="Muat contoh data demo untuk simulasi"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 transition shrink-0"
+              title={t.settings.loadDemo}
             >
               <RotateCcw className="h-3.5 w-3.5 text-slate-500" />
-              <span>Muat Contoh Demo</span>
+              <span>{t.settings.loadDemo}</span>
             </button>
 
             <button
               type="button"
               onClick={handleReset}
-              className="flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 hover:border-rose-300 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-300 transition shadow-xs"
-              title="Kosongkan seluruh data untuk mulai operasional riil dari 0"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 hover:border-rose-300 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-300 transition shadow-xs shrink-0"
+              title={t.settings.clearData}
             >
               <Trash2 className="h-3.5 w-3.5 text-rose-600" />
-              <span>Kosongkan Semua Data</span>
+              <span>{t.settings.clearData}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* SECTION: PENGATURAN BAHASA SISTEM / SYSTEM LANGUAGE */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white font-bold shadow-md shadow-sky-600/20 shrink-0">
+                <Languages className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>{t.settings.langCardTitle}</span>
+                  <span className="rounded bg-sky-100 px-2 py-0.5 text-[10px] font-bold text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
+                    ID / EN
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {t.settings.langCardDesc}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">
+                {t.settings.activeBadge}:
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                {language === "id" ? "🇮🇩 Bahasa Indonesia" : "🇺🇸 English (US)"}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {/* Indonesian Option */}
+            <button
+              type="button"
+              onClick={() => handleLanguageChange("id")}
+              className={`flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all cursor-pointer relative ${
+                language === "id"
+                  ? "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 dark:border-emerald-500 ring-2 ring-emerald-500/20 shadow-xs"
+                  : "border-slate-200 bg-slate-50/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/40 dark:hover:bg-slate-800/80"
+              }`}
+            >
+              <div className="text-2xl sm:text-3xl shrink-0 p-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-xs border border-slate-200/60 dark:border-slate-700">
+                🇮🇩
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    {t.settings.langIdName}
+                  </span>
+                  {language === "id" && (
+                    <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>{t.settings.activeStatus}</span>
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  {t.settings.langIdDesc}
+                </p>
+                <div className="mt-2.5 flex items-center gap-1.5 text-[10px] font-medium text-slate-400">
+                  <span className="px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold">
+                    IDR (Rp)
+                  </span>
+                  <span>•</span>
+                  <span>Meja / Kasir / Struk</span>
+                </div>
+              </div>
+            </button>
+
+            {/* English Option */}
+            <button
+              type="button"
+              onClick={() => handleLanguageChange("en")}
+              className={`flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all cursor-pointer relative ${
+                language === "en"
+                  ? "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 dark:border-emerald-500 ring-2 ring-emerald-500/20 shadow-xs"
+                  : "border-slate-200 bg-slate-50/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/40 dark:hover:bg-slate-800/80"
+              }`}
+            >
+              <div className="text-2xl sm:text-3xl shrink-0 p-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-xs border border-slate-200/60 dark:border-slate-700">
+                🇺🇸
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    {t.settings.langEnName}
+                  </span>
+                  {language === "en" && (
+                    <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>{t.settings.activeStatus}</span>
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  {t.settings.langEnDesc}
+                </p>
+                <div className="mt-2.5 flex items-center gap-1.5 text-[10px] font-medium text-slate-400">
+                  <span className="px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold">
+                    USD / IDR
+                  </span>
+                  <span>•</span>
+                  <span>Tables / Cashier / Receipt</span>
+                </div>
+              </div>
             </button>
           </div>
         </div>
@@ -121,13 +284,13 @@ export default function SettingsPage() {
               </div>
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>Manajemen Akun Kasir & Pengguna</span>
+                  <span>{t.settings.userCardTitle}</span>
                   <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                    Khusus Owner
+                    {t.settings.onlyOwner}
                   </span>
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Owner dapat menambah akun kasir baru, menetapkan username & password, dan mengontrol status aktif.
+                  {t.settings.userCardSubtitle}
                 </p>
               </div>
             </div>
@@ -135,16 +298,19 @@ export default function SettingsPage() {
             {isOwner ? (
               <button
                 type="button"
-                onClick={() => setIsUserModalOpen(true)}
+                onClick={() => {
+                  setUserToEdit(null);
+                  setIsUserModalOpen(true);
+                }}
                 className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition shrink-0"
               >
                 <UserPlus className="h-4 w-4" />
-                <span>+ Buat Akun Kasir Baru</span>
+                <span>{t.settings.createCashier}</span>
               </button>
             ) : (
               <span className="text-xs text-amber-600 font-semibold flex items-center gap-1">
                 <Lock className="h-3.5 w-3.5" />
-                <span>Mode Kasir: Hanya Owner yang dapat menambah akun</span>
+                <span>{t.settings.cashierModeNotice}</span>
               </span>
             )}
           </div>
@@ -152,19 +318,19 @@ export default function SettingsPage() {
           {/* User List Table */}
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-850 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+              <thead className="bg-slate-50 dark:bg-slate-800 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="p-3">Nama Karyawan</th>
-                  <th className="p-3">Username Login</th>
-                  <th className="p-3">Password</th>
-                  <th className="p-3">Peran / Role</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3 text-right">Aksi</th>
+                  <th className="p-3">{t.settings.thEmployeeName}</th>
+                  <th className="p-3">{t.settings.thUsername}</th>
+                  <th className="p-3">{t.settings.thPassword}</th>
+                  <th className="p-3">{t.settings.thRole}</th>
+                  <th className="p-3">{t.settings.thStatus}</th>
+                  <th className="p-3 text-right">{t.settings.thAction}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-850">
+                  <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                     <td className="p-3">
                       <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <div className={`h-2.5 w-2.5 rounded-full ${u.isActive ? (u.role === "owner" ? "bg-emerald-500" : "bg-sky-500") : "bg-slate-400"}`} />
@@ -189,7 +355,7 @@ export default function SettingsPage() {
                           ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
                           : "bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
                       }`}>
-                        {u.role === "owner" ? "Owner / Master" : "Kasir Cabang"}
+                        {u.role === "owner" ? t.userModal.roleOwner : t.userModal.roleCashier}
                       </span>
                     </td>
                     <td className="p-3">
@@ -203,22 +369,35 @@ export default function SettingsPage() {
                             : "bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300"
                         } disabled:opacity-50`}
                       >
-                        {u.isActive ? "Aktif (Bisa Login)" : "Nonaktif"}
+                        {u.isActive ? (isEnglish ? "Active (Can Login)" : "Aktif (Bisa Login)") : (isEnglish ? "Inactive" : "Nonaktif")}
                       </button>
                     </td>
                     <td className="p-3 text-right">
-                      {u.role !== "owner" && isOwner ? (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteUserAccount(u.id, u.name)}
-                          className="p-1 text-slate-400 hover:text-rose-500 transition"
-                          title="Hapus akun kasir ini"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      ) : (
-                        <span className="text-[10px] text-slate-400">Master Utama</span>
-                      )}
+                      <div className="flex items-center justify-end gap-1.5">
+                        {isOwner && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUserToEdit(u);
+                              setIsUserModalOpen(true);
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 transition cursor-pointer"
+                            title={isEnglish ? `Edit name, username & password for ${u.name}` : `Edit nama, username & password akun ${u.name}`}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                        )}
+                        {u.role !== "owner" && isOwner ? (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteUserAccount(u.id, u.name)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-800 transition cursor-pointer"
+                            title={isEnglish ? "Delete this cashier account" : "Hapus akun kasir ini"}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -234,83 +413,88 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
               <Store className="h-5 w-5 text-emerald-600" />
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                Identitas Outlet & Informasi Publik
+                {t.settings.storeCardTitle}
               </h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nama Outlet / Brand
+                  {t.settings.storeName}
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.storeName}
-                  onChange={(e) => setFormData({ ...formData, storeName: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  onChange={(e) => handleStoreNameChange(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  {isEnglish
+                    ? "Changing the name here automatically updates the system header, receipts, and store brand throughout the app."
+                    : "Mengubah nama di sini otomatis memperbarui header sistem, struk printer kasir, dan identitas seluruh aplikasi."}
+                </p>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Tagline Outlet
+                  {t.settings.tagline}
                 </label>
                 <input
                   type="text"
                   value={formData.tagline}
                   onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Alamat Lengkap Outlet
+                {t.settings.address}
               </label>
               <textarea
                 rows={2}
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nomor Telepon / WhatsApp
+                  {t.settings.phone}
                 </label>
                 <input
                   type="text"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Akun Instagram
+                  {t.settings.instagram}
                 </label>
                 <input
                   type="text"
                   value={formData.instagram}
                   onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Akun TikTok
+                  {t.settings.tiktok}
                 </label>
                 <input
                   type="text"
                   value={formData.tiktok}
                   onChange={(e) => setFormData({ ...formData, tiktok: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
             </div>
@@ -319,25 +503,25 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nama WiFi Outlet (SSID)
+                  {t.settings.wifiName}
                 </label>
                 <input
                   type="text"
                   value={formData.wifiName}
                   onChange={(e) => setFormData({ ...formData, wifiName: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Password WiFi
+                  {t.settings.wifiPassword}
                 </label>
                 <input
                   type="text"
                   value={formData.wifiPassword}
                   onChange={(e) => setFormData({ ...formData, wifiPassword: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
             </div>
@@ -348,14 +532,14 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
               <Receipt className="h-5 w-5 text-emerald-600" />
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                Format Printer Thermal & Pengaturan Pajak (PPN)
+                {t.settings.receiptCardTitle}
               </h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Ukuran Lebar Kertas Printer Thermal Default
+                  {t.settings.receiptWidth}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -367,7 +551,7 @@ export default function SettingsPage() {
                         : "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
                     }`}
                   >
-                    58mm (Printer Mini / Bluetooth)
+                    {t.settings.printer58}
                   </button>
 
                   <button
@@ -379,14 +563,14 @@ export default function SettingsPage() {
                         : "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
                     }`}
                   >
-                    80mm (Desktop / USB Pos Printer)
+                    {t.settings.printer80}
                   </button>
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Tarif Pajak PPN (%) & Status Default Kasir
+                  {t.settings.taxRate}
                 </label>
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="relative">
@@ -396,7 +580,7 @@ export default function SettingsPage() {
                       max={100}
                       value={formData.taxPercentage}
                       onChange={(e) => setFormData({ ...formData, taxPercentage: Number(e.target.value) })}
-                      className="w-24 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 pr-7 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      className="w-24 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 pr-7 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                     />
                     <span className="absolute right-2.5 top-2 text-xs font-bold text-slate-400">%</span>
                   </div>
@@ -421,24 +605,30 @@ export default function SettingsPage() {
                         }`}
                       />
                     </div>
-                    <span>{formData.taxEnabled ? "Pajak PPN Aktif Secara Default di Kasir" : "Pajak PPN Nonaktif (Bebas Pajak)"}</span>
+                    <span>
+                      {formData.taxEnabled
+                        ? (isEnglish ? "VAT Enabled by Default at Cashier" : "Pajak PPN Aktif Secara Default di Kasir")
+                        : (isEnglish ? "VAT Disabled (Tax Free)" : "Pajak PPN Nonaktif (Bebas Pajak)")}
+                    </span>
                   </button>
                 </div>
                 <p className="text-[11px] text-slate-500 mt-1">
-                  Jika diaktifkan, pesanan baru di kasir otomatis memuat PPN {formData.taxPercentage}%. Kasir tetap dapat menonaktifkan PPN secara fleksibel per transaksi.
+                  {isEnglish
+                    ? `When enabled, new cashier orders automatically include ${formData.taxPercentage}% VAT. Cashier can still toggle VAT per transaction.`
+                    : `Jika diaktifkan, pesanan baru di kasir otomatis memuat PPN ${formData.taxPercentage}%. Kasir tetap dapat menonaktifkan PPN secara fleksibel per transaksi.`}
                 </p>
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Pesan Catatan Kaki (Footer Struk Belanja)
+                {t.settings.receiptFooter}
               </label>
               <textarea
                 rows={2}
                 value={formData.receiptFooterMessage}
                 onChange={(e) => setFormData({ ...formData, receiptFooterMessage: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
           </div>
@@ -448,14 +638,14 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
               <Building2 className="h-5 w-5 text-emerald-600" />
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                Akun Rekening Transfer & Merchant QRIS
+                {t.settings.paymentCardTitle}
               </h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nama Bank
+                  {t.settings.bankName}
                 </label>
                 <input
                   type="text"
@@ -466,13 +656,13 @@ export default function SettingsPage() {
                       bankAccount: { ...formData.bankAccount, bankName: e.target.value },
                     })
                   }
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nomor Rekening
+                  {t.settings.accountNumber}
                 </label>
                 <input
                   type="text"
@@ -483,13 +673,13 @@ export default function SettingsPage() {
                       bankAccount: { ...formData.bankAccount, accountNumber: e.target.value },
                     })
                   }
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Atas Nama Rekening
+                  {t.settings.accountHolder}
                 </label>
                 <input
                   type="text"
@@ -500,20 +690,20 @@ export default function SettingsPage() {
                       bankAccount: { ...formData.bankAccount, holderName: e.target.value },
                     })
                   }
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Merchant Name & NMID QRIS
+                {t.settings.qrisName}
               </label>
               <input
                 type="text"
                 value={formData.qrisMerchantName}
                 onChange={(e) => setFormData({ ...formData, qrisMerchantName: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
           </div>
@@ -525,7 +715,7 @@ export default function SettingsPage() {
               className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 active:scale-[0.99] transition"
             >
               <Save className="h-4 w-4" />
-              <span>Simpan Seluruh Pengaturan</span>
+              <span>{t.settings.saveAllSettings}</span>
             </button>
           </div>
 
@@ -533,7 +723,11 @@ export default function SettingsPage() {
 
         <UserFormModal
           isOpen={isUserModalOpen}
-          onClose={() => setIsUserModalOpen(false)}
+          onClose={() => {
+            setIsUserModalOpen(false);
+            setUserToEdit(null);
+          }}
+          userToEdit={userToEdit}
         />
 
       </div>

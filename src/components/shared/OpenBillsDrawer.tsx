@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah, formatTime } from "@/lib/utils";
 import { Order, PaymentMethod } from "@/types/pos";
 import { 
@@ -16,6 +17,7 @@ import {
 
 export const OpenBillsDrawer: React.FC = () => {
   const router = useRouter();
+  const { t, isEnglish } = useTranslation();
   const { 
     isOpenBillsDrawerOpen, 
     setOpenBillsDrawerOpen, 
@@ -60,10 +62,10 @@ export const OpenBillsDrawer: React.FC = () => {
             </div>
             <div>
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                Daftar Open Bill ({openBills.length})
+                {t.openBills.drawerTitle.replace("{count}", String(openBills.length))}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Tagihan meja berjalan & pesanan pending
+                {t.openBills.drawerSubtitle}
               </p>
             </div>
           </div>
@@ -84,10 +86,10 @@ export const OpenBillsDrawer: React.FC = () => {
             <div className="flex flex-col items-center justify-center h-64 text-center">
               <Receipt className="h-12 w-12 text-slate-300 dark:text-slate-700 mb-2" />
               <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-                Tidak ada Open Bill yang aktif
+                {t.openBills.emptyTitle}
               </p>
               <p className="text-[11px] text-slate-400 mt-1 max-w-xs">
-                Anda dapat menyimpan tagihan pelanggan di kasir menggunakan tombol "Simpan Tagihan (Open Bill)".
+                {t.openBills.emptyDesc}
               </p>
             </div>
           ) : (
@@ -103,7 +105,7 @@ export const OpenBillsDrawer: React.FC = () => {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="rounded-lg bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60">
-                          {bill.tableNumber || "Takeaway"}
+                          {bill.tableNumber || (isEnglish ? "Takeaway" : "Takeaway")}
                         </span>
                         <span className="text-[11px] font-mono text-slate-400">
                           {bill.invoiceNumber}
@@ -111,7 +113,7 @@ export const OpenBillsDrawer: React.FC = () => {
                       </div>
                       <div className="mt-1 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                         <Users className="h-3.5 w-3.5 text-slate-400" />
-                        <span>{bill.customerName || "Tamu Walk-in"}</span>
+                        <span>{bill.customerName || (isEnglish ? "Walk-in Guest" : "Tamu Walk-in")}</span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -141,7 +143,7 @@ export const OpenBillsDrawer: React.FC = () => {
                   {isSettling ? (
                     <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 dark:border-emerald-900/40 dark:bg-emerald-950/20 animate-in fade-in duration-100">
                       <div className="text-xs font-bold text-emerald-900 dark:text-emerald-300 mb-2">
-                        Pilih Metode Pelunasan:
+                        {t.openBills.settlePrompt}
                       </div>
 
                       <div className="grid grid-cols-3 gap-1.5 mb-3">
@@ -164,7 +166,7 @@ export const OpenBillsDrawer: React.FC = () => {
                       {paymentMethod === "cash" && (
                         <div className="mb-2">
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                            Nominal Uang Tunai Diterima:
+                            {t.openBills.cashReceivedLabel}
                           </label>
                           <input
                             type="number"
@@ -173,7 +175,7 @@ export const OpenBillsDrawer: React.FC = () => {
                             className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-900 dark:border-slate-700 dark:bg-[#111827] dark:text-white"
                           />
                           <div className="mt-1 flex justify-between text-[11px]">
-                            <span className="text-slate-500">Kembalian:</span>
+                            <span className="text-slate-500">{isEnglish ? "Change:" : "Kembalian:"}</span>
                             <span className="font-bold text-emerald-600 font-mono">
                               {formatRupiah(Math.max(0, cashAmountInput - bill.total))}
                             </span>
@@ -187,14 +189,14 @@ export const OpenBillsDrawer: React.FC = () => {
                           onClick={() => setSettlingOrderId(null)}
                           className="flex-1 rounded-lg border border-slate-200 bg-white py-1.5 text-[11px] font-semibold text-slate-600 dark:bg-[#111827] dark:text-slate-300"
                         >
-                          Batal
+                          {t.openBills.cancelBtn}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleConfirmSettle(bill)}
                           className="flex-1 rounded-lg bg-emerald-600 py-1.5 text-[11px] font-bold text-white hover:bg-emerald-700 transition"
                         >
-                          Konfirmasi Lunas
+                          {t.openBills.confirmSettleBtn}
                         </button>
                       </div>
                     </div>
@@ -206,7 +208,7 @@ export const OpenBillsDrawer: React.FC = () => {
                         className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 transition"
                       >
                         <PlusCircle className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>Tambah Item</span>
+                        <span>{t.openBills.editBillBtn}</span>
                       </button>
                       <button
                         type="button"
@@ -214,7 +216,7 @@ export const OpenBillsDrawer: React.FC = () => {
                         className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-2xs transition"
                       >
                         <Check className="h-3.5 w-3.5" />
-                        <span>Bayar / Lunasi</span>
+                        <span>{t.openBills.settleBillBtn}</span>
                       </button>
                     </div>
                   )}

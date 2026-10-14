@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -14,7 +15,10 @@ import {
   BarChart3,
   Settings,
   Clock,
-  X
+  X,
+  LogOut,
+  UserCog,
+  Languages
 } from "lucide-react";
 
 interface SidebarProps {
@@ -24,66 +28,67 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
-  const { currentUser, setShiftModalOpen, orders, currentShift } = usePosStore();
+  const { currentUser, logout, setShiftModalOpen, setEditProfileModalOpen, orders, currentShift, settings } = usePosStore();
+  const { t, language, setLanguage } = useTranslation();
 
   const isOwner = currentUser?.role === "owner";
   const openBills = orders.filter((o) => o.status === "open_bill").length;
 
   const allNavItems = [
     {
-      title: "Dashboard",
+      title: t.nav.dashboard,
       href: "/",
       icon: LayoutDashboard,
       badge: null,
       ownerOnly: false,
     },
     {
-      title: "Kasir POS",
+      title: t.nav.pos,
       href: "/pos",
       icon: ShoppingCart,
-      badge: "Utama",
+      badge: t.nav.mainBadge,
       ownerOnly: false,
     },
     {
-      title: "Riwayat Transaksi",
+      title: t.nav.transactions,
       href: "/transactions",
       icon: Receipt,
-      badge: openBills > 0 ? `${openBills} Open` : null,
+      badge: openBills > 0 ? `${openBills} ${t.nav.openSuffix}` : null,
       ownerOnly: false,
     },
     {
-      title: "Pelanggan",
+      title: t.nav.customers,
       href: "/customers",
       icon: Users,
       badge: null,
       ownerOnly: false,
     },
     {
-      title: "Produk & Resep HPP",
+      title: t.nav.products,
       href: "/products",
       icon: Coffee,
-      badge: "Owner",
+      badge: t.nav.ownerBadge,
       ownerOnly: true,
     },
     {
-      title: "Inventori & Gudang",
+      title: t.nav.inventory,
       href: "/inventory",
       icon: Package,
-      badge: "Owner",
+      badge: t.nav.ownerBadge,
       ownerOnly: true,
     },
     {
-      title: "Laporan Keuangan",
+      title: t.nav.reports,
       href: "/reports",
       icon: BarChart3,
-      badge: "Owner",
+      badge: t.nav.ownerBadge,
       ownerOnly: true,
     },
     {
-      title: "Pengaturan & Akun",
+      title: t.nav.settings,
       href: "/settings",
       icon: Settings,
-      badge: "Owner",
+      badge: t.nav.ownerBadge,
       ownerOnly: true,
     },
   ];
@@ -108,11 +113,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       >
         {/* Brand / Header in Mobile */}
         <div className="flex h-16 items-center justify-between px-5 border-b border-slate-100 dark:border-slate-800 lg:hidden">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-sm">
-              K46
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-xs shrink-0">
+              {settings?.storeName ? settings.storeName.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase() : "POS"}
             </div>
-            <span className="font-bold text-slate-900 dark:text-white">KAGE46 POS</span>
+            <span className="font-bold text-slate-900 dark:text-white truncate max-w-[150px]">
+              {settings?.storeName || "KASIR POS"}
+            </span>
           </div>
           <button
             onClick={onClose}
@@ -179,37 +186,100 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-200">
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>Status Shift</span>
+                <span>{language === "en" ? "Shift Status" : "Status Shift"}</span>
               </div>
               <span
-                className={`rounded px-1.5 py-0.5 text-[10px] ${
+                className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${
                   currentShift && currentShift.status === "open"
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold"
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
                     : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                 }`}
               >
-                {currentShift && currentShift.status === "open" ? "AKTIF" : "OFF"}
+                {currentShift && currentShift.status === "open" ? (language === "en" ? "ACTIVE" : "AKTIF") : "OFF"}
               </span>
             </div>
             
             <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
               {currentShift && currentShift.status === "open"
-                ? `Kasir: ${currentShift.cashierName}`
-                : "Klik untuk buka shift baru"}
+                ? `${language === "en" ? "Cashier:" : "Kasir:"} ${currentShift.cashierName}`
+                : (language === "en" ? "Click to open new shift" : "Klik untuk buka shift baru")}
             </p>
 
             <div className="mt-2 flex items-center justify-between text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold group-hover:underline">
-              <span>Kelola Shift & Laci</span>
+              <span>{language === "en" ? "Manage Shift & Drawer" : "Kelola Shift & Laci"}</span>
               <span>&rarr;</span>
             </div>
           </div>
 
-          {/* Role disclaimer indicator */}
-          <div className="mt-2 flex items-center justify-between px-1 text-[11px] text-slate-400">
-            <span>Akun Aktif:</span>
-            <span className="font-semibold uppercase text-slate-600 dark:text-slate-300">
-              {currentUser?.role === "owner" ? "Owner" : "Kasir"}
-            </span>
+          {/* Quick Language Toggle in Sidebar */}
+          <div className="mt-2.5 flex items-center justify-between px-1.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-xs">
+            <div className="flex items-center gap-1.5 px-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+              <Languages className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{t.header.language}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setLanguage("id")}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition cursor-pointer ${
+                  language === "id"
+                    ? "bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-2xs"
+                    : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                🇮🇩 ID
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage("en")}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition cursor-pointer ${
+                  language === "en"
+                    ? "bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-2xs"
+                    : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                🇺🇸 EN
+              </button>
+            </div>
+          </div>
+
+          {/* User Account info & Logout button */}
+          <div className="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+            <div 
+              onClick={() => {
+                onClose();
+                setEditProfileModalOpen(true);
+              }}
+              className="flex items-center gap-2 min-w-0 cursor-pointer group/user flex-1"
+              title={language === "en" ? "Click to edit name, username & password" : "Klik untuk ubah nama, username & password akun"}
+            >
+              <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-[11px] font-black uppercase text-white shrink-0 group-hover/user:scale-105 transition-transform ${
+                currentUser?.role === "owner" ? "bg-emerald-600" : "bg-sky-600"
+              }`}>
+                {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : "U"}
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-slate-800 dark:text-white truncate group-hover/user:text-emerald-600 dark:group-hover/user:text-emerald-400 flex items-center gap-1">
+                  <span className="truncate">{currentUser?.name || "Kasir"}</span>
+                  <UserCog className="h-3 w-3 opacity-50 shrink-0" />
+                </div>
+                <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">
+                  {currentUser?.role === "owner" ? "Owner" : "Kasir"} • {language === "en" ? "Edit" : "Ubah"}
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                onClose();
+                logout();
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300 text-xs font-bold transition shrink-0 cursor-pointer"
+              title={t.header.logout}
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>{language === "en" ? "Logout" : "Keluar"}</span>
+            </button>
           </div>
         </div>
       </aside>

@@ -14,7 +14,8 @@ import {
   OrderType, 
   PaymentMethod,
   ProductCategory,
-  UserAccount
+  UserAccount,
+  AppLanguage
 } from "@/types/pos";
 import { 
   initialProducts, 
@@ -44,13 +45,15 @@ interface PosState {
   login: (username: string, password: string) => boolean;
   logout: () => void;
   addUser: (userData: Omit<UserAccount, "id" | "createdAt">) => boolean;
-  updateUser: (id: string, userData: Partial<UserAccount>) => void;
+  updateUser: (id: string, userData: Partial<UserAccount>) => boolean;
   deleteUser: (id: string) => void;
   toggleUserActive: (id: string) => void;
 
-  // Theme
+  // Theme & Language
   isDarkMode: boolean;
   toggleDarkMode: () => void;
+  language: AppLanguage;
+  setLanguage: (lang: AppLanguage) => void;
 
   // Store Settings
   settings: StoreSettings;
@@ -137,6 +140,8 @@ interface PosState {
   setQuickAddModalOpen: (open: boolean) => void;
   isOpenBillsDrawerOpen: boolean;
   setOpenBillsDrawerOpen: (open: boolean) => void;
+  isEditProfileModalOpen: boolean;
+  setEditProfileModalOpen: (open: boolean) => void;
 
   // Toasts
   toasts: ToastItem[];
@@ -196,11 +201,23 @@ export const usePosStore = create<PosState>()(
         return true;
       },
       updateUser: (id, userData) => {
+        if (userData.username) {
+          const cleanUsername = userData.username.trim().toLowerCase();
+          const exists = get().users.some(
+            (u) => u.id !== id && u.username.toLowerCase() === cleanUsername
+          );
+          if (exists) {
+            get().addToast(`Username "${cleanUsername}" sudah digunakan akun lain!`, "error");
+            return false;
+          }
+          userData.username = cleanUsername;
+        }
         set((state) => ({
           users: state.users.map((u) => (u.id === id ? { ...u, ...userData } : u)),
           currentUser: state.currentUser?.id === id ? { ...state.currentUser, ...userData } : state.currentUser,
         }));
-        get().addToast("Data akun berhasil diperbarui", "success");
+        get().addToast("Data akun berhasil diperbarui!", "success");
+        return true;
       },
       deleteUser: (id) => {
         const target = get().users.find((u) => u.id === id);
@@ -241,20 +258,43 @@ export const usePosStore = create<PosState>()(
         }
       },
 
+      // Language
+      language: initialSettings.language || "id",
+      setLanguage: (lang) => {
+        set((state) => ({
+          language: lang,
+          settings: { ...state.settings, language: lang },
+        }));
+        const isId = lang === "id";
+        get().addToast(
+          isId ? "Bahasa berhasil diubah ke Bahasa Indonesia" : "Language successfully switched to English",
+          "info"
+        );
+      },
+
       // Settings
       settings: initialSettings,
       updateSettings: (newSettings) => {
-        set((state) => ({
-          settings: { ...state.settings, ...newSettings },
-          taxEnabled: newSettings.taxEnabled !== undefined ? newSettings.taxEnabled : state.taxEnabled,
-        }));
-        get().addToast("Pengaturan berhasil disimpan", "success");
+        set((state) => {
+          const nextLang = newSettings.language || state.language;
+          return {
+            settings: { ...state.settings, ...newSettings, language: nextLang },
+            taxEnabled: newSettings.taxEnabled !== undefined ? newSettings.taxEnabled : state.taxEnabled,
+            language: nextLang,
+          };
+        });
+        const currentLang = get().language;
+        get().addToast(
+          currentLang === "en" ? "Settings saved successfully!" : "Pengaturan berhasil disimpan!",
+          "success"
+        );
       },
       resetAllData: () => {
         set({
           users: [initialUsers[0]], // Tetap simpan akun Master Owner
           currentUser: initialUsers[0],
           role: "owner",
+          language: "id",
           products: [], // Kosongkan produk
           ingredients: [], // Kosongkan bahan baku gudang
           customers: [], // Kosongkan pelanggan
@@ -275,6 +315,7 @@ export const usePosStore = create<PosState>()(
           users: initialUsers,
           currentUser: initialUsers[0],
           role: "owner",
+          language: "id",
           products: initialProducts,
           ingredients: initialIngredients,
           customers: initialCustomers,
@@ -901,6 +942,8 @@ export const usePosStore = create<PosState>()(
       setQuickAddModalOpen: (open) => set({ isQuickAddModalOpen: open }),
       isOpenBillsDrawerOpen: false,
       setOpenBillsDrawerOpen: (open) => set({ isOpenBillsDrawerOpen: open }),
+      isEditProfileModalOpen: false,
+      setEditProfileModalOpen: (open) => set({ isEditProfileModalOpen: open }),
 
       // Toasts
       toasts: [],
@@ -940,6 +983,7 @@ export const usePosStore = create<PosState>()(
         currentUser: state.currentUser,
         role: state.role,
         isDarkMode: state.isDarkMode,
+        language: state.language,
         settings: state.settings,
         taxEnabled: state.taxEnabled,
         products: state.products,

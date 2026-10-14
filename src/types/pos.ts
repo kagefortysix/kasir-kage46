@@ -1,3 +1,5 @@
+export type AppLanguage = "id" | "en";
+
 export type UserRole = "owner" | "cashier";
 
 export type OrderType = "dine_in" | "takeaway";
@@ -172,6 +174,7 @@ export interface StoreSettings {
   receiptSize: "58mm" | "80mm";
   receiptFooterMessage: string;
   qrisMerchantName: string;
+  language?: AppLanguage;
   bankAccount: {
     bankName: string;
     accountNumber: string;

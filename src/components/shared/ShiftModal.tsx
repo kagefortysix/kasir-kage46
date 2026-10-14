@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { 
   Clock, 
@@ -24,6 +25,7 @@ export const ShiftModal: React.FC = () => {
     closeShift, 
     role 
   } = usePosStore();
+  const { t, isEnglish } = useTranslation();
 
   // Open Shift Form State
   const [startingCashInput, setStartingCashInput] = useState<number>(200000);
@@ -65,10 +67,14 @@ export const ShiftModal: React.FC = () => {
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                {isShiftActive ? "Manajemen & Tutup Shift Kasir" : "Buka Shift Kasir Baru"}
+                {isShiftActive 
+                  ? (isEnglish ? "Cashier Shift Management & Close" : "Manajemen & Tutup Shift Kasir") 
+                  : (isEnglish ? "Open New Cashier Shift" : "Buka Shift Kasir Baru")}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {isShiftActive ? "Rekonsiliasi uang fisik di laci kasir" : "Catat modal awal uang kembalian"}
+                {isShiftActive 
+                  ? (isEnglish ? "Reconcile cash in drawer with system totals" : "Rekonsiliasi uang fisik di laci kasir")
+                  : (isEnglish ? "Enter initial drawer float money" : "Catat modal awal uang kembalian")}
               </p>
             </div>
           </div>
@@ -86,7 +92,7 @@ export const ShiftModal: React.FC = () => {
           <form onSubmit={handleOpenShift} className="mt-4 space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Nama Kasir Bertugas
+                {isEnglish ? "Cashier on Duty Name" : "Nama Kasir Bertugas"}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -95,15 +101,15 @@ export const ShiftModal: React.FC = () => {
                   required
                   value={cashierNameInput}
                   onChange={(e) => setCashierNameInput(e.target.value)}
-                  placeholder="Contoh: Rizky Ramadhan"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  placeholder="e.g. Rizky Ramadhan"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Modal Awal Kasir (Uang Kembalian di Laci)
+                {isEnglish ? "Cash Float / Starting Drawer Cash (Rp)" : "Modal Awal Kasir (Uang Kembalian di Laci)"}
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-500">Rp</span>
@@ -114,7 +120,7 @@ export const ShiftModal: React.FC = () => {
                   step={5000}
                   value={startingCashInput}
                   onChange={(e) => setStartingCashInput(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-2 text-sm font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-2 text-sm font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
               <div className="flex gap-2 mt-2">
@@ -133,26 +139,28 @@ export const ShiftModal: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Catatan Shift (Opsional)
+                {isEnglish ? "Shift Notes (Optional)" : "Catatan Shift (Opsional)"}
               </label>
               <input
                 type="text"
                 value={openNotesInput}
                 onChange={(e) => setOpenNotesInput(e.target.value)}
-                placeholder="Contoh: Shift Pagi (07:00 - 15:00)"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                placeholder={isEnglish ? "e.g. Morning Shift (07:00 - 15:00)" : "Contoh: Shift Pagi (07:00 - 15:00)"}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
 
             <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3 text-[11px] text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300">
-              💡 Modal kasir digunakan sebagai acuan uang kembalian. Seluruh transaksi tunai dan pengeluaran laci akan direkonsiliasi saat tutup shift.
+              💡 {isEnglish 
+                ? "Initial cash float is used for customer change. All cash sales and cash drawer expenses will be reconciled when closing shift."
+                : "Modal kasir digunakan sebagai acuan uang kembalian. Seluruh transaksi tunai dan pengeluaran laci akan direkonsiliasi saat tutup shift."}
             </div>
 
             <button
               type="submit"
               className="w-full rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 active:scale-[0.99] transition"
             >
-              Buka Shift Kasir Sekarang
+              {isEnglish ? "Open Cashier Shift Now" : "Buka Shift Kasir Sekarang"}
             </button>
           </form>
         ) : (
@@ -161,11 +169,11 @@ export const ShiftModal: React.FC = () => {
             {/* Shift info badge */}
             <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 dark:border-slate-800 dark:bg-slate-800/40">
               <div>
-                <div className="text-[11px] text-slate-500">Kasir Bertugas</div>
+                <div className="text-[11px] text-slate-500">{isEnglish ? "Cashier on Duty" : "Kasir Bertugas"}</div>
                 <div className="text-xs font-bold text-slate-900 dark:text-white">{currentShift.cashierName}</div>
               </div>
               <div className="text-right">
-                <div className="text-[11px] text-slate-500">Mulai Shift</div>
+                <div className="text-[11px] text-slate-500">{isEnglish ? "Shift Started" : "Mulai Shift"}</div>
                 <div className="text-xs font-medium text-slate-700 dark:text-slate-300">{formatDate(currentShift.openedAt)}</div>
               </div>
             </div>
@@ -173,19 +181,19 @@ export const ShiftModal: React.FC = () => {
             {/* Reconciliation breakdown cards */}
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="rounded-xl border border-slate-200 p-2.5 dark:border-slate-800">
-                <span className="text-[11px] text-slate-500">Modal Kas Awal</span>
+                <span className="text-[11px] text-slate-500">{isEnglish ? "Initial Float" : "Modal Kas Awal"}</span>
                 <div className="text-sm font-bold text-slate-900 dark:text-white">{formatRupiah(currentShift.startingCash)}</div>
               </div>
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-2.5 dark:border-emerald-900/30 dark:bg-emerald-950/20">
-                <span className="text-[11px] text-emerald-700 dark:text-emerald-400">Total Tunai Masuk</span>
+                <span className="text-[11px] text-emerald-700 dark:text-emerald-400">{isEnglish ? "Total Cash In" : "Total Tunai Masuk"}</span>
                 <div className="text-sm font-bold text-emerald-700 dark:text-emerald-300">+{formatRupiah(currentShift.totalCashSales)}</div>
               </div>
               <div className="rounded-xl border border-sky-200 bg-sky-50/50 p-2.5 dark:border-sky-900/30 dark:bg-sky-950/20">
-                <span className="text-[11px] text-sky-700 dark:text-sky-400">Total Non-Tunai</span>
+                <span className="text-[11px] text-sky-700 dark:text-sky-400">{isEnglish ? "Total Non-Cash" : "Total Non-Tunai"}</span>
                 <div className="text-sm font-bold text-sky-700 dark:text-sky-300">{formatRupiah(currentShift.totalNonCashSales)}</div>
               </div>
               <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-2.5 dark:border-rose-900/30 dark:bg-rose-950/20">
-                <span className="text-[11px] text-rose-700 dark:text-rose-400">Pengeluaran Laci</span>
+                <span className="text-[11px] text-rose-700 dark:text-rose-400">{isEnglish ? "Drawer Expenses" : "Pengeluaran Laci"}</span>
                 <div className="text-sm font-bold text-rose-700 dark:text-rose-300">-{formatRupiah(currentShift.totalExpenses)}</div>
               </div>
             </div>
@@ -195,10 +203,10 @@ export const ShiftModal: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-xs font-semibold text-emerald-900 dark:text-emerald-300">
-                    Uang Tunai Laci Sistem (Expected Cash)
+                    {isEnglish ? "System Expected Cash in Drawer" : "Uang Tunai Laci Sistem (Expected Cash)"}
                   </div>
                   <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Modal + Tunai Masuk - Pengeluaran Laci
+                    {isEnglish ? "Float + Cash In - Drawer Expenses" : "Modal + Tunai Masuk - Pengeluaran Laci"}
                   </div>
                 </div>
                 <div className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
@@ -210,7 +218,7 @@ export const ShiftModal: React.FC = () => {
             {/* Input actual physical cash */}
             <div>
               <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                Hitung Fisik Uang di Laci Kasir (Actual Cash)
+                {isEnglish ? "Counted Physical Cash in Drawer (Actual Cash)" : "Hitung Fisik Uang di Laci Kasir (Actual Cash)"}
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-500">Rp</span>
@@ -226,7 +234,7 @@ export const ShiftModal: React.FC = () => {
 
               {/* Difference indication */}
               <div className="mt-2 flex items-center justify-between rounded-lg p-2 text-xs font-semibold">
-                <span className="text-slate-500">Selisih Kas Laci:</span>
+                <span className="text-slate-500">{isEnglish ? "Cash Variance:" : "Selisih Kas Laci:"}</span>
                 <span
                   className={`font-bold ${
                     cashDifference === 0
@@ -237,24 +245,24 @@ export const ShiftModal: React.FC = () => {
                   }`}
                 >
                   {cashDifference === 0
-                    ? "✓ Pas (Tidak Ada Selisih)"
+                    ? (isEnglish ? "✓ Exact (Zero Variance)" : "✓ Pas (Tidak Ada Selisih)")
                     : cashDifference > 0
-                    ? `+${formatRupiah(cashDifference)} (Lebih)`
-                    : `${formatRupiah(cashDifference)} (Kurang / Minus)`}
+                    ? `+${formatRupiah(cashDifference)} (${isEnglish ? "Surplus" : "Lebih"})`
+                    : `${formatRupiah(cashDifference)} (${isEnglish ? "Deficit" : "Kurang / Minus"})`}
                 </span>
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Catatan Penutupan Shift
+                {isEnglish ? "Closing Shift Notes" : "Catatan Penutupan Shift"}
               </label>
               <input
                 type="text"
                 value={closeNotesInput}
                 onChange={(e) => setCloseNotesInput(e.target.value)}
-                placeholder="Contoh: Selisih uang koin tip atau uang pas diserahkan ke shift sore"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                placeholder={isEnglish ? "e.g. Handed over drawer float to evening cashier" : "Contoh: Selisih uang koin tip atau uang pas diserahkan ke shift sore"}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
 
@@ -265,14 +273,14 @@ export const ShiftModal: React.FC = () => {
                 onClick={() => setShiftModalOpen(false)}
                 className="flex-1 rounded-xl border border-slate-200 bg-slate-100 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
               >
-                Kembali ke Kasir
+                {isEnglish ? "Back to POS" : "Kembali ke Kasir"}
               </button>
               <button
                 type="button"
                 onClick={handleCloseShift}
                 className="flex-1 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-lg shadow-rose-600/20 hover:bg-rose-700 transition"
               >
-                Tutup Shift & Rekap
+                {isEnglish ? "Close Shift & Reconcile" : "Tutup Shift & Rekap"}
               </button>
             </div>
           </div>

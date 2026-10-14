@@ -29,7 +29,7 @@ export function formatCSVRow(fields: (string | number | boolean | null | undefin
 /**
  * Export Transactions History to CSV
  */
-export function exportTransactionsToCSV(orders: any[], filename = "Riwayat_Transaksi_KAGE46.csv") {
+export function exportTransactionsToCSV(orders: any[], filename = "Riwayat_Transaksi.csv") {
   const headers = [
     "No. Invoice",
     "Tanggal & Waktu",
@@ -93,7 +93,7 @@ export function exportFinancialReportToCSV(
     expensesList: any[];
     paymentBreakdown: Record<string, number>;
   },
-  filename = "Laporan_Keuangan_KAGE46.csv"
+  filename = "Laporan_Keuangan.csv"
 ) {
   const rows: string[] = [
     formatCSVRow(["LAPORAN LABA RUGI & FINANSIAL", reportData.storeName]),
@@ -132,7 +132,7 @@ export function exportFinancialReportToCSV(
 /**
  * Export Inventory & Ingredients to CSV
  */
-export function exportInventoryToCSV(ingredients: any[], filename = "Inventori_Bahan_Baku_KAGE46.csv") {
+export function exportInventoryToCSV(ingredients: any[], filename = "Inventori_Bahan_Baku.csv") {
   const headers = [
     "ID Bahan",
     "Nama Bahan Baku",

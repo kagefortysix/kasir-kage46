@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Product, ProductCategory } from "@/types/pos";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { X, Coffee, Sparkles } from "lucide-react";
 
 interface ProductFormModalProps {
@@ -12,6 +13,7 @@ interface ProductFormModalProps {
 
 export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdit, onClose }) => {
   const { addProduct, updateProduct } = usePosStore();
+  const { t, isEnglish } = useTranslation();
 
   const [name, setName] = useState(productToEdit?.name || "");
   const [category, setCategory] = useState<ProductCategory>(productToEdit?.category || "Kopi");
@@ -70,7 +72,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
           <div className="flex items-center gap-2">
             <Coffee className="h-5 w-5 text-emerald-600" />
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              {productToEdit ? "Edit Menu Produk" : "Tambah Menu Produk Baru"}
+              {productToEdit ? t.productModal.titleEdit : t.productModal.titleAdd}
             </h2>
           </div>
           <button
@@ -84,39 +86,39 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Nama Menu Jual
+              {t.productModal.nameLabel}
             </label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Contoh: Caramel Macchiato Velvet"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              placeholder={t.productModal.namePlaceholder}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Kategori Menu
+                {t.productModal.categoryLabel}
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ProductCategory)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               >
                 <option value="Signature">Signature</option>
-                <option value="Kopi">Kopi</option>
-                <option value="Non-Kopi">Non-Kopi</option>
-                <option value="Makanan">Makanan</option>
-                <option value="Camilan">Camilan</option>
+                <option value="Kopi">{isEnglish ? "Coffee" : "Kopi"}</option>
+                <option value="Non-Kopi">{isEnglish ? "Non-Coffee" : "Non-Kopi"}</option>
+                <option value="Makanan">{isEnglish ? "Food" : "Makanan"}</option>
+                <option value="Camilan">{isEnglish ? "Snacks" : "Camilan"}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Harga Jual (Rp)
+                {t.productModal.priceLabel}
               </label>
               <input
                 type="number"
@@ -125,7 +127,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
                 step={500}
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
           </div>
@@ -133,7 +135,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Modal Pokok (HPP) (Rp)
+                {t.productModal.costPriceLabel}
               </label>
               <input
                 type="number"
@@ -141,28 +143,28 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
                 step={500}
                 value={costPrice}
                 onChange={(e) => setCostPrice(Number(e.target.value))}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Stok Awal Porsi
+                {t.productModal.stockLabel}
               </label>
               <input
                 type="number"
                 min={0}
                 value={stock}
                 onChange={(e) => setStock(Number(e.target.value))}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
           </div>
 
           <div className="p-3 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30">
             <label className="block text-xs font-bold text-amber-900 dark:text-amber-300 mb-1 flex items-center justify-between">
-              <span>Alokasi Sewa Tempat & Operasional / Cup</span>
-              <span className="text-[10px] text-amber-700/80 font-normal">Sewa toko, listrik & utilitas</span>
+              <span>{t.productModal.overheadLabel}</span>
+              <span className="text-[10px] text-amber-700/80 font-normal">{t.productModal.overheadSubtitle}</span>
             </label>
             <div className="flex items-center">
               <span className="text-xs font-bold text-amber-600 mr-2">Rp</span>
@@ -173,21 +175,21 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
                 value={overheadCost}
                 onChange={(e) => setOverheadCost(Number(e.target.value))}
                 placeholder="Contoh: 1500"
-                className="w-full rounded-xl border border-amber-200 bg-white px-3 py-1.5 text-xs font-black text-slate-900 focus:border-amber-500 focus:outline-none dark:border-amber-800 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-amber-200 bg-white px-3 py-1.5 text-xs font-black text-slate-900 focus:border-amber-500 focus:outline-none dark:border-amber-800 dark:bg-slate-800 dark:text-white dark:focus:bg-slate-800"
               />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Deskripsi Menu
+              {t.productModal.descriptionLabel}
             </label>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Catatan rasa, perpaduan bahan..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              placeholder={t.productModal.descriptionPlaceholder}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
 
@@ -197,13 +199,13 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
               onClick={onClose}
               className="flex-1 rounded-xl border border-slate-200 bg-slate-100 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
             >
-              Batal
+              {t.productModal.cancelBtn}
             </button>
             <button
               type="submit"
               className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition"
             >
-              {productToEdit ? "Simpan Perubahan" : "Tambahkan Menu"}
+              {productToEdit ? t.productModal.submitEdit : t.productModal.submitAdd}
             </button>
           </div>
         </form>

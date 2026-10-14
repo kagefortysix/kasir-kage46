@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah } from "@/lib/utils";
 import { TablePickerModal } from "./TablePickerModal";
 import { 
@@ -24,6 +25,7 @@ interface CartPaneProps {
 }
 
 export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) => {
+  const { t, isEnglish } = useTranslation();
   const {
     cart,
     orderType,
@@ -70,7 +72,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
   };
 
   const handleSaveBill = () => {
-    const cashier = currentShift?.cashierName || "Kasir Utama";
+    const cashier = currentShift?.cashierName || (isEnglish ? "Lead Cashier" : "Kasir Utama");
     saveOpenBill(cashier);
     if (isMobileDrawer) setCartDrawerOpen(false);
   };
@@ -92,7 +94,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
             <div className="flex items-center gap-2">
               <ShoppingCart className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                Keranjang Kasir ({totalQty} Item)
+                {isEnglish ? "Cashier Cart" : "Keranjang Kasir"} ({totalQty} {isEnglish ? "Items" : "Item"})
               </span>
             </div>
             <button
@@ -116,7 +118,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
             }`}
           >
             <Utensils className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Dine In (Meja)</span>
+            <span>{isEnglish ? "Dine In" : "Dine In (Meja)"}</span>
           </button>
 
           <button
@@ -137,20 +139,20 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
         {orderType === "dine_in" && (
           <div className="mt-2 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-1.5 text-xs dark:border-emerald-900/40 dark:bg-emerald-950/20">
             <span className="font-semibold text-emerald-900 dark:text-emerald-300">
-              Lokasi: <span className="font-black">{tableNumber}</span>
+              {isEnglish ? "Table:" : "Lokasi:"} <span className="font-black">{tableNumber}</span>
             </span>
             <button
               type="button"
               onClick={() => setIsTableModalOpen(true)}
               className="rounded-lg bg-emerald-600 px-2 py-0.5 text-[11px] font-bold text-white hover:bg-emerald-700 transition"
             >
-              Ganti Meja
+              {isEnglish ? "Change Table" : "Ganti Meja"}
             </button>
           </div>
         )}
       </div>
 
-      {/* Cart Items List with min-h-0 and overflow-y-auto so it stays scrollable internally */}
+      {/* Cart Items List */}
       <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
         {cart.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 text-center px-4">
@@ -158,10 +160,10 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
               <ShoppingCart className="h-5 w-5" />
             </div>
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              Keranjang Masih Kosong
+              {t.pos.emptyCart}
             </p>
             <p className="text-[11px] text-slate-400 mt-0.5 max-w-xs leading-relaxed">
-              Klik menu di sebelah kiri untuk menambahkan pesanan.
+              {t.pos.emptyCartDesc}
             </p>
           </div>
         ) : (
@@ -196,7 +198,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
                     onClick={() => handleOpenNotes(item.id, item.notes)}
                     className="text-emerald-600 dark:text-emerald-400 hover:underline shrink-0 ml-1 font-semibold"
                   >
-                    Ubah
+                    {t.common.edit}
                   </button>
                 </div>
               )}
@@ -208,7 +210,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
                     type="text"
                     value={noteInput}
                     onChange={(e) => setNoteInput(e.target.value)}
-                    placeholder="Less sugar, tanpa es, pedas, dll."
+                    placeholder={t.pos.notesPlaceholder}
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-900 focus:border-emerald-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
                   <div className="flex justify-end gap-1">
@@ -217,14 +219,14 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
                       onClick={() => setEditingNotesItemId(null)}
                       className="px-2 py-0.5 text-[10px] text-slate-500 hover:bg-slate-100 rounded"
                     >
-                      Batal
+                      {t.common.cancel}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleSaveNotes(item.id)}
                       className="px-2 py-0.5 text-[10px] bg-emerald-600 text-white font-bold rounded"
                     >
-                      Simpan
+                      {t.common.save}
                     </button>
                   </div>
                 </div>
@@ -240,7 +242,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
                       className="flex items-center gap-1 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 font-medium"
                     >
                       <FileText className="h-3 w-3" />
-                      <span>+ Catatan</span>
+                      <span>{t.pos.addNotes}</span>
                     </button>
                   )}
                 </div>
@@ -267,7 +269,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
                     type="button"
                     onClick={() => removeFromCart(item.id)}
                     className="ml-1 p-1 text-slate-400 hover:text-rose-500 transition"
-                    title="Hapus"
+                    title={t.common.delete}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -279,13 +281,13 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
         )}
       </div>
 
-      {/* Bill Calculation & Checkout Footer: Pinned at bottom (shrink-0) */}
+      {/* Bill Calculation & Checkout Footer */}
       <div className="shrink-0 p-3 sm:p-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-[#0e1422] space-y-2">
         
         {/* Subtotal, Discount & Tax Settings */}
         <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
           <div className="flex justify-between">
-            <span>Subtotal ({totalQty} item):</span>
+            <span>Subtotal ({totalQty} {isEnglish ? "items" : "item"}):</span>
             <span className="font-bold text-slate-900 dark:text-white font-mono">
               {formatRupiah(subtotal)}
             </span>
@@ -299,7 +301,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
               className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
             >
               <Percent className="h-3 w-3" />
-              <span>{discountNominal > 0 ? `Diskon: -${formatRupiah(discountNominal)}` : "+ Pasang Diskon"}</span>
+              <span>{discountNominal > 0 ? `${isEnglish ? "Discount:" : "Diskon:"} -${formatRupiah(discountNominal)}` : (isEnglish ? "+ Apply Discount" : "+ Pasang Diskon")}</span>
             </button>
 
             {isDiscountOpen && (
@@ -310,7 +312,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
                   step={1000}
                   value={discountNominal}
                   onChange={(e) => setDiscountNominal(Number(e.target.value))}
-                  placeholder="Nominal Rp"
+                  placeholder="Rp"
                   className="w-24 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
                 <button
@@ -329,14 +331,13 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
             <button
               type="button"
               onClick={() => setTaxEnabled(!taxEnabled)}
-              title={taxEnabled ? "Klik untuk nonaktifkan pajak PPN" : "Klik untuk aktifkan pajak PPN"}
+              title={taxEnabled ? (isEnglish ? "Click to disable tax" : "Klik untuk nonaktifkan pajak PPN") : (isEnglish ? "Click to enable tax" : "Klik untuk aktifkan pajak PPN")}
               className={`flex items-center gap-2 rounded-lg px-2.5 py-1 font-semibold transition select-none cursor-pointer active:scale-95 ${
                 taxEnabled
                   ? "bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
                   : "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 dark:bg-slate-800/80 dark:text-slate-400 dark:border-slate-700"
               }`}
             >
-              {/* Toggle switch visual */}
               <div
                 className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
                   taxEnabled ? "bg-emerald-600" : "bg-slate-300 dark:bg-slate-600"
@@ -348,7 +349,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
                   }`}
                 />
               </div>
-              <span>PPN ({settings.taxPercentage}%): {taxEnabled ? "Aktif" : "Nonaktif"}</span>
+              <span>PPN ({settings.taxPercentage}%): {taxEnabled ? (isEnglish ? "Active" : "Aktif") : (isEnglish ? "Inactive" : "Nonaktif")}</span>
             </button>
             <span className={`font-mono font-bold ${taxEnabled ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-slate-500"}`}>
               {taxEnabled ? formatRupiah(taxNominal) : "Rp 0"}
@@ -357,7 +358,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
 
           {/* Total Grand */}
           <div className="flex justify-between text-sm sm:text-base font-black text-slate-900 dark:text-white pt-1.5 border-t border-slate-200 dark:border-slate-800">
-            <span>Total Tagihan:</span>
+            <span>{isEnglish ? "Total Payment:" : "Total Tagihan:"}</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-mono">{formatRupiah(total)}</span>
           </div>
         </div>
@@ -375,7 +376,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
             }`}
           >
             <CreditCard className="h-4 w-4" />
-            <span>Bayar Sekarang ({formatRupiah(total)})</span>
+            <span>{isEnglish ? "Checkout Now" : "Bayar Sekarang"} ({formatRupiah(total)})</span>
           </button>
 
           <div className="flex gap-1.5">
@@ -384,10 +385,10 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
               disabled={cart.length === 0}
               onClick={clearCart}
               className="flex items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-[#111827] dark:text-slate-300 dark:hover:bg-rose-950/40 transition disabled:opacity-40"
-              title="Kosongkan Keranjang"
+              title={isEnglish ? "Clear Cart" : "Kosongkan Keranjang"}
             >
               <Trash2 className="h-3.5 w-3.5" />
-              <span>Reset</span>
+              <span>{isEnglish ? "Clear" : "Reset"}</span>
             </button>
 
             <button
@@ -397,7 +398,7 @@ export const CartPane: React.FC<CartPaneProps> = ({ isMobileDrawer = false }) =>
               className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50/70 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800/60 dark:bg-emerald-950/30 dark:text-emerald-300 transition disabled:opacity-40"
             >
               <Save className="h-3.5 w-3.5" />
-              <span>Simpan Open Bill</span>
+              <span>{t.pos.saveOpenBill}</span>
             </button>
           </div>
         </div>

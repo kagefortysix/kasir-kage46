@@ -6,11 +6,13 @@ import { ProductGrid } from "@/components/pos/ProductGrid";
 import { CartPane } from "@/components/pos/CartPane";
 import { CheckoutModal } from "@/components/pos/CheckoutModal";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah } from "@/lib/utils";
 import { ShoppingCart, Coffee, ArrowRight } from "lucide-react";
 
 export default function PosPage() {
   const { cart, discountNominal, taxEnabled, settings } = usePosStore();
+  const { t, isEnglish } = useTranslation();
   
   // Mobile view state: "menu" | "cart"
   const [mobileTab, setMobileTab] = useState<"menu" | "cart">("menu");
@@ -38,7 +40,7 @@ export default function PosPage() {
               }`}
             >
               <Coffee className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Katalog Menu</span>
+              <span>{t.pos.mobileMenuTab}</span>
             </button>
 
             <button
@@ -51,7 +53,7 @@ export default function PosPage() {
               }`}
             >
               <ShoppingCart className="h-4 w-4" />
-              <span>Keranjang ({totalQty})</span>
+              <span>{t.pos.mobileCartTab} ({totalQty})</span>
               {totalQty > 0 && mobileTab !== "cart" && (
                 <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping absolute top-1.5 right-2" />
               )}
@@ -94,13 +96,13 @@ export default function PosPage() {
                   {totalQty}
                 </div>
                 <div className="text-left leading-tight">
-                  <div className="text-[11px] text-emerald-100">Keranjang Aktif</div>
+                  <div className="text-[11px] text-emerald-100">{t.pos.mobileActiveCart}</div>
                   <div className="text-xs font-bold font-mono">{formatRupiah(total)}</div>
                 </div>
               </div>
 
               <div className="flex items-center gap-1 text-xs font-bold bg-white text-emerald-800 px-3 py-1.5 rounded-lg shadow-2xs">
-                <span>Lihat Keranjang</span>
+                <span>{isEnglish ? "View Cart" : "Lihat Keranjang"}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </button>

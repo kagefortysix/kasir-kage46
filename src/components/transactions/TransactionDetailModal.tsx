@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Order } from "@/types/pos";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { VoidModal } from "./VoidModal";
 import { 
@@ -26,6 +27,7 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
   onClose,
 }) => {
   const { setActiveReceiptOrder, setReceiptModalOpen } = usePosStore();
+  const { t, isEnglish } = useTranslation();
   const [isVoidModalOpen, setIsVoidModalOpen] = useState(false);
 
   const handlePrintAgain = () => {
@@ -47,7 +49,7 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
               </div>
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                  Rincian Transaksi
+                  {t.transactionDetail.modalTitle}
                 </h2>
                 <p className="text-xs text-slate-500 font-mono">
                   {order.invoiceNumber}
@@ -63,30 +65,30 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
           </div>
 
           {/* Status Banner */}
-          <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 dark:border-slate-800 dark:bg-slate-850">
+          <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 p-3 border border-slate-200 dark:border-slate-800 dark:bg-slate-800">
             <div>
-              <div className="text-[11px] text-slate-500">Status Pesanan</div>
+              <div className="text-[11px] text-slate-500">{isEnglish ? "Order Status" : "Status Pesanan"}</div>
               <div className="text-xs font-bold capitalize text-slate-900 dark:text-white flex items-center gap-1.5 mt-0.5">
                 {order.status === "completed" && (
                   <span className="flex items-center gap-1 text-emerald-600 font-bold">
-                    <CheckCircle2 className="h-4 w-4" /> Lunas Selesai
+                    <CheckCircle2 className="h-4 w-4" /> {isEnglish ? "Completed (Paid)" : "Lunas Selesai"}
                   </span>
                 )}
                 {order.status === "open_bill" && (
                   <span className="flex items-center gap-1 text-amber-600 font-bold">
-                    <Clock className="h-4 w-4" /> Open Bill Aktif
+                    <Clock className="h-4 w-4" /> {isEnglish ? "Active Open Bill" : "Open Bill Aktif"}
                   </span>
                 )}
                 {order.status === "void" && (
                   <span className="flex items-center gap-1 text-rose-600 font-bold">
-                    <AlertTriangle className="h-4 w-4" /> Transaksi Dibatalkan (Void)
+                    <AlertTriangle className="h-4 w-4" /> {isEnglish ? "Cancelled (Void)" : "Transaksi Dibatalkan (Void)"}
                   </span>
                 )}
               </div>
             </div>
 
             <div className="text-right text-xs">
-              <div className="text-[11px] text-slate-500">Waktu Transaksi</div>
+              <div className="text-[11px] text-slate-500">{isEnglish ? "Transaction Time" : "Waktu Transaksi"}</div>
               <div className="font-semibold text-slate-700 dark:text-slate-300">
                 {formatDate(order.timestamp)}
               </div>
@@ -96,9 +98,9 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
           {/* Void notice if void */}
           {order.status === "void" && (
             <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-300">
-              <div className="font-bold">Alasan Void: {order.voidReason}</div>
+              <div className="font-bold">{isEnglish ? "Void Reason:" : "Alasan Void:"} {order.voidReason}</div>
               <div className="text-[11px] text-rose-600 mt-0.5">
-                Dibatalkan pada: {order.voidedAt} • Stok dikembalikan: {order.restoredStock ? "Ya" : "Tidak"}
+                {isEnglish ? "Cancelled at:" : "Dibatalkan pada:"} {order.voidedAt} • {isEnglish ? "Stock restored:" : "Stok dikembalikan:"} {order.restoredStock ? (isEnglish ? "Yes" : "Ya") : (isEnglish ? "No" : "Tidak")}
               </div>
             </div>
           )}
@@ -106,7 +108,7 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
           {/* Items Table */}
           <div className="mt-4">
             <div className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-              Daftar Pesanan ({order.items.length} Menu):
+              {isEnglish ? `Ordered Items (${order.items.length}):` : `Daftar Pesanan (${order.items.length} Menu):`}
             </div>
             <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
               {order.items.map((item, idx) => (
@@ -140,18 +142,18 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
             </div>
             {order.discountNominal > 0 && (
               <div className="flex justify-between text-rose-600 font-bold">
-                <span>Diskon:</span>
+                <span>{isEnglish ? "Discount:" : "Diskon:"}</span>
                 <span>-{formatRupiah(order.discountNominal)}</span>
               </div>
             )}
             {order.taxNominal > 0 && (
               <div className="flex justify-between">
-                <span>PPN:</span>
+                <span>{isEnglish ? "Tax (VAT):" : "PPN:"}</span>
                 <span>{formatRupiah(order.taxNominal)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm font-black text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-slate-700 font-sans">
-              <span>TOTAL TAGIHAN:</span>
+              <span>{isEnglish ? "TOTAL BILL:" : "TOTAL TAGIHAN:"}</span>
               <span className="text-emerald-600 dark:text-emerald-400">{formatRupiah(order.total)}</span>
             </div>
           </div>
@@ -159,11 +161,11 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
           {/* Payment metadata */}
           <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
             <div className="rounded-xl border border-slate-200 p-2.5 dark:border-slate-800">
-              <span className="text-[11px] text-slate-500">Metode Bayar:</span>
+              <span className="text-[11px] text-slate-500">{isEnglish ? "Payment Method:" : "Metode Bayar:"}</span>
               <div className="font-bold uppercase text-slate-900 dark:text-white">{order.paymentMethod}</div>
             </div>
             <div className="rounded-xl border border-slate-200 p-2.5 dark:border-slate-800">
-              <span className="text-[11px] text-slate-500">Kasir Bertugas:</span>
+              <span className="text-[11px] text-slate-500">{isEnglish ? "Cashier on Duty:" : "Kasir Bertugas:"}</span>
               <div className="font-bold text-slate-900 dark:text-white">{order.cashierName}</div>
             </div>
           </div>
@@ -177,7 +179,7 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
                 className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-xs font-bold text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300 transition"
               >
                 <AlertTriangle className="h-4 w-4" />
-                <span>Void (Batalkan)</span>
+                <span>{isEnglish ? "Void (Cancel)" : "Void (Batalkan)"}</span>
               </button>
             )}
 
@@ -187,7 +189,7 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
               className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition"
             >
               <Printer className="h-4 w-4" />
-              <span>Cetak Ulang Struk / Share WA</span>
+              <span>{isEnglish ? "Reprint Receipt / Share WA" : "Cetak Ulang Struk / Share WA"}</span>
             </button>
           </div>
 

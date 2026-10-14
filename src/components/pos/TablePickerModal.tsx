@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { X, Check, UtensilsCrossed } from "lucide-react";
 
 interface TablePickerModalProps {
@@ -11,6 +12,7 @@ interface TablePickerModalProps {
 
 export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onClose }) => {
   const { tableNumber, setTableNumber, setOrderType, orders } = usePosStore();
+  const { t, isEnglish } = useTranslation();
   const [customTable, setCustomTable] = useState("");
 
   if (!isOpen) return null;
@@ -20,7 +22,10 @@ export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onCl
     .filter((o) => o.status === "open_bill" && o.tableNumber)
     .map((o) => o.tableNumber);
 
-  const indoorTables = Array.from({ length: 12 }, (_, i) => `Meja ${String(i + 1).padStart(2, "0")}`);
+  const indoorTables = Array.from(
+    { length: 12 },
+    (_, i) => `${isEnglish ? "Table" : "Meja"} ${String(i + 1).padStart(2, "0")}`
+  );
   const vipTables = ["VIP 01", "VIP 02", "VIP 03"];
   const outdoorTables = ["Outdoor 01", "Outdoor 02", "Outdoor 03", "Outdoor 04"];
 
@@ -47,8 +52,10 @@ export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onCl
           <div className="flex items-center gap-2">
             <UtensilsCrossed className="h-5 w-5 text-emerald-600" />
             <div>
-              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Pilih Meja Pelanggan</h2>
-              <p className="text-[11px] text-slate-500">Tipe Pesanan: Dine-In</p>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                {t.tablePicker.title}
+              </h2>
+              <p className="text-[11px] text-slate-500">{t.tablePicker.subtitle}</p>
             </div>
           </div>
           <button
@@ -62,7 +69,7 @@ export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onCl
         {/* Indoor Area */}
         <div className="mt-3">
           <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-            Area Utama (Indoor AC)
+            {t.tablePicker.mainArea}
           </div>
           <div className="grid grid-cols-4 gap-2">
             {indoorTables.map((tbl) => {
@@ -85,7 +92,7 @@ export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onCl
                   <span>{tbl}</span>
                   {isOccupied && !isSelected && (
                     <span className="text-[9px] font-normal text-rose-600 dark:text-rose-400 mt-0.5">
-                      Open Bill
+                      {t.tablePicker.occupiedBadge}
                     </span>
                   )}
                 </button>
@@ -97,7 +104,7 @@ export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onCl
         {/* VIP & Outdoor */}
         <div className="mt-4">
           <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-            Area Khusus / VIP & Outdoor
+            {t.tablePicker.vipArea}
           </div>
           <div className="grid grid-cols-3 gap-2">
             {[...vipTables, ...outdoorTables].map((tbl) => {
@@ -120,7 +127,7 @@ export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onCl
                   <span>{tbl}</span>
                   {isOccupied && !isSelected && (
                     <span className="text-[9px] font-normal text-rose-600 dark:text-rose-400 mt-0.5">
-                      Open Bill
+                      {t.tablePicker.occupiedBadge}
                     </span>
                   )}
                 </button>
@@ -135,14 +142,14 @@ export const TablePickerModal: React.FC<TablePickerModalProps> = ({ isOpen, onCl
             type="text"
             value={customTable}
             onChange={(e) => setCustomTable(e.target.value)}
-            placeholder="Ketik nomor meja custom..."
-            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            placeholder={t.tablePicker.customPlaceholder}
+            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
           />
           <button
             type="submit"
             className="rounded-xl bg-emerald-600 text-white px-3.5 py-2 text-xs font-bold hover:bg-emerald-700 transition"
           >
-            Pilih
+            {t.tablePicker.selectBtn}
           </button>
         </form>
 

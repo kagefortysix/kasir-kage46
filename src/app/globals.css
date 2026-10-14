@@ -2,6 +2,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-slate-850: #162032;
+}
+
 @layer base {
   :root {
     --background: #f8fafc;
@@ -21,10 +25,29 @@
     color-scheme: dark;
   }
 
+  html,
   body {
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
     background-color: var(--background);
     color: var(--foreground);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Prevent inputs from turning white when focused in dark mode */
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+  }
+
+  .dark input,
+  .dark textarea,
+  .dark select {
+    color-scheme: dark;
   }
 }
 

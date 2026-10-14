@@ -4,6 +4,7 @@ import React from "react";
 import { Product } from "@/types/pos";
 import { usePosStore } from "@/store/usePosStore";
 import { formatRupiah } from "@/lib/utils";
+import { useTranslation } from "@/lib/translations";
 import { Plus, AlertTriangle, Sparkles } from "lucide-react";
 
 interface ProductCardProps {
@@ -12,9 +13,21 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = usePosStore();
+  const { isEnglish } = useTranslation();
 
   const isLowStock = product.stock <= (product.minStockAlert ?? 10);
   const isOutOfStock = product.stock <= 0;
+
+  const getCategoryLabel = (cat: string) => {
+    if (!isEnglish) return cat;
+    switch (cat) {
+      case "Kopi": return "Coffee";
+      case "Non-Kopi": return "Non-Coffee";
+      case "Makanan": return "Food";
+      case "Camilan": return "Snacks";
+      default: return cat;
+    }
+  };
 
   // Curated category badge styles
   const getCategoryBadge = (cat: string) => {
@@ -58,7 +71,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )} flex items-center gap-1`}
           >
             {product.category === "Signature" && <Sparkles className="h-2.5 w-2.5" />}
-            <span>{product.category}</span>
+            <span>{getCategoryLabel(product.category)}</span>
           </span>
         </div>
 
@@ -85,14 +98,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {/* Stock status */}
           <div className="text-[10px] mt-0.5">
             {isOutOfStock ? (
-              <span className="font-bold text-rose-600 dark:text-rose-400">Stok Habis</span>
+              <span className="font-bold text-rose-600 dark:text-rose-400">
+                {isEnglish ? "Out of Stock" : "Stok Habis"}
+              </span>
             ) : isLowStock ? (
               <span className="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
                 <AlertTriangle className="h-2.5 w-2.5" />
-                <span>Sisa {product.stock}</span>
+                <span>{isEnglish ? `Left ${product.stock}` : `Sisa ${product.stock}`}</span>
               </span>
             ) : (
-              <span className="text-slate-500 dark:text-slate-400">Stok: {product.stock}</span>
+              <span className="text-slate-500 dark:text-slate-400">
+                {isEnglish ? `Stock: ${product.stock}` : `Stok: ${product.stock}`}
+              </span>
             )}
           </div>
         </div>

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { Customer } from "@/types/pos";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { 
@@ -18,7 +19,8 @@ import {
 } from "lucide-react";
 
 export default function CustomersPage() {
-  const { customers, addCustomer, deleteCustomer } = usePosStore();
+  const { customers, addCustomer, deleteCustomer, settings } = usePosStore();
+  const { t, isEnglish } = useTranslation();
 
   const [search, setSearch] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -44,7 +46,8 @@ export default function CustomersPage() {
   };
 
   const handleDeleteCustomer = (id: string, customerName: string) => {
-    if (confirm(`Hapus pelanggan "${customerName}" dari daftar kontak?`)) {
+    const confirmMsg = t.customers.deleteConfirm.replace("{name}", customerName);
+    if (confirm(confirmMsg)) {
       deleteCustomer(id);
     }
   };
@@ -52,9 +55,11 @@ export default function CustomersPage() {
   const handleWhatsApp = (phoneStr: string, customerName: string) => {
     const cleanPhone = phoneStr.replace(/[^0-9]/g, "");
     const formatted = cleanPhone.startsWith("0") ? `62${cleanPhone.slice(1)}` : cleanPhone;
-    const msg = encodeURIComponent(
-      `Halo Kak ${customerName}! Terima kasih telah berbelanja di KAGE46 Coffee & Eatery.`
-    );
+    const storeLabel = settings?.storeName || (isEnglish ? "our store" : "toko kami");
+    const greeting = t.customers.waGreeting
+      .replace("{name}", customerName)
+      .replace("{store}", storeLabel);
+    const msg = encodeURIComponent(greeting);
     window.open(`https://wa.me/${formatted}?text=${msg}`, "_blank");
   };
 
@@ -63,25 +68,25 @@ export default function CustomersPage() {
       <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full pb-24 lg:pb-12">
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <span>Daftar Pelanggan</span>
-              <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400">
-                {customers.length} Pelanggan
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-2">
+              <span>{t.customers.pageTitle}</span>
+              <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 shrink-0">
+                {t.customers.customersCountBadge.replace("{count}", String(customers.length))}
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Database kontak pelanggan dan riwayat transaksi pesanan KAGE46.
+              {t.customers.pageSubtitle.replace("{store}", settings?.storeName || (isEnglish ? "outlet" : "toko"))}
             </p>
           </div>
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition"
+            className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition w-full sm:w-auto shrink-0"
           >
             <Plus className="h-4 w-4" />
-            <span>+ Tambah Pelanggan</span>
+            <span>{t.customers.addCustomerBtn}</span>
           </button>
         </div>
 
@@ -92,7 +97,7 @@ export default function CustomersPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari nama atau nomor WhatsApp pelanggan..."
+            placeholder={t.customers.searchPlaceholder}
             className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2 text-xs sm:text-sm font-medium text-slate-900 focus:border-emerald-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
           />
         </div>
@@ -124,16 +129,16 @@ export default function CustomersPage() {
                     </div>
                   </div>
 
-                  {/* Customer stats (Visits & Spend only, no loyalty points) */}
+                  {/* Customer stats (Visits & Spend) */}
                   <div className="mt-4 grid grid-cols-2 gap-2 rounded-xl bg-slate-50 p-2.5 text-center dark:bg-slate-800/50">
                     <div>
-                      <div className="text-[10px] text-slate-400">Kunjungan</div>
+                      <div className="text-[10px] text-slate-400">{t.customers.statVisits}</div>
                       <div className="text-xs font-black text-slate-900 dark:text-white mt-0.5">
                         {cust.totalVisits}x
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-400">Total Belanja</div>
+                      <div className="text-[10px] text-slate-400">{t.customers.statTotalSpend}</div>
                       <div className="text-xs font-black text-slate-900 dark:text-white mt-0.5 truncate">
                         {formatRupiah(cust.totalSpend)}
                       </div>
@@ -145,7 +150,7 @@ export default function CustomersPage() {
                 <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                   <span className="text-[10px] text-slate-400 flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    <span>Terakhir: {cust.lastVisit.slice(0, 10)}</span>
+                    <span>{t.customers.lastVisitPrefix} {cust.lastVisit.slice(0, 10)}</span>
                   </span>
 
                   <div className="flex items-center gap-1.5">
@@ -153,20 +158,20 @@ export default function CustomersPage() {
                       type="button"
                       onClick={() => handleWhatsApp(cust.phone, cust.name)}
                       className="flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition"
-                      title="Chat WhatsApp"
+                      title={t.customers.chatWaBtn}
                     >
                       <MessageSquare className="h-3.5 w-3.5" />
-                      <span>Chat WA</span>
+                      <span>{t.customers.chatWaBtn}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleDeleteCustomer(cust.id, cust.name)}
                       className="flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-100 hover:border-rose-300 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300 dark:hover:bg-rose-950/60 transition"
-                      title="Hapus Pelanggan"
+                      title={t.customers.deleteBtn}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
-                      <span>Hapus</span>
+                      <span>{t.customers.deleteBtn}</span>
                     </button>
                   </div>
                 </div>
@@ -179,9 +184,9 @@ export default function CustomersPage() {
         {filteredCustomers.length === 0 && (
           <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900">
             <Users className="h-10 w-10 text-slate-300 dark:text-slate-700 mx-auto mb-2" />
-            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Belum ada data pelanggan</p>
+            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{t.customers.emptyTitle}</p>
             <p className="text-[11px] text-slate-400 mt-1">
-              Klik <strong>"+ Tambah Pelanggan"</strong> di atas untuk menyimpan kontak pelanggan baru.
+              {t.customers.emptyDesc}
             </p>
           </div>
         )}
@@ -194,7 +199,7 @@ export default function CustomersPage() {
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-emerald-600" />
                   <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                    Registrasi Pelanggan Baru
+                    {t.customers.modalTitle}
                   </h2>
                 </div>
                 <button
@@ -208,42 +213,42 @@ export default function CustomersPage() {
               <form onSubmit={handleAddSubmit} className="mt-4 space-y-3.5">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Nama Lengkap
+                    {t.customers.labelFullName}
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Contoh: Amanda Clarissa"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    placeholder={t.customers.placeholderFullName}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Nomor WhatsApp / HP
+                    {t.customers.labelPhone}
                   </label>
                   <input
                     type="tel"
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Contoh: 081234567890"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    placeholder={t.customers.placeholderPhone}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Email (Opsional)
+                    {t.customers.labelEmail}
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Contoh: amanda@gmail.com"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    placeholder={t.customers.placeholderEmail}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
                 </div>
 
@@ -253,13 +258,13 @@ export default function CustomersPage() {
                     onClick={() => setIsAddModalOpen(false)}
                     className="flex-1 rounded-xl border border-slate-200 bg-slate-100 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
                   >
-                    Batal
+                    {t.customers.btnCancel}
                   </button>
                   <button
                     type="submit"
                     className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition"
                   >
-                    Simpan Pelanggan
+                    {t.customers.btnSave}
                   </button>
                 </div>
               </form>

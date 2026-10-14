@@ -14,12 +14,13 @@ import { ReceiptModal } from "../pos/ReceiptModal";
 import { ToastContainer } from "../shared/ToastContainer";
 import { CartPane } from "../pos/CartPane";
 import { LoginScreen } from "../auth/LoginScreen";
+import { EditProfileModal } from "../auth/EditProfileModal";
 import { ShieldAlert, ArrowLeft } from "lucide-react";
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { isDarkMode, currentUser } = usePosStore();
+  const { isDarkMode, currentUser, settings } = usePosStore();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -29,7 +30,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, [isDarkMode]);
+
+    if (settings?.storeName && typeof document !== "undefined") {
+      document.title = `${settings.storeName} • Modern Point of Sale`;
+    }
+  }, [isDarkMode, settings?.storeName]);
 
   // Loading skeleton while hydrating store from localStorage
   if (!mounted) {
@@ -37,10 +42,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-white">
         <div className="flex flex-col items-center gap-3">
           <div className="h-12 w-12 rounded-2xl bg-emerald-600 animate-pulse flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-600/30">
-            K46
+            {settings?.storeName ? settings.storeName.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase() : "POS"}
           </div>
           <div className="text-xs font-bold tracking-widest text-slate-300 uppercase">
-            Memuat KASIR POS KAGE46...
+            Memuat {settings?.storeName || "KASIR POS"}...
           </div>
         </div>
       </div>
@@ -67,11 +72,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   if (!isOwner && isOwnerOnlyPage) {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 font-sans transition-colors">
+      <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 font-sans transition-colors w-full max-w-full overflow-x-hidden">
         <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden w-full max-w-full">
           <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-          <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <main className="flex-1 flex flex-col items-center justify-center p-6 text-center w-full max-w-full min-w-0">
             <div className="max-w-md p-6 sm:p-8 rounded-3xl border border-amber-200 bg-white shadow-xl dark:border-amber-900/50 dark:bg-slate-900 space-y-4">
               <div className="mx-auto h-14 w-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
                 <ShieldAlert className="h-7 w-7" />
@@ -100,21 +105,21 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const isPosPage = pathname === "/pos";
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 font-sans transition-colors">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 font-sans transition-colors w-full max-w-full overflow-x-hidden">
       
       {/* Top Header */}
       <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
       {/* Main Layout Area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden w-full max-w-full">
         
         {/* Sidebar */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         {/* Content Page: If on POS, prevent outer scroll so cart & catalog fit in viewport */}
         <main
-          className={`flex-1 flex flex-col min-w-0 ${
-            isPosPage ? "h-[calc(100dvh-4rem)] overflow-hidden" : "overflow-y-auto"
+          className={`flex-1 flex flex-col min-w-0 w-full max-w-full ${
+            isPosPage ? "h-[calc(100dvh-4rem)] overflow-hidden" : "overflow-y-auto overflow-x-hidden"
           }`}
         >
           {children}
@@ -133,6 +138,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <ExpenseModal />
       <OpenBillsDrawer />
       <ReceiptModal />
+      <EditProfileModal />
 
       {/* Toasts */}
       <ToastContainer />

@@ -2,12 +2,14 @@
 
 import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah } from "@/lib/utils";
 import { Expense } from "@/types/pos";
 import { PlusCircle, X, DollarSign, Wallet, Building2, Tag } from "lucide-react";
 
 export const ExpenseModal: React.FC = () => {
   const { isExpenseModalOpen, setExpenseModalOpen, addExpense, currentShift } = usePosStore();
+  const { t, isEnglish } = useTranslation();
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<Expense["category"]>("Bahan Tambahan");
@@ -26,7 +28,7 @@ export const ExpenseModal: React.FC = () => {
       category,
       amount,
       source,
-      cashierName: currentShift?.cashierName || "Kasir On-Duty",
+      cashierName: currentShift?.cashierName || (isEnglish ? "On-Duty Cashier" : "Kasir On-Duty"),
       note,
     });
 
@@ -34,12 +36,19 @@ export const ExpenseModal: React.FC = () => {
     setNote("");
   };
 
-  const quickTemplates = [
-    { title: "Beli Es Batu Kristal 2 Bal", amount: 24000, category: "Bahan Tambahan" as const },
-    { title: "Refill Gas LPG 12kg Kitchen", amount: 145000, category: "Utilitas & Listrik" as const },
-    { title: "Beli Galon Air Minum 2 Pcs", amount: 40000, category: "Bahan Tambahan" as const },
-    { title: "Plastik Cup Carrier & Kantong", amount: 35000, category: "Operasional Toko" as const },
-  ];
+  const quickTemplates = isEnglish
+    ? [
+        { title: "Ice Tube 2 Bags", amount: 24000, category: "Bahan Tambahan" as const },
+        { title: "LPG Gas 12kg Kitchen Refill", amount: 145000, category: "Utilitas & Listrik" as const },
+        { title: "Mineral Water Gallons 2 Pcs", amount: 40000, category: "Bahan Tambahan" as const },
+        { title: "Cup Carriers & Takeaway Bags", amount: 35000, category: "Operasional Toko" as const },
+      ]
+    : [
+        { title: "Beli Es Batu Kristal 2 Bal", amount: 24000, category: "Bahan Tambahan" as const },
+        { title: "Refill Gas LPG 12kg Kitchen", amount: 145000, category: "Utilitas & Listrik" as const },
+        { title: "Beli Galon Air Minum 2 Pcs", amount: 40000, category: "Bahan Tambahan" as const },
+        { title: "Plastik Cup Carrier & Kantong", amount: 35000, category: "Operasional Toko" as const },
+      ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-150">
@@ -53,10 +62,10 @@ export const ExpenseModal: React.FC = () => {
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Catat Beban Operasional Kas
+                {isEnglish ? "Record Store Cash Expense" : "Catat Beban Operasional Kas"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Pengeluaran harian outlet & kas kasir
+                {isEnglish ? "Daily outlet & cashier cash outflow" : "Pengeluaran harian outlet & kas kasir"}
               </p>
             </div>
           </div>
@@ -70,20 +79,20 @@ export const ExpenseModal: React.FC = () => {
 
         {/* Quick Template Chips */}
         <div className="mt-3">
-          <div className="text-[11px] font-semibold text-slate-400 mb-1.5">Template Cepat:</div>
+          <div className="text-[11px] font-semibold text-slate-400 mb-1.5">{t.expense.quickTemplatesTitle}</div>
           <div className="flex flex-wrap gap-1.5">
-            {quickTemplates.map((t, idx) => (
+            {quickTemplates.map((item, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => {
-                  setTitle(t.title);
-                  setAmount(t.amount);
-                  setCategory(t.category);
+                  setTitle(item.title);
+                  setAmount(item.amount);
+                  setCategory(item.category);
                 }}
                 className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-medium text-slate-600 hover:border-emerald-400 hover:bg-emerald-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
               >
-                {t.title}
+                {item.title}
               </button>
             ))}
           </div>
@@ -93,39 +102,39 @@ export const ExpenseModal: React.FC = () => {
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Keperluan / Nama Biaya
+              {t.expense.expenseTitle}
             </label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Contoh: Belanja es batu kristal 2 bal"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              placeholder={isEnglish ? "e.g. Ice tubes 2 bags" : "Contoh: Belanja es batu kristal 2 bal"}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Kategori Beban
+                {t.expense.category}
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as Expense["category"])}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               >
-                <option value="Bahan Tambahan">Bahan Tambahan</option>
-                <option value="Utilitas & Listrik">Utilitas & Listrik</option>
-                <option value="Operasional Toko">Operasional Toko</option>
-                <option value="Transport & Logistik">Transport & Logistik</option>
-                <option value="Lainnya">Lainnya</option>
+                <option value="Bahan Tambahan">{isEnglish ? "Add. Ingredients" : "Bahan Tambahan"}</option>
+                <option value="Utilitas & Listrik">{isEnglish ? "Utilities & Power" : "Utilitas & Listrik"}</option>
+                <option value="Operasional Toko">{isEnglish ? "Store Operations" : "Operasional Toko"}</option>
+                <option value="Transport & Logistik">{isEnglish ? "Logistics & Delivery" : "Transport & Logistik"}</option>
+                <option value="Lainnya">{isEnglish ? "Other" : "Lainnya"}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Nominal Biaya (Rp)
+                {t.expense.amount}
               </label>
               <input
                 type="number"
@@ -134,14 +143,14 @@ export const ExpenseModal: React.FC = () => {
                 step={1000}
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Sumber Dana Pengeluaran
+              {t.expense.source}
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -155,8 +164,8 @@ export const ExpenseModal: React.FC = () => {
               >
                 <Wallet className="h-4 w-4 text-rose-600" />
                 <div className="text-left">
-                  <div>Kas Laci Kasir</div>
-                  <div className="text-[10px] font-normal text-slate-500">Potong uang laci</div>
+                  <div>{t.expense.cashDrawer}</div>
+                  <div className="text-[10px] font-normal text-slate-500">{isEnglish ? "Deduct drawer cash" : "Potong uang laci"}</div>
                 </div>
               </button>
 
@@ -171,8 +180,8 @@ export const ExpenseModal: React.FC = () => {
               >
                 <Building2 className="h-4 w-4 text-sky-600" />
                 <div className="text-left">
-                  <div>Rekening Bank</div>
-                  <div className="text-[10px] font-normal text-slate-500">Transfer owner</div>
+                  <div>{t.expense.bankTransfer}</div>
+                  <div className="text-[10px] font-normal text-slate-500">{isEnglish ? "Owner account" : "Transfer owner"}</div>
                 </div>
               </button>
             </div>
@@ -180,14 +189,14 @@ export const ExpenseModal: React.FC = () => {
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Catatan / Bukti Pengeluaran
+              {t.expense.notes}
             </label>
             <input
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Contoh: Bon nota toko es kristal terlampir"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              placeholder={isEnglish ? "e.g. Receipt receipt attached" : "Contoh: Bon nota toko es kristal terlampir"}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
 
@@ -197,13 +206,13 @@ export const ExpenseModal: React.FC = () => {
               onClick={() => setExpenseModalOpen(false)}
               className="flex-1 rounded-xl border border-slate-200 bg-slate-100 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
             >
-              Batal
+              {t.common.cancel}
             </button>
             <button
               type="submit"
               className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition"
             >
-              Simpan Pengeluaran
+              {t.expense.submit}
             </button>
           </div>
         </form>

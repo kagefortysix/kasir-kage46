@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { 
   Lock, 
   User, 
@@ -23,7 +24,8 @@ interface LoginModalProps {
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
-  const { login, currentUser, users } = usePosStore();
+  const { login, currentUser, users, settings } = usePosStore();
+  const { t, isEnglish } = useTranslation();
   
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -44,19 +46,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       if (success) {
         onClose();
       } else {
-        setErrorMessage("Username atau password salah, atau akun ini telah dinonaktifkan oleh Owner.");
+        setErrorMessage(t.auth.invalidErr);
       }
     }, 200);
-  };
-
-  const handleQuickLogin = (uname: string, pass: string) => {
-    setUsername(uname);
-    setPassword(pass);
-    setErrorMessage(null);
-    const success = login(uname, pass);
-    if (success) {
-      onClose();
-    }
   };
 
   const isCloud = isSupabaseConfigured();
@@ -79,15 +71,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             <Coffee className="h-7 w-7" />
           </div>
           <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
-            Login Kasir & Owner KAGE<span className="text-emerald-500">46</span>
+            {isEnglish ? `Cashier & Owner Login - ${settings?.storeName || "Outlet"}` : `Login Kasir & Owner ${settings?.storeName || "Outlet"}`}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Masuk dengan akun terdaftar untuk mulai transaksi & pencatatan shift kasir.
+            {isEnglish ? "Sign in to start cashier shift & transactions." : "Masuk dengan akun terdaftar untuk mulai transaksi & pencatatan shift kasir."}
           </p>
 
           <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold border bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700">
             <Database className="h-3 w-3 text-emerald-500" />
-            <span>{isCloud ? "Supabase PostgreSQL Terhubung" : "Autentikasi Lokal Aktif (Offline-First)"}</span>
+            <span>
+              {isCloud
+                ? (isEnglish ? "Supabase PostgreSQL Connected" : "Supabase PostgreSQL Terhubung")
+                : (isEnglish ? "Local Offline-First Mode Active" : "Autentikasi Lokal Aktif (Offline-First)")}
+            </span>
           </div>
         </div>
 
@@ -103,7 +99,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Username Kasir / Owner
+              {t.auth.usernameLabel}
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
@@ -112,15 +108,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Contoh: owner atau kasir1"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                placeholder={t.auth.usernamePlaceholder}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Password
+              {t.auth.passwordLabel}
             </label>
             <div className="relative">
               <KeyRound className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
@@ -129,8 +125,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Masukkan kata sandi..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                placeholder={t.auth.passwordPlaceholder}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 py-2 text-xs font-bold text-slate-900 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
               <button
                 type="button"
@@ -147,7 +143,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             disabled={loading}
             className="w-full rounded-xl bg-emerald-600 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 active:scale-[0.99] transition disabled:opacity-50"
           >
-            {loading ? "Memverifikasi..." : "Masuk ke Kasir KAGE46"}
+            {loading ? t.auth.loadingVerify : t.auth.submitBtn.replace("{store}", settings?.storeName || "Kasir")}
           </button>
         </form>
 

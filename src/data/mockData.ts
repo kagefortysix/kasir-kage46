@@ -54,6 +54,7 @@ export const initialSettings: StoreSettings = {
   receiptSize: "58mm",
   receiptFooterMessage: "Terima kasih telah berkunjung ke KAGE46! Nikmati harimu dengan secangkir semangat.",
   qrisMerchantName: "NMID: ID1020349464601 - KAGE46 KASIR",
+  language: "id",
   bankAccount: {
     bankName: "BCA (Bank Central Asia)",
     accountNumber: "840-046-4646",

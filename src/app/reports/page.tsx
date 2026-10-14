@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { usePosStore } from "@/store/usePosStore";
+import { useTranslation } from "@/lib/translations";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { 
   BarChart3, 
@@ -21,6 +22,7 @@ import {
 
 export default function ReportsPage() {
   const { orders, expenses, settings, role } = usePosStore();
+  const { t, isEnglish } = useTranslation();
   const [period, setPeriod] = useState<"today" | "7d" | "30d" | "custom">("today");
   const [currentDateStr, setCurrentDateStr] = useState<string>("13 Okt 2026");
 
@@ -55,45 +57,44 @@ export default function ReportsPage() {
     <AppShell>
       <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full pb-24 lg:pb-12">
         
-
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <span>Laporan Keuangan & Analisis Laba Bersih</span>
-              <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400">
-                Resmi
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-2">
+              <span>{t.reports.pageTitle}</span>
+              <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 shrink-0">
+                {t.reports.officialBadge}
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Rekapitulasi Omset Penjualan, Total HPP Bahan, Biaya Operasional, dan Laba Bersih Riil.
+              {t.reports.pageSubtitle}
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="flex rounded-xl border border-slate-200 bg-white p-1 text-xs font-semibold dark:border-slate-800 dark:bg-slate-900 shadow-2xs">
               {(["today", "7d", "30d"] as const).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPeriod(p)}
-                  className={`rounded-lg px-3 py-1.5 transition ${
+                  className={`rounded-lg px-2.5 sm:px-3 py-1.5 transition ${
                     period === p
                       ? "bg-emerald-600 text-white font-bold"
                       : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
                   }`}
                 >
-                  {p === "today" ? "Hari Ini" : p === "7d" ? "7 Hari" : "30 Hari (Bulan)"}
+                  {p === "today" ? t.reports.today : p === "7d" ? t.reports.days7 : t.reports.days30}
                 </button>
               ))}
             </div>
 
             <button
               onClick={handlePrintOfficialReport}
-              className="flex items-center gap-1.5 rounded-xl bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-3.5 py-2 text-xs font-bold shadow hover:bg-slate-800 transition"
-              title="Cetak struk resmi atau simpan sebagai dokumen PDF"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-3.5 py-2 text-xs font-bold shadow hover:bg-slate-800 transition shrink-0"
+              title={t.reports.printTooltip}
             >
               <Printer className="h-4 w-4" />
-              <span>Cetak / Simpan PDF</span>
+              <span>{t.reports.printPdfBtn}</span>
             </button>
           </div>
         </div>
@@ -104,65 +105,65 @@ export default function ReportsPage() {
           {/* 1. Omset Penjualan */}
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              1. Omset Penjualan (Gross)
+              {t.reports.step1Title}
             </span>
             <div className="mt-2 text-lg font-black text-slate-900 dark:text-white">
               {formatRupiah(totalOmset)}
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">
-              {completedOrders.length} Pesanan Lunas
+              {completedOrders.length} {isEnglish ? "Paid Orders" : "Pesanan Lunas"}
             </div>
           </div>
 
           {/* 2. Total HPP */}
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              2. Total HPP (Bahan Baku)
+              {t.reports.step2Title}
             </span>
             <div className="mt-2 text-lg font-black text-rose-600 dark:text-rose-400">
               -{formatRupiah(totalHPP)}
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">
-              Racikan bahan menu
+              {isEnglish ? "Recipe ingredient costs" : "Racikan bahan menu"}
             </div>
           </div>
 
           {/* 3. Laba Kotor */}
           <div className="rounded-2xl border border-teal-200 bg-teal-50/50 p-4 shadow-xs dark:border-teal-900/40 dark:bg-teal-950/20">
             <span className="text-[10px] font-bold text-teal-800 dark:text-teal-400 uppercase tracking-wider">
-              3. Laba Kotor (Gross Profit)
+              {t.reports.step3Title}
             </span>
             <div className="mt-2 text-lg font-black text-teal-700 dark:text-teal-300">
               {formatRupiah(grossProfit)}
             </div>
             <div className="text-[11px] text-teal-700/80 dark:text-teal-400 mt-0.5">
-              Omset - HPP
+              {isEnglish ? "Revenue - COGS" : "Omset - HPP"}
             </div>
           </div>
 
           {/* 4. Pengeluaran Operasional */}
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              4. Biaya Operasional (OPEX)
+              {t.reports.step4Title}
             </span>
             <div className="mt-2 text-lg font-black text-rose-600 dark:text-rose-400">
               -{formatRupiah(totalExpenses)}
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">
-              {expenses.length} Transaksi Beban
+              {expenses.length} {isEnglish ? "Expense Transactions" : "Transaksi Beban"}
             </div>
           </div>
 
           {/* 5. Laba Bersih Riil */}
           <div className="rounded-2xl border border-emerald-300 bg-emerald-50/60 p-4 shadow-xs dark:border-emerald-800 dark:bg-emerald-950/30">
             <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">
-              5. Laba Bersih Riil (Net)
+              {t.reports.step5Title}
             </span>
             <div className="mt-2 text-xl font-black text-emerald-700 dark:text-emerald-300">
               {formatRupiah(netProfit)}
             </div>
             <div className="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold mt-0.5">
-              Margin Bersih: {netProfitMargin}%
+              {t.reports.netProfitMarginTitle}: {netProfitMargin}%
             </div>
           </div>
 
@@ -176,10 +177,12 @@ export default function ReportsPage() {
                 {settings.storeName}
               </div>
               <div className="text-xs text-slate-500">
-                LAPORAN LABA RUGI & REKAPITULASI PENJUALAN
+                {isEnglish ? "PROFIT & LOSS STATEMENT & SALES RECAP" : "LAPORAN LABA RUGI & REKAPITULASI PENJUALAN"}
               </div>
               <div className="text-[11px] text-slate-400 mt-0.5">
-                Periode: {period === "today" ? "Hari Ini" : period === "7d" ? "7 Hari Terakhir" : "Bulan Berjalan"} • Tanggal Cetak: {currentDateStr}
+                {isEnglish 
+                  ? `Period: ${period === "today" ? "Today" : period === "7d" ? "Last 7 Days" : "Current Month"} • Print Date: ${currentDateStr}`
+                  : `Periode: ${period === "today" ? "Hari Ini" : period === "7d" ? "7 Hari Terakhir" : "Bulan Berjalan"} • Tanggal Cetak: ${currentDateStr}`}
               </div>
             </div>
             <div className="text-right">
@@ -192,37 +195,39 @@ export default function ReportsPage() {
           {/* Statement Rows */}
           <div className="mt-4 space-y-3 text-xs">
             <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800 font-semibold">
-              <span className="text-slate-700 dark:text-slate-300">Pendapatan Kotor Penjualan (Gross Revenue)</span>
+              <span className="text-slate-700 dark:text-slate-300">
+                {isEnglish ? "Gross Sales Revenue" : "Pendapatan Kotor Penjualan (Gross Revenue)"}
+              </span>
               <span className="font-bold font-mono">{formatRupiah(totalOmset)}</span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800 text-rose-600">
-              <span>Beban Pokok Penjualan (Cost of Goods Sold / HPP)</span>
+              <span>{isEnglish ? "Cost of Goods Sold (COGS / Raw Ingredients)" : "Beban Pokok Penjualan (Cost of Goods Sold / HPP)"}</span>
               <span className="font-bold font-mono">({formatRupiah(totalHPP)})</span>
             </div>
             <div className="flex justify-between py-2 border-b-2 border-slate-200 dark:border-slate-700 font-bold text-teal-700 dark:text-teal-400">
-              <span>LABA KOTOR (GROSS PROFIT)</span>
+              <span>{isEnglish ? "GROSS PROFIT" : "LABA KOTOR (GROSS PROFIT)"}</span>
               <span className="font-mono">{formatRupiah(grossProfit)}</span>
             </div>
 
             <div className="pt-2 text-slate-500 font-bold uppercase text-[11px]">
-              Rincian Beban Operasional Toko (OPEX):
+              {isEnglish ? "Store Operating Expenses (OPEX):" : "Rincian Beban Operasional Toko (OPEX):"}
             </div>
             {expenses.map((exp) => (
               <div key={exp.id} className="flex justify-between py-1 text-slate-600 dark:text-slate-400 pl-4">
                 <span>
-                  • {exp.title} ({exp.category}) - {exp.source === "cash_drawer" ? "Kas Laci" : "Rekening Bank"}
+                  • {exp.title} ({exp.category}) - {exp.source === "cash_drawer" ? (isEnglish ? "Cash Drawer" : "Kas Laci") : (isEnglish ? "Bank Transfer" : "Rekening Bank")}
                 </span>
                 <span className="font-mono text-rose-600">-{formatRupiah(exp.amount)}</span>
               </div>
             ))}
 
             <div className="flex justify-between py-2 border-b-2 border-slate-200 dark:border-slate-700 font-bold text-rose-600">
-              <span>TOTAL PENGELUARAN OPERASIONAL</span>
+              <span>{isEnglish ? "TOTAL OPERATING EXPENSES" : "TOTAL PENGELUARAN OPERASIONAL"}</span>
               <span className="font-mono">({formatRupiah(totalExpenses)})</span>
             </div>
 
             <div className="flex justify-between py-3 border-t-2 border-slate-900 dark:border-white text-sm font-black text-emerald-600 dark:text-emerald-400">
-              <span>LABA BERSIH RIIL (NET PROFIT)</span>
+              <span>{isEnglish ? "REAL NET PROFIT" : "LABA BERSIH RIIL (NET PROFIT)"}</span>
               <span className="font-mono text-base">{formatRupiah(netProfit)}</span>
             </div>
           </div>
@@ -232,7 +237,7 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-              Rekapitulasi Penerimaan Kas per Metode
+              {isEnglish ? "Cash Inflow Recap by Method" : "Rekapitulasi Penerimaan Kas per Metode"}
             </h3>
             <div className="space-y-2 text-xs">
               {Object.entries(paymentBreakdown).map(([method, amount]) => (
@@ -246,23 +251,23 @@ export default function ReportsPage() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-              Kinerja Efisiensi Finansial
+              {isEnglish ? "Financial Efficiency Metrics" : "Kinerja Efisiensi Finansial"}
             </h3>
             <div className="space-y-3 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-500">Gross Margin:</span>
+                <span className="text-slate-500">{isEnglish ? "Gross Margin:" : "Gross Margin:"}</span>
                 <span className="font-bold text-slate-900 dark:text-white">
                   {totalOmset > 0 ? Math.round((grossProfit / totalOmset) * 100) : 0}%
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">OPEX to Sales Ratio:</span>
+                <span className="text-slate-500">{isEnglish ? "OPEX to Sales Ratio:" : "OPEX to Sales Ratio:"}</span>
                 <span className="font-bold text-slate-900 dark:text-white">
                   {totalOmset > 0 ? Math.round((totalExpenses / totalOmset) * 100) : 0}%
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Net Profit Margin:</span>
+                <span className="text-slate-500">{isEnglish ? "Net Profit Margin:" : "Net Profit Margin:"}</span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">{netProfitMargin}%</span>
               </div>
             </div>
