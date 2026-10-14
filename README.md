@@ -1,389 +1,211 @@
 # ☕ KASIR POS KAGE46
 
+[![Live Demo](https://img.shields.io/badge/LIVE%20DEMO-kasir--kage46.vercel.app-0070F3?style=for-the-badge&logo=vercel&logoColor=white)](https://kasir-kage46.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.3-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Zustand](https://img.shields.io/badge/Zustand-v5-443E38?style=for-the-badge)](https://zustand-demo.pmnd.rs/)
-[![Cloudflare Tunnel Ready](https://img.shields.io/badge/Cloudflare_Tunnel-Ready-F38020?style=for-the-badge&logo=cloudflare)](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
-[![Supabase Ready](https://img.shields.io/badge/Supabase-Ready-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-🌐 **Bahasa / Language:** [🇮🇩 Bahasa Indonesia](README.md) | [🇬🇧 English](README.en.md)
+---
+
+### 🚀 Coba Aplikasi Langsung (Live Demo)
+Klik tombol di bawah ini untuk mencoba aplikasi secara langsung tanpa perlu instalasi:
+
+[![Buka Live Demo Kasir KAGE46](https://img.shields.io/badge/👉_KLIK_DI_SINI_UNTUK_BUKA_LIVE_DEMO-0070F3?style=for-the-badge&logo=vercel&logoColor=white)](https://kasir-kage46.vercel.app/)
+
+> **Tautan Demo:** [https://kasir-kage46.vercel.app/](https://kasir-kage46.vercel.app/)
 
 ---
 
-**KASIR POS KAGE46** adalah aplikasi kasir pintar (*Point of Sale*) modern berbasis web yang dirancang khusus untuk bisnis *Food & Beverage* (F&B), kafe, kedai kopi (*Specialty Coffee*), artisan kitchen, dan restoran. 
+## 💡 Tentang Aplikasi
 
-Sistem ini mengusung arsitektur **Database Server Terpusat**, **Offline-First**, **Mobile-Friendly**, dan **Cloudflare Tunnel Ready** dengan antarmuka premium berstandar SaaS (Glassmorphism, Dark/Light Mode, dan responsif di smartphone, tablet, maupun desktop PC kasir).
+**KASIR POS KAGE46** adalah aplikasi kasir pintar (*Point of Sale*) modern berbasis web yang dirancang khusus untuk bisnis **F&B, Kedai Kopi (*Specialty Coffee*), Artisan Kitchen, dan Restoran**. 
 
----
-
-## 📑 Daftar Isi
-
-- [Sekilas Proyek](#-sekilas-proyek)
-- [Teknologi yang Digunakan (Tech Stack)](#-teknologi-yang-digunakan-tech-stack)
-- [Fitur Utama Sistem](#-fitur-utama-sistem)
-  - [1. Sistem Kasir Pintar (Point of Sale)](#1-sistem-kasir-pintar-point-of-sale)
-  - [2. Transaksi & Multi-Metode Pembayaran](#2-transaksi--multi-metode-pembayaran)
-  - [3. Cetak Struk Thermal & Share WhatsApp](#3-cetak-struk-thermal--share-whatsapp)
-  - [4. Manajemen Inventori & Stock Opname](#4-manajemen-inventori--stock-opname)
-  - [5. Kalkulator HPP & Resep Otomatis](#5-kalkulator-hpp--resep-otomatis)
-  - [6. Laporan Keuangan & Analisis Laba Bersih](#6-laporan-keuangan--analisis-laba-bersih)
-  - [7. Manajemen Shift & Laci Kasir (Cash Management)](#7-manajemen-shift--laci-kasir-cash-management)
-  - [8. Pengeluaran Operasional (OPEX Tracker)](#8-pengeluaran-operasional-opex-tracker)
-  - [9. Database Pelanggan & CRM](#9-database-pelanggan--crm)
-  - [10. Autentikasi & Multi-User RBAC](#10-autentikasi--multi-user-rbac)
-  - [11. Ekspor Data ke Excel/CSV](#11-ekspor-data-ke-excelcsv)
-  - [12. Pengaturan Outlet & Personalisasi](#12-pengaturan-outlet--personalisasi)
-  - [13. Database Server Terpusat & Multi-Device Sync (Cloudflare Tunnel)](#13-database-server-terpusat--multi-device-sync-cloudflare-tunnel)
-- [Kredensial Akun Bawaan (Demo)](#-kredensial-akun-bawaan-demo)
-- [Instalasi & Menjalankan Proyek](#-instalasi--menjalankan-proyek)
-- [Akses Jaringan Lokal & Cloudflare Tunnel (Multi-Device)](#-akses-jaringan-lokal--cloudflare-tunnel-multi-device)
-- [Integrasi Database Cloud Supabase (Opsional)](#-integrasi-database-cloud-supabase-opsional)
-- [Struktur Direktori Proyek](#-struktur-direktori-proyek)
+Sistem ini menggabungkan pencatatan pesanan kasir super cepat, kalkulasi **HPP & Resep Otomatis**, kontrol stok gudang, laporan laba bersih riil, serta **Database Server Terpusat** yang otomatis tersinkronisasi antar perangkat (PC kasir dan smartphone pelayan di meja pelanggan via Wi-Fi lokal maupun Cloudflare Tunnel).
 
 ---
 
-## 💡 Sekilas Proyek
-
-Operasional kedai kopi dan restoran membutuhkan sistem kasir yang tidak hanya cepat dalam mencatat pesanan, namun juga mampu mengontrol modal bahan baku secara akurat. **KASIR POS KAGE46** hadir menjawab tantangan tersebut dengan:
-- **Kalkulasi HPP Presisi**: Menghubungkan setiap porsi menu dengan stok bahan baku gram/mililiter riil di gudang.
-- **Transparansi Profit**: Menampilkan Laba Bersih riil (*Net Profit*) setelah dikurangi HPP bahan baku dan biaya operasional kas toko.
-- **Portabilitas Tinggi**: Dapat dioperasikan langsung dari smartphone kasir atau tablet pelayan tanpa perlu instalasi aplikasi khusus dari toko aplikasi.
-- **Database Server Terpusat & Sinkronisasi Multi-Device**: Menggunakan database lokal server terpusat di PC kasir (`data/pos_database.json`) yang otomatis tersinkronisasi dua arah secara real-time ke smartphone pelayan via Wi-Fi lokal maupun Cloudflare Tunnel tanpa reset database atau password.
-- **Kemandirian Sistem**: Bekerja lancar secara offline menggunakan penyimpanan cache peramban lokal (*LocalStorage Sync* via Zustand Persist), dan siap disinkronkan ke PostgreSQL Supabase untuk analitik terpusat.
-
----
-
-## 🛠 Teknologi yang Digunakan (Tech Stack)
-
-| Kategori | Teknologi | Deskripsi |
-| :--- | :--- | :--- |
-| **Framework** | [Next.js 16 (App Router)](https://nextjs.org/) | Framework React modern dengan performa tinggi & rendering optimal |
-| **Library UI** | [React 19](https://react.dev/) | Versi terbaru React untuk manajemen siklus UI yang reaktif |
-| **Bahasa** | [TypeScript](https://www.typescriptlang.org/) | Type-safe code untuk stabilitas dan pemeliharaan jangka panjang |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first CSS modern, glassmorphism styling, & Dark Mode otomatis |
-| **Database Server** | Local JSON Server DB (`data/pos_database.json`) | Penyimpanan terpusat persisten di PC server dengan atomic write & auto-backup |
-| **Sinkronisasi Multi-Device** | Real-Time Sync Engine (`/api/sync`) | Sinkronisasi dua arah instan antar PC kasir, HP pelayan via LAN & Cloudflare Tunnel |
-| **State Management** | [Zustand v5](https://github.com/pmndrs/zustand) | Global state management ringan dengan middleware `persist` (Local Storage cache) |
-| **Ikon UI** | [Lucide React](https://lucide.dev/) | Paket ikon vektor modern, elegan, dan konsisten |
-| **Database Cloud** | [Supabase](https://supabase.com/) | Backend PostgreSQL (Opsional) untuk sinkronisasi cloud multi-cabang |
-| **CSS Print Engine** | `@media print` kustom | Tata letak khusus struk kasir printer thermal (58mm & 80mm) |
-| **Internationalization** | In-App Translation Module | Dukungan dwibahasa penuh (**Bahasa Indonesia** & **English**) |
-
----
-
-## 🚀 Fitur Utama Sistem
-
-### 1. Sistem Kasir Pintar (Point of Sale)
-- **Katalog Menu Cepat & Filter Kategori**: Filter instan berdasarkan kategori (*Signature, Kopi, Non-Kopi, Makanan, Camilan, Semua*), pencarian teks live, dan kode SKU/barcode.
-- **Tipe Pesanan Terintegrasi**:
-  - **Dine-In**: Pemilihan nomor meja visual (*Meja 01 - 20, VIP 01 - 03, Outdoor 01 - 04*) dengan penanda meja yang sedang terisi (*Open Bill*).
-  - **Takeaway**: Opsi kemasan bawa pulang otomatis.
-- **Kustomisasi Pesanan Fleksibel**: Pengaturan jumlah item, catatan khusus per menu (*misal: less sugar, oatmilk, tanpa es, level pedas*), dan pembersihan keranjang instan.
-- **Adaptif Responsive Layout**:
-  - **Desktop / Tablet**: Keranjang terpasang di samping (*Docked Cart Pane*) untuk entri pesanan cepat.
-  - **Smartphone**: Tombol aksi mengambang (*Floating Action Bar*) dan drawer keranjang geser (*Slide-in Cart Drawer*).
-- **Input Menu Cepat (+ Menu Instan)**: Tambah menu baru seketika langsung dari layar kasir tanpa harus meracik resep bahan baku terlebih dahulu. Menu langsung masuk ke keranjang dan tersimpan di database.
-
-### 2. Transaksi & Multi-Metode Pembayaran
-- **Multi-Metode Pembayaran**:
-  - **Tunai (Cash)**: Shortcut nominal uang cepat (Rp 20.000, Rp 50.000, Rp 100.000, Rp 200.000, dan Uang Pas) serta kalkulator kembalian otomatis real-time.
-  - **QRIS Instant**: Tampilan kode QR dinamis dengan informasi NMID Merchant outlet.
-  - **Transfer Bank**: Informasi nomor rekening outlet (BCA/Bank lain), nama pemilik, dan tombol konfirmasi.
-  - **Kartu Debit / EDC**: Pencatatan transaksi gesek kartu mesin EDC kasir.
-- **Diskon & Pajak (PPN)**: Potongan diskon fleksibel (nominal) dan toggle pajak PPN (11%) yang dapat diaktifkan/dinonaktifkan per pesanan.
-- **Fitur Open Bill / Bayar Nanti**:
-  - Simpan pesanan meja aktif yang belum dilunasi.
-  - Tambah menu baru ke tagihan berjalan meja tersebut kapan saja.
-  - Pelunasan cepat melalui drawer daftar tagihan aktif (*Open Bills Drawer*).
-- **Riwayat Transaksi & Pembatalan (Void)**:
-  - Pelacakan seluruh transaksi dengan filter status (*Lunas / Completed, Open Bill, Void*).
-  - Filter berdasarkan metode pembayaran dan pencarian invoice/pelanggan.
-  - **Fitur Void Aman**: Pembatalan transaksi wajib menyertakan alasan pembatalan dan dilengkapi opsi **otomatis mengembalikan (*restore*) stok bahan baku** ke gudang.
-
-### 3. Cetak Struk Thermal & Share WhatsApp
-- **Dukungan Dual-Size Printer Thermal**: Switch ukuran kertas struk **58mm** dan **80mm** secara langsung.
-- **Format Struk Kasir Lengkap**:
-  - Identitas toko (Logo, Nama Toko, Tagline, Alamat, Nomor Telepon).
-  - Nomor invoice resmi, tanggal, jam, dan nama kasir bertugas.
-  - Tipe pesanan (Dine-In + Nomor Meja / Takeaway) & nama pelanggan.
-  - Rincian item menu, catatan khusus, subtotal, diskon, PPN, dan total bayar.
-  - Metode pembayaran, jumlah uang diserahkan, dan nominal kembalian.
-  - Fasilitas WiFi outlet (SSID & Password) dan akun media sosial (Instagram & TikTok).
-  - Pesan penutup struk (*Footer Message*).
-- **Cetak Thermal Bluetooth & USB**: Layout cetak presisi berbasis CSS `@media print` tanpa margin berlebih.
-- **Kirim Struk via WhatsApp**: Menghasilkan format pesan teks struk yang rapi dan membuka tautan `wa.me` langsung ke nomor WhatsApp pelanggan dengan 1 klik.
-- **Salin Teks Struk**: Tombol salin teks nota ke clipboard.
-
-### 4. Manajemen Inventori & Stock Opname
-- **Database Bahan Baku Gudang**: Pengelolaan stok bahan baku (*Biji Kopi, Susu/Dairy, Sirup & Flavour, Bubuk Powder, Packaging, Topping*).
-- **Konversi Biaya Kemasan ke Satuan Terkecil**: Otomatis menghitung biaya pokok per gram, mililiter, atau pcs berdasarkan harga beli kemasan besar.
-- **Pengurangan Stok Otomatis**: Setiap kali pesanan lunas di kasir POS, stok bahan baku berkurang otomatis sesuai takaran porsi resep.
-- **Peringatan Stok Menipis (*Low Stock Alert*)**: Penanda visual merah ketika stok fisik berada di bawah batas minimum (*threshold*).
-- **Valuasi Aset Stok**: Total nilai rupiah seluruh aset bahan baku di gudang yang terhitung secara *real-time*.
-- **Pencatatan Stock Opname Terpadu**:
-  - Rekonsiliasi fisik berkala antara stok riil dan stok sistem.
-  - Pencatatan alasan selisih stok (*Spillage / Tumpah, Kadaluarsa, Rusak / Basi, Selisih Hitung, Lainnya*).
-  - Riwayat lengkap opname beserta tanggal, jam, dan nama staf pencatat.
-
-### 5. Kalkulator HPP & Resep Otomatis
-- **Racik Komposisi Resep Menu**: Masukkan takaran bahan baku per porsi (misal: 18 gr Espresso Beans + 150 ml Fresh Milk + 20 ml Aren Syrup).
-- **Kalkulasi Biaya Pokok Bahan (Raw Material Cost)**: Menghitung modal bahan otomatis dari database inventori terbaru.
-- **Alokasi Beban Operasional & Sewa Tempat (Overhead Cost)**:
-  - Input alokasi sewa tempat & listrik per cup.
-  - Dilengkapi kalkulator bantuan: hitung sewa bulanan dibagi target penjualan cup per bulan.
-- **Alokasi Biaya Kemasan (Packaging Cost)**: Perhitungan biaya cup, lid, dan sedotan per sajian.
-- **Kalkulator Full HPP**: Total HPP Komprehensif = Biaya Bahan Baku + Beban Sewa/Overhead + Biaya Kemasan.
-- **Simulasi Margin Profit & Rekomendasi Harga Jual**:
-  - Menghitung persentase margin keuntungan saat ini.
-  - Rekomendasi harga jual otomatis untuk target margin 50%, 60% (Standar Kafe), dan 70% (Premium).
-  - Terapkan harga rekomendasi ke katalog menu hanya dengan 1-klik.
-
-### 6. Laporan Keuangan & Analisis Laba Bersih
-- **Waterfall Finansial Komprehensif**:
-  1. **Omset Penjualan Kotor (*Gross Revenue*)**
-  2. **Harga Pokok Penjualan (*Total HPP Bahan Baku & Overhead*)**
-  3. **Laba Kotor (*Gross Profit = Omset - HPP*)**
-  4. **Beban Pengeluaran Operasional (*OPEX Toko*)**
-  5. **Laba Bersih Riil (*Net Profit = Laba Kotor - OPEX*) & Margin Bersih (%)**
-- **Filter Periode Laporan**: Hari Ini (*Today*), 7 Hari Terakhir (*7d*), dan 30 Hari Terakhir (*30d*).
-- **Distribusi Metode Pembayaran**: Rekapitulasi total dana masuk per metode (*Tunai, QRIS, Bank Transfer, Kartu Debit*).
-- **Cetak Laporan Pembukuan**: Format cetak laporan laba rugi resmi (*Print to PDF / Lembar Pembukuan*).
-
-### 7. Manajemen Shift & Laci Kasir (Cash Management)
-- **Buka Shift Kasir**: Input modal uang kembalian awal (*Starting Cash*).
-- **Slip Tutup Shift Kasir (*Shift Settlement*)**:
-  - Rekapitulasi modal kas awal.
-  - Total penerimaan tunai (*Cash Sales*) & non-tunai (*Non-Cash Sales*).
-  - Total pengeluaran uang dari laci kasir (*Cash Drawer Expenses*).
-  - Perhitungan **Expected Cash** (Kas Seharusnya) vs **Actual Cash** (Kas Fisik Terhitung).
-  - Deteksi otomatis selisih kas (*Over / Short Difference*).
-- **Arsip Riwayat Shift**: Riwayat pembukuan pergantian shift kasir terdahulu.
-
-### 8. Pengeluaran Operasional (OPEX Tracker)
-- **Catat Biaya Harian**: Input pembelian kebutuhan mendadak seperti es batu kristal, gas LPG, perlengkapan kebersihan, galon air, atau logistik.
-- **Pilihan Sumber Kas**:
-  - **Kas Laci Kasir (*Cash Drawer*)**: Otomatis memotong uang kas di laci pada shift berjalan (*mengurangi Expected Cash*).
-  - **Rekening Bank (*Bank Transfer*)**: Dicatat ke pembukuan beban operasional tanpa mengganggu laci kasir.
-
-### 9. Database Pelanggan & CRM
-- **Buku Kontak Pelanggan**: Simpan data pelanggan (Nama, Nomor Telepon/WhatsApp, Email).
-- **Metrik Loyalitas**: Menghitung frekuensi kunjungan (*Total Visits*), akumulasi belanja (*Total Spend*), dan poin loyalitas secara otomatis.
-- **Chat WhatsApp Instan**: Buka chat WhatsApp pelanggan dengan template pesan salam hangat personal toko yang otomatis disiapkan.
-
-### 10. Autentikasi & Multi-User RBAC
-- **Login Barrier**: Sistem kasir terkunci rapat sebelum staf memasukkan username dan kata sandi yang valid.
-- **Role-Based Access Control (RBAC)**:
-  - **Owner / Master**: Memiliki hak akses penuh ke seluruh modul, termasuk kalkulator HPP, resep rahasia, laporan laba bersih, inventori gudang, manajemen pengguna, dan pengaturan toko.
-  - **Kasir (Cashier)**: Dibatasi hanya pada operasional kasir POS, pesanan meja, riwayat transaksi, buka/tutup shift, dan pencatatan kas laci. Akses ke menu resep dan laporan laba dilindungi dengan layar pengaman.
-- **Manajemen Akun Kasir**: Owner dapat menambah kasir baru, mengedit profil, mengubah kata sandi, serta menonaktifkan akun kasir yang sudah tidak bertugas.
-
-### 11. Ekspor Data ke Excel/CSV
-- Ekspor seluruh tabel ke format **CSV dengan standar UTF-8 BOM** sehingga langsung rapi dan kompatibel dibuka di Microsoft Excel, Google Sheets, maupun Numbers tanpa format berantakan:
-  - Ekspor Riwayat Transaksi Penjualan
-  - Ekspor Laporan Laba Rugi Finansial
-  - Ekspor Database Inventori & Valuasi Bahan Baku
-
-### 12. Pengaturan Outlet & Personalisasi
-- **Identitas Toko**: Nama outlet, slogan/tagline, alamat lengkap, dan nomor kontak.
-- **Informasi WiFi Pelanggan**: Nama SSID dan kata sandi WiFi untuk otomatis ditampilkan di struk belanja.
-- **Akun Media Sosial**: Username Instagram & TikTok outlet.
-- **Pajak & Rekening Bank**: Persentase tarif PPN (%) dan nomor rekening transfer kasir.
-- **Dukungan Dwibahasa (Bilingual)**: Pilihan bahasa antarmuka **Bahasa Indonesia** atau **English**.
-- **Tema Gelap / Terang**: Dukungan Dark Mode dan Light Mode yang nyaman untuk penggunaan siang maupun malam hari.
-- **Manajemen Data**: Tombol muat data demo (*Load Demo Data*) atau reset data toko (*Reset All Data*).
-
-### 13. Database Server Terpusat & Multi-Device Sync (Cloudflare Tunnel Ready)
-- **Penyimpanan Terpusat di PC Kasir**: Seluruh data master toko (akun kasir & password, katalog menu, stok bahan baku, resep HPP, transaksi, open bill meja, dan shift) disimpan langsung di disk komputer server kasir (`data/pos_database.json`).
-- **Kompatibel Penuh dengan Cloudflare Tunnel**:
-  - Mengatasi masalah *origin mismatch* ketika aplikasi diakses dari luar jaringan via Cloudflare Tunnel (`https://xxx.trycloudflare.com` atau domain kustom).
-  - Password kasir/owner yang diubah di PC langsung berlaku di perangkat yang mengakses via Cloudflare Tunnel tanpa me-reset ke bawaan.
-- **Sinkronisasi Otomatis Real-Time**:
-  - Pelayan memasukkan pesanan atau open bill dari smartphone di meja pelanggan $\rightarrow$ langsung muncul seketika di PC kasir utama.
-  - Kasir menambah menu baru di PC $\rightarrow$ otomatis langsung tampil di katalog HP pelayan.
-  - Background polling cerdas (setiap 4 detik) dan event listener saat tab browser kembali aktif (*focus*).
-- **Indikator Status & Kontrol Manual**:
-  - Tombol indikator status 🟢 `Server PC` di Header dan layar login untuk memantau status koneksi real-time.
-  - Opsi **Sinkronkan Sekarang** dan **Unggah ke Server PC** di menu Pengaturan.
-- **Cadangan & Pemulihan (Backup & Restore)**:
-  - Tombol 1-klik **Unduh Cadangan (.json)** di menu Pengaturan untuk menyimpan salinan lengkap database ke komputer atau flashdisk.
-  - Tombol **Pulihkan Cadangan** untuk merestorasi seluruh data toko dari file `.json` secara instan.
-
----
-
-## 🔑 Kredensial Akun Bawaan (Demo)
-
-Aplikasi telah dilengkapi dengan data demo siap pakai. Anda dapat masuk menggunakan salah satu akun berikut:
+## 🔑 Akun Demo Bawaan
 
 | Peran (*Role*) | Username | Password | Hak Akses |
 | :--- | :--- | :--- | :--- |
-| **Owner / Master** | `owner` | `kage46owner` | Akses Penuh (POS, Resep HPP, Inventori, Laba Bersih, Pengaturan, Akun) |
-| **Kasir 1** | `kasir1` | `kasir123` | Akses Operasional Kasir POS, Transaksi, Shift, Kas Laci |
-| **Kasir 2** | `kasir2` | `kasir123` | Akses Operasional Kasir POS, Transaksi, Shift, Kas Laci |
-
-> [!TIP]
-> Anda dapat menambah atau mengubah akun kasir kapan saja melalui menu **Pengaturan & Akun** saat masuk sebagai **Owner**. Perubahan password akan otomatis tersinkron ke semua perangkat.
+| **👑 Owner / Master** | `owner` | `kage46owner` | **Akses Penuh** (POS, Resep HPP, Laba Bersih, Gudang, Pengaturan Toko, Manajemen Akun) |
+| **☕ Kasir (Cashier)** | `kasir1` | `kasir123` | **Kasir Operasional** (POS, Transaksi Meja, Buka/Tutup Shift, Kas Laci) |
 
 ---
 
-## 💻 Instalasi & Menjalankan Proyek
+## ✨ Fitur Utama Lengkap
 
-### Prasyarat
-- **Node.js**: Versi `18.17` atau lebih baru (direkomendasikan Node.js v20+)
-- **npm** atau **yarn** / **pnpm**
+### 1. 🛒 Kasir Pintar (Point of Sale)
+- **Katalog Cepat & Kategori**: Filter instan (*Signature, Kopi, Non-Kopi, Makanan, Camilan*), pencarian live, dan SKU barcode.
+- **Tipe Pesanan**:
+  - **Dine-In**: Pemilih meja visual (*Meja 01 - 20, VIP, Outdoor*) dengan indikator meja terisi (*Open Bill*).
+  - **Takeaway**: Opsi bungkus bawa pulang otomatis.
+- **Input Menu Cepat (+ Menu Instan)**: Tambah menu baru langsung dari layar kasir tanpa harus meracik resep bahan baku terlebih dahulu.
+- **Desain Responsif**: Panel keranjang terpasang di samping pada PC/tablet dan drawer geser (*slide-in*) pada smartphone.
 
-### Langkah-Langkah
+### 2. 💳 Multi-Pembayaran & Open Bill
+- **Metode Pembayaran**:
+  - **Tunai (Cash)**: Shortcut nominal uang cepat (Rp 20.000, 50.000, 100.000, Uang Pas) & hitung kembalian otomatis.
+  - **QRIS Dinamis**: Tampilan barcode QRIS dengan info NMID toko.
+  - **Transfer Bank & Kartu EDC**: Konfirmasi nomor rekening dan pencatatan debit mesin EDC.
+- **Diskon & Pajak**: Diskon fleksibel per pesanan dan toggle pajak PPN 11%.
+- **Open Bill (Bayar Nanti)**: Simpan pesanan meja yang belum lunas, tambah pesanan susulan, dan selesaikan tagihan kapan saja.
+- **Void Transaksi Aman**: Pembatalan nota wajib alasan pembatalan dengan opsi **otomatis mengembalikan stok bahan baku ke gudang**.
 
-1. **Clone repository atau buka direktori proyek**:
-   ```bash
-   cd "c:\Users\Administrator\Documents\antigravity\kasir kage46"
-   ```
+### 3. 🖨️ Cetak Struk Thermal & WhatsApp
+- **Dual-Size Printer**: Pilihan ukuran kertas struk **58mm** dan **80mm**.
+- **Cetak Presisi**: Cetak langsung via printer thermal USB / Bluetooth tanpa margin berlebih (`@media print`).
+- **Kirim Struk via WhatsApp**: Kirim format nota belanja rapi ke nomor WhatsApp pelanggan dalam 1-klik.
+- **Info Lengkap Struk**: Nama toko, logo, kasir, meja, rincian menu, wifi toko, medsos, dan catatan kaki.
 
-2. **Pasang seluruh dependensi**:
-   ```bash
-   npm install
-   ```
+### 4. 🧪 Kalkulator HPP & Resep Otomatis
+- **Komposisi Resep Bahan Baku**: Takaran gram/ml per porsi menu (Espresso, Susu, Sirup, Cup, Sedotan).
+- **Alokasi Beban Overhead & Sewa**: Kalkulator beban sewa tempat & listrik bulanan dibagi ke modal per cup.
+- **Biaya Kemasan (Packaging Cost)**: Perhitungan otomatis biaya cup, lid, dan sedotan per sajian.
+- **Simulasi Margin Profit**: Rekomendasi harga jual untuk target margin 50%, 60% (Standar Kafe), dan 70% (Premium) dengan tombol terapkan harga otomatis.
 
-3. **Jalankan server pengembangan (Development Server)**:
-   ```bash
-   npm run dev
-   ```
+### 5. 📦 Inventori Gudang & Stock Opname
+- **Database Bahan Baku**: Satuan unit (gram, ml, pcs), konversi harga kemasan besar ke harga satuan terkecil.
+- **Auto-Deduct Stok**: Stok berkurang otomatis setiap transaksi berhasil di kasir.
+- **Peringatan Stok Menipis (*Low Stock Alert*)**: Penanda visual merah ketika stok mendekati batas minimum.
+- **Stock Opname Terintegrasi**: Catat rekonsiliasi fisik vs sistem, hitung selisih, dan simpan alasan (*Spillage, Expired, Rusak*).
+- **Valuasi Aset**: Perhitungan nilai total aset inventori gudang secara real-time.
 
-4. **Buka aplikasi di peramban (Browser)**:
-   Akses [http://localhost:3000](http://localhost:3000) melalui Google Chrome, Microsoft Edge, Safari, atau Firefox.
+### 6. 📊 Laporan Keuangan & Laba Bersih Riil
+- **Waterfall Finansial**:
+  1. **Omset Penjualan Kotor (*Gross Revenue*)**
+  2. **Total HPP Bahan Baku & Beban Kemasan**
+  3. **Laba Kotor (*Gross Profit*)**
+  4. **Pengeluaran Operasional Harian (*OPEX Toko*)**
+  5. **Laba Bersih Riil (*Net Profit*) & Persentase Margin Bersih**
+- **Filter Periode**: Hari Ini (*Today*), 7 Hari Terakhir (*7d*), dan 30 Hari Terakhir (*30d*).
+- **Cetak Laporan**: Format cetak laporan pembukuan resmi (Print to PDF).
 
-5. **Build untuk Produksi (Opsional)**:
-   ```bash
-   npm run build
-   npm run start
-   ```
+### 7. 💵 Manajemen Shift & Laci Kasir (*Cash Float*)
+- **Buka Shift**: Input modal kas laci awal (*Starting Cash*).
+- **Tutup Shift Kasir (*Reconciliation*)**:
+  - Rekap kas modal, penjualan tunai, penjualan non-tunai, dan pengeluaran kas laci.
+  - Perhitungan otomatis **Expected Cash** vs **Actual Cash** dan deteksi selisih kas (*Over/Short*).
+- **Arsip Riwayat Shift**: Rekapitulasi shift kasir terdahulu tersimpan rapi.
+
+### 8. 📝 OPEX Tracker (Pengeluaran Harian)
+- Catat biaya belanja operasional mendadak (es batu, gas LPG, perlengkapan kebersihan, galon).
+- Pilihan sumber dana: **Kas Laci Kasir** (otomatis memotong kas laci pada shift berjalan) atau **Transfer Bank**.
+
+### 9. 👥 CRM & Database Pelanggan
+- Buku kontak pelanggan (Nama, No. WhatsApp, Email).
+- Metrik otomatis: Total kunjungan, akumulasi belanja (*Total Spend*), dan poin reward loyalitas.
+- Tombol langsung chat WhatsApp dengan pesan salam personal toko.
+
+### 10. 🛡️ Autentikasi & Multi-User RBAC
+- **Login Barrier**: Aplikasi terkunci sebelum login dengan username & kata sandi valid.
+- **Hak Akses Ketat (RBAC)**: Kasir dibatasi hanya pada transaksi kasir, open bill meja, dan shift. Modul resep HPP, laporan laba, dan pengaturan toko dilindungi khusus akun **Owner**.
+- **Kelola Akun**: Owner dapat menambah kasir baru, ubah password, atau menonaktifkan akun staf.
+
+### 11. ⚙️ Pengaturan Toko & Manajemen Data
+- Personalisasi nama outlet, tagline, alamat, nomor telepon, info WiFi, dan tarif PPN.
+- **Cadangan & Pemulihan (Backup & Restore)**: Unduh salinan database `.json` atau pulihkan kapan saja via 1-klik.
+- **Kosongkan Data (*Reset All Data*)**: Bersihkan seluruh data demo untuk mulai dari toko kosong yang siap pakai riil.
+- **Muat Data Demo (*Load Demo Data*)**: Kembalikan data contoh lengkap untuk simulasi.
+- **Mode Tampilan**: Dark Mode & Light Mode yang nyaman di mata.
+- **Dwibahasa (Bilingual)**: Pilihan bahasa **Bahasa Indonesia** atau **English**.
+
+### 12. 🔄 Database Server Terpusat & Sinkronisasi Multi-Device
+- **Single Source of Truth**: Data toko tersimpan di server lokal PC (`data/pos_database.json`) dengan atomic write & rolling backup (`.bak.json`).
+- **Sinkronisasi Otomatis Real-Time**: Pesanan meja dari HP pelayan langsung muncul di PC kasir; menu baru dari PC langsung tampil di HP pelayan.
+- **Multi-Device Ready**: Bekerja mulus melalui jaringan Wi-Fi lokal (LAN) maupun di luar toko menggunakan **Cloudflare Tunnel**.
 
 ---
 
-## 📱 Akses Jaringan Lokal & Cloudflare Tunnel (Multi-Device)
+## 🛠 Teknologi yang Digunakan
 
-Aplikasi telah dirancang agar komputer kasir utama berfungsi sebagai server pusat. Perangkat lain (smartphone kasir, tablet pelayan di meja pelanggan) dapat mengakses sistem dengan dua cara:
+| Komponen | Teknologi | Keterangan |
+| :--- | :--- | :--- |
+| **Framework** | [Next.js 16 (App Router)](https://nextjs.org/) | Rendering optimal & arsitektur modern |
+| **UI Library** | [React 19](https://react.dev/) | Reaktif & performa tinggi |
+| **Bahasa** | [TypeScript](https://www.typescriptlang.org/) | Type-safe & bebas bug |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Glassmorphism, Dark/Light Mode, & Responsive UI |
+| **State Management** | [Zustand v5](https://zustand-demo.pmnd.rs/) | Store global ringan dengan sinkronisasi server |
+| **Ikon** | [Lucide React](https://lucide.dev/) | Paket ikon modern & elegan |
+| **Penyimpanan Server** | Local Server JSON DB | File database persisten di PC server |
+| **Database Cloud** | [Supabase](https://supabase.com/) | Opsional untuk sinkronisasi PostgreSQL multi-cabang |
 
-### Cara 1: Akses Jaringan Wi-Fi Lokal (LAN)
-Server development otomatis berjalan dengan argumen `-H 0.0.0.0`:
-1. Buka Command Prompt / PowerShell di komputer kasir dan ketik:
+---
+
+## 💻 Cara Menjalankan Proyek di Komputer Lokal
+
+### 1. Prasyarat
+- Pastikan telah menginstal [Node.js](https://nodejs.org/) (versi 18.17+ atau 20+).
+
+### 2. Instalasi & Menjalankan
+Buka terminal / PowerShell di direktori proyek:
+
+```bash
+# 1. Pasang dependensi
+npm install
+
+# 2. Jalankan server pengembangan
+npm run dev
+```
+
+Buka peramban di: **[http://localhost:3000](http://localhost:3000)**
+
+---
+
+## 📱 Akses dari HP / Tablet Pelayan
+
+### Opsi A: Jaringan Wi-Fi Toko yang Sama (LAN)
+1. Cek alamat IP komputer server kasir dengan perintah:
    ```bash
    ipconfig
    ```
-2. Temukan alamat **IPv4 Address** komputer Anda (contoh: `192.168.1.46`).
-3. Buka browser di smartphone atau tablet yang terhubung ke jaringan Wi-Fi toko yang sama, lalu akses:
+2. Temukan **IPv4 Address** (misal: `192.168.1.9`).
+3. Buka browser di smartphone/tablet pelayan, lalu akses:
    ```
-   http://192.168.1.46:3000
+   http://192.168.1.9:3000
    ```
 
-### Cara 2: Akses Luar Jaringan via Cloudflare Tunnel (Internet Publik)
-Untuk menghubungkan smartphone kasir dari luar jaringan tanpa memerlukan IP publik statis atau port forwarding:
-1. Jalankan Cloudflare Tunnel di komputer kasir:
+### Opsi B: Akses Jarak Jauh via Cloudflare Tunnel
+1. Jalankan tunnel di komputer kasir:
    ```bash
    cloudflared tunnel --url http://localhost:3000
    ```
-2. Buka URL HTTPS yang diberikan oleh Cloudflare (contoh: `https://kage46-pos.trycloudflare.com`) di smartphone, tablet, atau laptop manapun.
-3. **Database Otomatis Terhubung**:
-   - Seluruh data transaksi, akun, menu baru, dan perubahan password di PC kasir langsung tersinkronisasi 100% secara real-time.
-   - Layar login akan menampilkan penanda hijau 🟢 **"Server Database Terhubung"**.
-
-> [!IMPORTANT]
-> **Wajib Daftarkan Domain Tunnel / IP ke `allowedDevOrigins` di `next.config.ts`**:
-> Server development Next.js memiliki proteksi keamanan asal domain (*Cross-Origin Security Protection*). Agar Next.js mengizinkan akses dari URL Cloudflare Tunnel atau IP LAN tanpa peringatan/blokir:
-> 1. Buka file [next.config.ts](file:///c:/Users/Administrator/Documents/antigravity/kasir%20kage46/next.config.ts).
-> 2. Daftarkan domain Cloudflare Tunnel dan IP lokal Anda ke dalam array `allowedDevOrigins`:
->    ```typescript
->    const nextConfig: NextConfig = {
->      allowedDevOrigins: [
->        "localhost:3000",
->        "192.168.1.9", // IP lokal Anda
->        "audience-pierre-embassy-shanghai.trycloudflare.com", // Domain Cloudflare Tunnel Anda
->      ],
->      // ...
->    };
->    ```
-> 3. Restart server pengembangan (`npm run dev`) jika baru saja mengubah file tersebut.
+2. Buka URL HTTPS publik yang dihasilkan di smartphone manapun (misal: `https://xxxx.trycloudflare.com`).
 
 ---
 
-## ☁️ Integrasi Database Cloud Supabase (Opsional)
-
-Secara bawaan, aplikasi bekerja 100% mandiri menggunakan **Database Server Terpusat** di PC kasir dengan cadangan LocalStorage. Jika Anda ingin menghubungkannya ke cloud PostgreSQL Supabase untuk analitik multi-cabang:
-
-1. Buat proyek baru di [Supabase Dashboard](https://database.new).
-2. Salin file environment contoh:
-   ```bash
-   cp .env.local.example .env.local
-   ```
-3. Buka file `.env.local` dan isi dengan kredensial API Supabase Anda:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-   ```
-4. Masuk ke menu **SQL Editor** di Dashboard Supabase, buka file [supabase/schema.sql](file:///c:/Users/Administrator/Documents/antigravity/kasir%20kage46/supabase/schema.sql), lalu jalankan seluruh kueri SQL tersebut untuk membuat tabel `users`, `products`, `ingredients`, `orders`, `expenses`, `shifts`, `customers`, `stock_opnames`, dan `store_settings`.
-
----
-
-## 📂 Struktur Direktori Proyek
+## 📂 Struktur Direktori Ringkas
 
 ```
 kasir-kage46/
-├── data/                   # Database server lokal terpusat
-│   ├── pos_database.json   # File database master persisten (akun, transaksi, menu, stok)
-│   └── pos_database.bak.json # Salinan cadangan otomatis bergulir (rolling backup)
-├── public/                 # Aset statis & favicon
+├── data/
+│   ├── pos_database.json        # Database master server persisten
+│   └── pos_database.bak.json    # Salinan cadangan otomatis bergulir
 ├── src/
-│   ├── app/                # Next.js App Router Pages & API Routes
-│   │   ├── api/
-│   │   │   └── sync/       # API Route sinkronisasi real-time & backup/restore
-│   │   │       ├── route.ts # GET & POST sinkronisasi data antar perangkat
-│   │   │       └── backup/route.ts # Ekspor & impor file database .json
-│   │   ├── layout.tsx      # Root HTML Layout, Metadata & Theme Loader
-│   │   ├── globals.css     # Tailwind CSS styles & @media print receipt rules
-│   │   ├── page.tsx        # Dashboard Utama, Metrik Penjualan & Top Menu
-│   │   ├── pos/            # Layar Kasir Pintar (Katalog, Keranjang & Checkout)
-│   │   ├── products/       # Manajemen Menu, Kalkulator Resep & Simulasi HPP
-│   │   ├── inventory/      # Database Bahan Baku Gudang & Stock Opname
-│   │   ├── transactions/   # Riwayat Transaksi, Open Bill & Void Pesanan
-│   │   ├── customers/      # Database Pelanggan, Poin & Kontak WhatsApp
-│   │   ├── reports/        # Laporan Keuangan, Waterfall Laba Bersih & Cetak PDF
-│   │   └── settings/       # Pengaturan Toko, Sinkronisasi Server, Pajak & Akun Staf
-│   ├── components/         # Komponen Modular Reusable
-│   │   ├── auth/           # LoginScreen, LoginModal, UserFormModal, EditProfileModal
-│   │   ├── inventory/      # IngredientFormModal, StockOpnameModal
-│   │   ├── layout/         # AppShell, Header (Server Status Pill), Sidebar, MobileBottomNav
-│   │   ├── pos/            # ProductGrid, ProductCard, CartPane, CheckoutModal,
-│   │   │                   # ReceiptModal, TablePickerModal, QuickAddProductModal
-│   │   ├── products/       # RecipeModal (HPP Calculator), ProductFormModal
-│   │   ├── shared/         # ShiftModal, ExpenseModal, OpenBillsDrawer, ToastContainer
-│   │   └── transactions/   # TransactionDetailModal, VoidModal
-│   ├── data/
-│   │   └── mockData.ts     # Data awal bawaan sistem (Template default)
-│   ├── lib/
-│   │   ├── exportUtils.ts  # Mesin ekspor CSV / Excel UTF-8 BOM
-│   │   ├── serverDb.ts     # Engine pembaca & penulis file database server lokal (atomic write)
-│   │   ├── syncService.ts  # Service sinkronisasi background real-time client-server
-│   │   ├── supabase.ts     # Inisialisasi klien Supabase & deteksi koneksi (opsional)
-│   │   ├── translations.ts # Modul dwibahasa (Indonesian & English)
-│   │   └── utils.ts        # Helper mata uang (IDR), format tanggal & generate ID
-│   ├── store/
-│   │   └── usePosStore.ts  # Zustand global store dengan sinkronisasi server & auto-listener
-│   └── types/
-│       └── pos.ts          # Definisi tipe data TypeScript & ServerPOSDatabase
-├── supabase/
-│   └── schema.sql          # Skema PostgreSQL lengkap untuk Supabase
-├── .env.local.example      # Template konfigurasi environment
-├── package.json            # Konfigurasi dependensi dan skrip proyek
-├── tsconfig.json           # Konfigurasi compiler TypeScript
-├── LICENSE                 # Berkas lisensi open source (MIT License)
-├── README.md               # Dokumentasi utama (Bahasa Indonesia)
-└── README.en.md            # Dokumentasi bahasa Inggris (English)
+│   ├── app/
+│   │   ├── api/sync/            # API Route sinkronisasi real-time & backup/restore
+│   │   ├── layout.tsx           # Root Layout & Metadata
+│   │   ├── page.tsx             # Dashboard Utama & KPI Penjualan
+│   │   ├── pos/                 # Kasir Pintar (Katalog, Keranjang & Checkout)
+│   │   ├── products/            # Katalog Menu & Kalkulator Resep HPP
+│   │   ├── inventory/           # Stok Gudang & Stock Opname
+│   │   ├── transactions/        # Riwayat Transaksi & Open Bill Meja
+│   │   ├── customers/           # Database Pelanggan & CRM
+│   │   ├── reports/             # Laporan Keuangan & Analisis Laba
+│   │   └── settings/            # Pengaturan Toko, Akun Staf & Reset Data
+│   ├── components/              # Komponen UI modular (Header, Sidebar, Modals)
+│   ├── lib/                     # Server DB engine, Sync service, Terjemahan
+│   ├── store/                   # Zustand store (usePosStore.ts)
+│   └── types/                   # Type definitions TypeScript
+├── package.json
+└── README.md
 ```
 
 ---
 
 ## 📄 Lisensi
 
-Proyek ini dirilis sebagai perangkat lunak sumber terbuka (*open source*) di bawah naungan lisensi **[MIT License](LICENSE)**. Anda bebas untuk menggunakan, mempelajari, memodifikasi, dan mendistribusikan kode ini untuk keperluan komersial, bisnis, maupun edukasi.
+Proyek ini dirilis di bawah naungan lisensi **[MIT License](LICENSE)**. Bebas digunakan, dipelajari, dan dikembangkan untuk keperluan bisnis, komersial, maupun edukasi.
