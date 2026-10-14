@@ -27,27 +27,31 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   useEffect(() => {
     setMounted(true);
     syncService.init();
+  }, []);
 
+  useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
+  }, [isDarkMode]);
 
+  useEffect(() => {
     if (settings?.storeName && typeof document !== "undefined") {
       document.title = `${settings.storeName} • Modern Point of Sale`;
     }
-  }, [isDarkMode, settings?.storeName]);
+  }, [settings?.storeName]);
 
   // Loading skeleton while hydrating store from localStorage
   if (!mounted) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-white">
+      <div className={`flex h-screen w-screen items-center justify-center transition-colors duration-200 ${isDarkMode ? "bg-[#070b14] text-white" : "bg-slate-50 text-slate-900"}`}>
         <div className="flex flex-col items-center gap-3">
-          <div className="h-12 w-12 rounded-2xl bg-emerald-600 animate-pulse flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-600/30">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-600 animate-pulse flex items-center justify-center font-black text-xl text-white shadow-lg shadow-emerald-600/30">
             {settings?.storeName ? settings.storeName.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase() : "POS"}
           </div>
-          <div className="text-xs font-bold tracking-widest text-slate-300 uppercase">
+          <div className={`text-xs font-bold tracking-widest uppercase ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
             Memuat {settings?.storeName || "KASIR POS"}...
           </div>
         </div>
