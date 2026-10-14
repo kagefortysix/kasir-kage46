@@ -6,6 +6,11 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Zustand](https://img.shields.io/badge/Zustand-v5-443E38?style=for-the-badge)](https://zustand-demo.pmnd.rs/)
 [![Supabase Ready](https://img.shields.io/badge/Supabase-Ready-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+🌐 **Bahasa / Language:** [🇮🇩 Bahasa Indonesia](README.md) | [🇬🇧 English](README.en.md)
+
+---
 
 **KASIR POS KAGE46** adalah aplikasi kasir pintar (*Point of Sale*) modern berbasis web yang dirancang khusus untuk bisnis *Food & Beverage* (F&B), kafe, kedai kopi (*Specialty Coffee*), artisan kitchen, dan restoran. 
 
@@ -313,11 +318,13 @@ kasir-kage46/
 ├── .env.local.example      # Template konfigurasi environment
 ├── package.json            # Konfigurasi dependensi dan skrip proyek
 ├── tsconfig.json           # Konfigurasi compiler TypeScript
-└── README.md               # Dokumentasi lengkap proyek
+├── LICENSE                 # Berkas lisensi open source (MIT License)
+├── README.md               # Dokumentasi utama (Bahasa Indonesia)
+└── README.en.md            # Dokumentasi bahasa Inggris (English)
 ```
 
 ---
 
-## 📄 Lisensi & Hak Cipta
+## 📄 Lisensi
 
-Dikelola untuk operasional **KAGE46 Specialty Coffee & Artisan Kitchen**. Seluruh hak cipta dilindungi.
+Proyek ini dirilis sebagai perangkat lunak sumber terbuka (*open source*) di bawah naungan lisensi **[MIT License](LICENSE)**. Anda bebas untuk menggunakan, mempelajari, memodifikasi, dan mendistribusikan kode ini untuk keperluan komersial, bisnis, maupun edukasi.
