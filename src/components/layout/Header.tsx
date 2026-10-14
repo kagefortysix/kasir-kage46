@@ -19,7 +19,8 @@ import {
   LogOut,
   KeyRound,
   UserCog,
-  Languages
+  Languages,
+  RefreshCw
 } from "lucide-react";
 
 interface HeaderProps {
@@ -41,7 +42,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
     cart,
     setCartDrawerOpen,
     setEditProfileModalOpen,
-    settings
+    settings,
+    syncStatus,
+    manualSync
   } = usePosStore();
 
   const { t, language, toggleLanguage, setLanguage } = useTranslation();
@@ -118,8 +121,27 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
           </button>
         </div>
 
-        {/* Right Actions: Open Bills, Role Switcher, Dark Mode, Cart */}
+        {/* Right Actions: Server Sync, Open Bills, Role Switcher, Dark Mode, Cart */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          
+          {/* Server Sync Status Pill */}
+          <button
+            onClick={() => manualSync()}
+            className={`flex items-center gap-1.5 rounded-xl border p-2 sm:px-2.5 sm:py-1.5 text-xs font-semibold transition shrink-0 ${
+              syncStatus === "synced"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300 hover:bg-emerald-100"
+                : syncStatus === "syncing"
+                ? "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-300 hover:bg-amber-100"
+                : "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 hover:bg-slate-100"
+            }`}
+            title="Database Terhubung ke Server PC (Sinkron Otomatis) - Klik untuk sinkronkan sekarang"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${syncStatus === "syncing" ? "animate-spin text-amber-500" : "text-emerald-500"}`} />
+            <span className="hidden lg:inline text-[11px]">
+              {syncStatus === "synced" ? "Server PC" : syncStatus === "syncing" ? "Sinkron..." : "Offline"}
+            </span>
+          </button>
+
           
           {/* Open Bills Badge */}
           <button

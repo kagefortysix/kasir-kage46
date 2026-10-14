@@ -1,0 +1,790 @@
+{
+  "version": 5,
+  "lastModified": 1792000571868,
+  "initialized": true,
+  "users": [
+    {
+      "id": "usr-1",
+      "username": "owner",
+      "password": "kage46",
+      "name": "Owner KAGE46",
+      "role": "owner",
+      "isActive": true,
+      "createdAt": "2026-10-01"
+    },
+    {
+      "id": "usr-2",
+      "username": "kasir1",
+      "password": "kasir123",
+      "name": "Rizky Ramadhan",
+      "role": "cashier",
+      "isActive": true,
+      "createdAt": "2026-10-05"
+    },
+    {
+      "id": "usr-3",
+      "username": "kasir2",
+      "password": "kasir123",
+      "name": "Siti Barista",
+      "role": "cashier",
+      "isActive": true,
+      "createdAt": "2026-10-08"
+    }
+  ],
+  "settings": {
+    "storeName": "KAGE46",
+    "tagline": "test aja ehe",
+    "address": "Jl. Boulevard Raya Blok A4 No. 46, Kebayoran Baru, Jakarta Selatan",
+    "phone": "+62 812-4646-9900",
+    "instagram": "@kage46.coffee",
+    "tiktok": "@kage46coffee",
+    "wifiName": "",
+    "wifiPassword": "ngopicantik46",
+    "taxPercentage": 11,
+    "taxEnabled": false,
+    "receiptSize": "58mm",
+    "receiptFooterMessage": "Terima kasih telah berkunjung ke ! Nikmati harimu dengan secangkir semangat.",
+    "qrisMerchantName": "NMID: ID1020349464601 -  ",
+    "language": "id",
+    "bankAccount": {
+      "bankName": "BCA (Bank Central Asia)",
+      "accountNumber": "840-046-4646",
+      "holderName": "PT KAGE EMPAT ENAM INDONESIA"
+    }
+  },
+  "products": [
+    {
+      "id": "prod-1",
+      "sku": "KGE-COF-01",
+      "name": "Kopi Susu Kage46 Aren",
+      "category": "Signature",
+      "price": 24000,
+      "costPrice": 7850,
+      "stock": 120,
+      "minStockAlert": 15,
+      "imageUrl": "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": true,
+      "description": "Espresso ganda dipadu susu segar pilihan dan manis legit gula aren organik racikan khas Kage46.",
+      "recipe": [
+        {
+          "ingredientId": "ing-1",
+          "ingredientName": "House Blend Arabica",
+          "amount": 18,
+          "unit": "gr",
+          "costPerUnit": 165,
+          "subtotalCost": 2970
+        },
+        {
+          "ingredientId": "ing-2",
+          "ingredientName": "Fresh Milk Pasteurized",
+          "amount": 130,
+          "unit": "ml",
+          "costPerUnit": 22,
+          "subtotalCost": 2860
+        },
+        {
+          "ingredientId": "ing-4",
+          "ingredientName": "Organic Aren Liquid Sugar",
+          "amount": 25,
+          "unit": "ml",
+          "costPerUnit": 32,
+          "subtotalCost": 800
+        },
+        {
+          "ingredientId": "ing-8",
+          "ingredientName": "Cup 16oz Cold + Straw + Lid",
+          "amount": 1,
+          "unit": "pcs",
+          "costPerUnit": 840,
+          "subtotalCost": 840
+        }
+      ]
+    },
+    {
+      "id": "prod-2",
+      "sku": "KGE-COF-02",
+      "name": "Caramel Macchiato Velvet",
+      "category": "Kopi",
+      "price": 32000,
+      "costPrice": 9980,
+      "stock": 85,
+      "minStockAlert": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1485808191679-5f86510681a2?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": true,
+      "description": "Layering halus vanilla milk foam, espresso shot tebal, dan drizzle saus karamel artisan Monin.",
+      "recipe": [
+        {
+          "ingredientId": "ing-1",
+          "ingredientName": "House Blend Arabica",
+          "amount": 18,
+          "unit": "gr",
+          "costPerUnit": 165,
+          "subtotalCost": 2970
+        },
+        {
+          "ingredientId": "ing-2",
+          "ingredientName": "Fresh Milk Pasteurized",
+          "amount": 150,
+          "unit": "ml",
+          "costPerUnit": 22,
+          "subtotalCost": 3300
+        },
+        {
+          "ingredientId": "ing-5",
+          "ingredientName": "Caramel Artisan Syrup",
+          "amount": 20,
+          "unit": "ml",
+          "costPerUnit": 207,
+          "subtotalCost": 4140
+        },
+        {
+          "ingredientId": "ing-8",
+          "ingredientName": "Cup 16oz Cold + Straw + Lid",
+          "amount": 1,
+          "unit": "pcs",
+          "costPerUnit": 840,
+          "subtotalCost": 840
+        }
+      ]
+    },
+    {
+      "id": "prod-3",
+      "sku": "KGE-COF-03",
+      "name": "Espresso Double Shot (Hot)",
+      "category": "Kopi",
+      "price": 18000,
+      "costPrice": 3730,
+      "stock": 200,
+      "minStockAlert": 20,
+      "imageUrl": "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": true,
+      "description": "Ekstraksi espresso murni 36ml dengan crema tebal keemasan dan notes cokelat karamel.",
+      "recipe": [
+        {
+          "ingredientId": "ing-1",
+          "ingredientName": "House Blend Arabica",
+          "amount": 18,
+          "unit": "gr",
+          "costPerUnit": 165,
+          "subtotalCost": 2970
+        },
+        {
+          "ingredientId": "ing-9",
+          "ingredientName": "Hot Cup 8oz Paper + Lid",
+          "amount": 1,
+          "unit": "pcs",
+          "costPerUnit": 760,
+          "subtotalCost": 760
+        }
+      ]
+    },
+    {
+      "id": "prod-4",
+      "sku": "KGE-COF-04",
+      "name": "Spanish Oat Latte",
+      "category": "Signature",
+      "price": 36000,
+      "costPrice": 11450,
+      "stock": 60,
+      "minStockAlert": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": true,
+      "description": "Racikan susu oat creamy plant-based Oatside berpadu double espresso dan condensed milk lembut.",
+      "recipe": [
+        {
+          "ingredientId": "ing-1",
+          "ingredientName": "House Blend Arabica",
+          "amount": 18,
+          "unit": "gr",
+          "costPerUnit": 165,
+          "subtotalCost": 2970
+        },
+        {
+          "ingredientId": "ing-3",
+          "ingredientName": "Oat Milk Barista Edition",
+          "amount": 150,
+          "unit": "ml",
+          "costPerUnit": 38,
+          "subtotalCost": 5700
+        },
+        {
+          "ingredientId": "ing-4",
+          "ingredientName": "Organic Aren Liquid Sugar",
+          "amount": 15,
+          "unit": "ml",
+          "costPerUnit": 32,
+          "subtotalCost": 480
+        },
+        {
+          "ingredientId": "ing-8",
+          "ingredientName": "Cup 16oz Cold + Straw + Lid",
+          "amount": 1,
+          "unit": "pcs",
+          "costPerUnit": 840,
+          "subtotalCost": 840
+        }
+      ]
+    },
+    {
+      "id": "prod-5",
+      "sku": "KGE-TEA-01",
+      "name": "Kyoto Uji Matcha Latte",
+      "category": "Non-Kopi",
+      "price": 28000,
+      "costPrice": 9140,
+      "stock": 55,
+      "minStockAlert": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": true,
+      "description": "Bubuk teh hijau matcha asli Kyoto diaduk perlahan bersama susu segar dingin dan simple syrup.",
+      "recipe": [
+        {
+          "ingredientId": "ing-6",
+          "ingredientName": "Pure Matcha Powder Uji",
+          "amount": 12,
+          "unit": "gr",
+          "costPerUnit": 390,
+          "subtotalCost": 4680
+        },
+        {
+          "ingredientId": "ing-2",
+          "ingredientName": "Fresh Milk Pasteurized",
+          "amount": 150,
+          "unit": "ml",
+          "costPerUnit": 22,
+          "subtotalCost": 3300
+        },
+        {
+          "ingredientId": "ing-8",
+          "ingredientName": "Cup 16oz Cold + Straw + Lid",
+          "amount": 1,
+          "unit": "pcs",
+          "costPerUnit": 840,
+          "subtotalCost": 840
+        }
+      ]
+    },
+    {
+      "id": "prod-6",
+      "sku": "KGE-CHO-01",
+      "name": "Artisan Dark Chocolate 70%",
+      "category": "Non-Kopi",
+      "price": 26000,
+      "costPrice": 7740,
+      "stock": 70,
+      "minStockAlert": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": true,
+      "description": "Cokelat hitam pekat kaya rasa cokelat premium, perpaduan manis gurih yang menenangkan.",
+      "recipe": [
+        {
+          "ingredientId": "ing-7",
+          "ingredientName": "Dark Chocolate Powder 70%",
+          "amount": 30,
+          "unit": "gr",
+          "costPerUnit": 120,
+          "subtotalCost": 3600
+        },
+        {
+          "ingredientId": "ing-2",
+          "ingredientName": "Fresh Milk Pasteurized",
+          "amount": 150,
+          "unit": "ml",
+          "costPerUnit": 22,
+          "subtotalCost": 3300
+        },
+        {
+          "ingredientId": "ing-8",
+          "ingredientName": "Cup 16oz Cold + Straw + Lid",
+          "amount": 1,
+          "unit": "pcs",
+          "costPerUnit": 840,
+          "subtotalCost": 840
+        }
+      ]
+    },
+    {
+      "id": "prod-7",
+      "sku": "KGE-BAK-01",
+      "name": "French Golden Butter Croissant",
+      "category": "Makanan",
+      "price": 22000,
+      "costPrice": 11000,
+      "stock": 24,
+      "minStockAlert": 5,
+      "imageUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": true,
+      "description": "Pastry croissant renyah berlapis dengan aroma butter Prancis yang harum saat dipanaskan.",
+      "recipe": [
+        {
+          "ingredientId": "ing-10",
+          "ingredientName": "Frozen Butter Croissant Dough",
+          "amount": 1,
+          "unit": "pcs",
+          "costPerUnit": 11000,
+          "subtotalCost": 11000
+        }
+      ]
+    },
+    {
+      "id": "prod-8",
+      "sku": "KGE-FOO-01",
+      "name": "Truffle Parmesan Fries",
+      "category": "Camilan",
+      "price": 28000,
+      "costPrice": 9500,
+      "stock": 40,
+      "minStockAlert": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": false,
+      "description": "Kentang goreng renyah disiram minyak truffle wangi dan taburan keju parmesan gurih."
+    },
+    {
+      "id": "prod-9",
+      "sku": "KGE-FOO-02",
+      "name": "Crispy Dori Sambal Matah Bowl",
+      "category": "Makanan",
+      "price": 38000,
+      "costPrice": 16500,
+      "stock": 18,
+      "minStockAlert": 5,
+      "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "hasRecipe": false,
+      "description": "Nasi hangat dengan fillet ikan dori tepung krispi, telur mata sapi, dan sambal matah Bali segar."
+    },
+    {
+      "id": "prod-10",
+      "sku": "KGE-QCK-01",
+      "name": "Air Mineral Oasis 600ml (Dingin)",
+      "category": "Non-Kopi",
+      "price": 6000,
+      "costPrice": 2500,
+      "stock": 80,
+      "minStockAlert": 15,
+      "imageUrl": "https://images.unsplash.com/photo-1559839914-ba2ac5cd7c99?auto=format&fit=crop&w=600&q=80",
+      "isAvailable": true,
+      "isQuickItem": true,
+      "hasRecipe": false,
+      "description": "Menu instan langsung jual tanpa resep."
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "ing-1",
+      "name": "House Blend Arabica (Gayo & Kintamani)",
+      "category": "Biji Kopi",
+      "unit": "gr",
+      "currentStock": 4800,
+      "minStockAlert": 1500,
+      "packagePrice": 165000,
+      "packageSize": 1000,
+      "unitCost": 165,
+      "lastRestockedAt": "2026-10-10"
+    },
+    {
+      "id": "ing-2",
+      "name": "Fresh Milk Pasteurized (Greenfields)",
+      "category": "Dairy",
+      "unit": "ml",
+      "currentStock": 12500,
+      "minStockAlert": 5000,
+      "packagePrice": 22000,
+      "packageSize": 1000,
+      "unitCost": 22,
+      "lastRestockedAt": "2026-10-12"
+    },
+    {
+      "id": "ing-3",
+      "name": "Oat Milk Barista Edition (Oatside)",
+      "category": "Dairy",
+      "unit": "ml",
+      "currentStock": 6000,
+      "minStockAlert": 3000,
+      "packagePrice": 38000,
+      "packageSize": 1000,
+      "unitCost": 38,
+      "lastRestockedAt": "2026-10-11"
+    },
+    {
+      "id": "ing-4",
+      "name": "Organic Aren Liquid Sugar",
+      "category": "Sirup & Flavour",
+      "unit": "ml",
+      "currentStock": 3400,
+      "minStockAlert": 1000,
+      "packagePrice": 32000,
+      "packageSize": 1000,
+      "unitCost": 32,
+      "lastRestockedAt": "2026-10-09"
+    },
+    {
+      "id": "ing-5",
+      "name": "Caramel Artisan Syrup (Monin)",
+      "category": "Sirup & Flavour",
+      "unit": "ml",
+      "currentStock": 1800,
+      "minStockAlert": 600,
+      "packagePrice": 145000,
+      "packageSize": 700,
+      "unitCost": 207,
+      "lastRestockedAt": "2026-10-05"
+    },
+    {
+      "id": "ing-6",
+      "name": "Pure Matcha Powder Uji Kyoto",
+      "category": "Bubuk Powder",
+      "unit": "gr",
+      "currentStock": 850,
+      "minStockAlert": 400,
+      "packagePrice": 195000,
+      "packageSize": 500,
+      "unitCost": 390,
+      "lastRestockedAt": "2026-10-08"
+    },
+    {
+      "id": "ing-7",
+      "name": "Dark Chocolate Powder 70%",
+      "category": "Bubuk Powder",
+      "unit": "gr",
+      "currentStock": 1200,
+      "minStockAlert": 500,
+      "packagePrice": 120000,
+      "packageSize": 1000,
+      "unitCost": 120,
+      "lastRestockedAt": "2026-10-07"
+    },
+    {
+      "id": "ing-8",
+      "name": "Cup 16oz Cold + Straw + Lid",
+      "category": "Packaging",
+      "unit": "pcs",
+      "currentStock": 340,
+      "minStockAlert": 100,
+      "packagePrice": 42000,
+      "packageSize": 50,
+      "unitCost": 840,
+      "lastRestockedAt": "2026-10-11"
+    },
+    {
+      "id": "ing-9",
+      "name": "Hot Cup 8oz Paper + Lid",
+      "category": "Packaging",
+      "unit": "pcs",
+      "currentStock": 180,
+      "minStockAlert": 80,
+      "packagePrice": 38000,
+      "packageSize": 50,
+      "unitCost": 760,
+      "lastRestockedAt": "2026-10-10"
+    },
+    {
+      "id": "ing-10",
+      "name": "Frozen Butter Croissant Dough",
+      "category": "Topping / Lainnya",
+      "unit": "pcs",
+      "currentStock": 42,
+      "minStockAlert": 20,
+      "packagePrice": 110000,
+      "packageSize": 10,
+      "unitCost": 11000,
+      "lastRestockedAt": "2026-10-12"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-1",
+      "name": "Hendra Wijaya",
+      "phone": "081234567890",
+      "email": "hendra.w@gmail.com",
+      "totalVisits": 14,
+      "totalSpend": 420000,
+      "points": 84,
+      "lastVisit": "2026-10-12 14:20"
+    },
+    {
+      "id": "cust-2",
+      "name": "Amanda Clarissa",
+      "phone": "081987654321",
+      "email": "amanda.cl@gmail.com",
+      "totalVisits": 22,
+      "totalSpend": 780000,
+      "points": 156,
+      "lastVisit": "2026-10-13 09:15"
+    },
+    {
+      "id": "cust-3",
+      "name": "Budi Santoso",
+      "phone": "085611223344",
+      "email": "budi.santoso@yahoo.com",
+      "totalVisits": 8,
+      "totalSpend": 240000,
+      "points": 48,
+      "lastVisit": "2026-10-11 16:45"
+    },
+    {
+      "id": "cust-4",
+      "name": "Nadia Putri",
+      "phone": "087788990011",
+      "email": "nadiaputri@gmail.com",
+      "totalVisits": 31,
+      "totalSpend": 1150000,
+      "points": 230,
+      "lastVisit": "2026-10-13 08:30"
+    },
+    {
+      "id": "cust-5",
+      "name": "Kevin Pratama",
+      "phone": "082199887766",
+      "totalVisits": 5,
+      "totalSpend": 165000,
+      "points": 33,
+      "lastVisit": "2026-10-10 19:10"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord-1001",
+      "invoiceNumber": "INV-261013-1001",
+      "timestamp": "2026-10-13 07:15:20",
+      "orderType": "dine_in",
+      "tableNumber": "Meja 02",
+      "customerName": "Nadia Putri",
+      "customerPhone": "087788990011",
+      "cashierName": "Rizky (Kasir Shift Pagi)",
+      "items": [
+        {
+          "id": "item-1",
+          "productId": "prod-1",
+          "name": "Kopi Susu Kage46 Aren",
+          "price": 24000,
+          "costPrice": 7850,
+          "quantity": 2,
+          "notes": "Less sugar, es standar",
+          "category": "Signature",
+          "subtotal": 48000
+        },
+        {
+          "id": "item-2",
+          "productId": "prod-7",
+          "name": "French Golden Butter Croissant",
+          "price": 22000,
+          "costPrice": 11000,
+          "quantity": 1,
+          "notes": "Dipanaskan hangat",
+          "category": "Makanan",
+          "subtotal": 22000
+        }
+      ],
+      "subtotal": 70000,
+      "discountNominal": 0,
+      "taxNominal": 7700,
+      "total": 77700,
+      "paymentMethod": "qris",
+      "amountPaid": 77700,
+      "changeAmount": 0,
+      "status": "completed",
+      "notes": "Pelanggan reguler"
+    },
+    {
+      "id": "ord-1002",
+      "invoiceNumber": "INV-261013-1002",
+      "timestamp": "2026-10-13 07:45:10",
+      "orderType": "takeaway",
+      "customerName": "Kevin Pratama",
+      "customerPhone": "082199887766",
+      "cashierName": "Rizky (Kasir Shift Pagi)",
+      "items": [
+        {
+          "id": "item-3",
+          "productId": "prod-4",
+          "name": "Spanish Oat Latte",
+          "price": 36000,
+          "costPrice": 11450,
+          "quantity": 1,
+          "notes": "Extra ice",
+          "category": "Signature",
+          "subtotal": 36000
+        },
+        {
+          "id": "item-4",
+          "productId": "prod-10",
+          "name": "Air Mineral Oasis 600ml (Dingin)",
+          "price": 6000,
+          "costPrice": 2500,
+          "quantity": 1,
+          "category": "Non-Kopi",
+          "subtotal": 6000
+        }
+      ],
+      "subtotal": 42000,
+      "discountNominal": 2000,
+      "taxNominal": 4400,
+      "total": 44400,
+      "paymentMethod": "cash",
+      "amountPaid": 50000,
+      "changeAmount": 5600,
+      "status": "completed"
+    },
+    {
+      "id": "ord-open-1",
+      "invoiceNumber": "INV-261013-0901",
+      "timestamp": "2026-10-13 08:20:00",
+      "orderType": "dine_in",
+      "tableNumber": "Meja 05",
+      "customerName": "Pak Hendra",
+      "customerPhone": "081234567890",
+      "cashierName": "Rizky (Kasir Shift Pagi)",
+      "items": [
+        {
+          "id": "item-5",
+          "productId": "prod-2",
+          "name": "Caramel Macchiato Velvet",
+          "price": 32000,
+          "costPrice": 9980,
+          "quantity": 2,
+          "notes": "1 dingin, 1 hangat",
+          "category": "Kopi",
+          "subtotal": 64000
+        },
+        {
+          "id": "item-6",
+          "productId": "prod-8",
+          "name": "Truffle Parmesan Fries",
+          "price": 28000,
+          "costPrice": 9500,
+          "quantity": 1,
+          "notes": "Saus sambal ekstra",
+          "category": "Camilan",
+          "subtotal": 28000
+        }
+      ],
+      "subtotal": 92000,
+      "discountNominal": 0,
+      "taxNominal": 10120,
+      "total": 102120,
+      "paymentMethod": "cash",
+      "amountPaid": 0,
+      "changeAmount": 0,
+      "status": "void",
+      "notes": "Tagihan berjalan di Meja 05 - Menunggu pesanan tambahan",
+      "voidReason": "Salah input jumlah pesanan",
+      "voidedAt": "2026-10-14 10:48:05",
+      "restoredStock": true
+    },
+    {
+      "id": "ord-open-2",
+      "invoiceNumber": "INV-261013-0902",
+      "timestamp": "2026-10-13 08:50:30",
+      "orderType": "dine_in",
+      "tableNumber": "Meja 09 (VIP)",
+      "customerName": "Ibu Amanda",
+      "customerPhone": "081987654321",
+      "cashierName": "Rizky (Kasir Shift Pagi)",
+      "items": [
+        {
+          "id": "item-7",
+          "productId": "prod-5",
+          "name": "Kyoto Uji Matcha Latte",
+          "price": 28000,
+          "costPrice": 9140,
+          "quantity": 2,
+          "notes": "Oat milk base",
+          "category": "Non-Kopi",
+          "subtotal": 56000
+        },
+        {
+          "id": "item-8",
+          "productId": "prod-9",
+          "name": "Crispy Dori Sambal Matah Bowl",
+          "price": 38000,
+          "costPrice": 16500,
+          "quantity": 2,
+          "notes": "Pedas sedang",
+          "category": "Makanan",
+          "subtotal": 76000
+        }
+      ],
+      "subtotal": 132000,
+      "discountNominal": 10000,
+      "taxNominal": 13420,
+      "total": 135420,
+      "paymentMethod": "qris",
+      "amountPaid": 0,
+      "changeAmount": 0,
+      "status": "void",
+      "notes": "Open Bill Meja 09 VIP",
+      "voidReason": "Salah input jumlah pesanan",
+      "voidedAt": "2026-10-14 10:48:07",
+      "restoredStock": true
+    }
+  ],
+  "expenses": [
+    {
+      "id": "exp-1",
+      "title": "Beli Es Batu Kristal Tube 3 Bal",
+      "category": "Bahan Tambahan",
+      "amount": 36000,
+      "source": "cash_drawer",
+      "cashierName": "Rizky (Kasir)",
+      "timestamp": "2026-10-13 07:10:00",
+      "note": "Untuk stok pagi & siang"
+    },
+    {
+      "id": "exp-2",
+      "title": "Gas LPG Bright Gas 12 Kg (Refill)",
+      "category": "Utilitas & Listrik",
+      "amount": 145000,
+      "source": "cash_drawer",
+      "cashierName": "Rizky (Kasir)",
+      "timestamp": "2026-10-13 08:00:00",
+      "note": "Dapur utama kitchen"
+    },
+    {
+      "id": "exp-3",
+      "title": "Pembelian Tissue Napkin & Sabun Cuci",
+      "category": "Operasional Toko",
+      "amount": 52000,
+      "source": "bank_transfer",
+      "cashierName": "Owner Kage46",
+      "timestamp": "2026-10-12 16:30:00",
+      "note": "Restock kebersihan outlet"
+    }
+  ],
+  "currentShift": {
+    "id": "shift-261013-01",
+    "cashierName": "Rizky Ramadhan",
+    "openedAt": "2026-10-13 07:00:00",
+    "startingCash": 250000,
+    "totalCashSales": 50000,
+    "totalNonCashSales": 77700,
+    "totalExpenses": 181000,
+    "expectedCash": 119000,
+    "status": "open",
+    "notes": "Shift Pagi (07:00 - 15:00). Kas laci rapi dan uang kembalian lengkap."
+  },
+  "shiftHistory": [],
+  "stockOpnames": [
+    {
+      "id": "opname-1",
+      "ingredientId": "ing-2",
+      "ingredientName": "Fresh Milk Pasteurized",
+      "unit": "ml",
+      "systemStock": 13000,
+      "actualStock": 12500,
+      "difference": -500,
+      "reason": "Spillage (Tumpah)",
+      "recordedBy": "Rizky (Kasir)",
+      "timestamp": "2026-10-12 21:30:00",
+      "note": "Tumpah saat steaming susu rush hour sore"
+    }
+  ]
+}

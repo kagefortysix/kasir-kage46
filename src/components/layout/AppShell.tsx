@@ -16,6 +16,7 @@ import { CartPane } from "../pos/CartPane";
 import { LoginScreen } from "../auth/LoginScreen";
 import { EditProfileModal } from "../auth/EditProfileModal";
 import { ShieldAlert, ArrowLeft } from "lucide-react";
+import { syncService } from "@/lib/syncService";
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
@@ -25,6 +26,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   useEffect(() => {
     setMounted(true);
+    syncService.init();
+
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
     } else {

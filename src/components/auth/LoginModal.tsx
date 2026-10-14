@@ -24,7 +24,7 @@ interface LoginModalProps {
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
-  const { login, currentUser, users, settings } = usePosStore();
+  const { login, currentUser, users, settings, syncStatus } = usePosStore();
   const { t, isEnglish } = useTranslation();
   
   const [username, setUsername] = useState("");
@@ -78,9 +78,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </p>
 
           <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold border bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700">
-            <Database className="h-3 w-3 text-emerald-500" />
+            <Database className={`h-3 w-3 ${syncStatus === "synced" ? "text-emerald-500" : "text-amber-500"}`} />
             <span>
-              {isCloud
+              {syncStatus === "synced"
+                ? (isEnglish ? "PC Server Database Connected" : "Database Server PC Terhubung")
+                : isCloud
                 ? (isEnglish ? "Supabase PostgreSQL Connected" : "Supabase PostgreSQL Terhubung")
                 : (isEnglish ? "Local Offline-First Mode Active" : "Autentikasi Lokal Aktif (Offline-First)")}
             </span>

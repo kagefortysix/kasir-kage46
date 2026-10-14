@@ -5,6 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Zustand](https://img.shields.io/badge/Zustand-v5-443E38?style=for-the-badge)](https://zustand-demo.pmnd.rs/)
+[![Cloudflare Tunnel Ready](https://img.shields.io/badge/Cloudflare_Tunnel-Ready-F38020?style=for-the-badge&logo=cloudflare)](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 [![Supabase Ready](https://img.shields.io/badge/Supabase-Ready-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
@@ -14,7 +15,7 @@
 
 **KASIR POS KAGE46** adalah aplikasi kasir pintar (*Point of Sale*) modern berbasis web yang dirancang khusus untuk bisnis *Food & Beverage* (F&B), kafe, kedai kopi (*Specialty Coffee*), artisan kitchen, dan restoran. 
 
-Sistem ini mengusung pendekatan **Offline-First**, **Mobile-Friendly**, dan **Cloud-Ready** dengan antarmuka premium berstandar SaaS (Glassmorphism, Dark/Light Mode, dan responsif di smartphone, tablet, maupun desktop PC kasir).
+Sistem ini mengusung arsitektur **Database Server Terpusat**, **Offline-First**, **Mobile-Friendly**, dan **Cloudflare Tunnel Ready** dengan antarmuka premium berstandar SaaS (Glassmorphism, Dark/Light Mode, dan responsif di smartphone, tablet, maupun desktop PC kasir).
 
 ---
 
@@ -35,9 +36,10 @@ Sistem ini mengusung pendekatan **Offline-First**, **Mobile-Friendly**, dan **Cl
   - [10. Autentikasi & Multi-User RBAC](#10-autentikasi--multi-user-rbac)
   - [11. Ekspor Data ke Excel/CSV](#11-ekspor-data-ke-excelcsv)
   - [12. Pengaturan Outlet & Personalisasi](#12-pengaturan-outlet--personalisasi)
+  - [13. Database Server Terpusat & Multi-Device Sync (Cloudflare Tunnel)](#13-database-server-terpusat--multi-device-sync-cloudflare-tunnel)
 - [Kredensial Akun Bawaan (Demo)](#-kredensial-akun-bawaan-demo)
 - [Instalasi & Menjalankan Proyek](#-instalasi--menjalankan-proyek)
-- [Akses Jaringan Lokal (Multi-Device / Smartphone)](#-akses-jaringan-lokal-multi-device--smartphone)
+- [Akses Jaringan Lokal & Cloudflare Tunnel (Multi-Device)](#-akses-jaringan-lokal--cloudflare-tunnel-multi-device)
 - [Integrasi Database Cloud Supabase (Opsional)](#-integrasi-database-cloud-supabase-opsional)
 - [Struktur Direktori Proyek](#-struktur-direktori-proyek)
 
@@ -49,7 +51,8 @@ Operasional kedai kopi dan restoran membutuhkan sistem kasir yang tidak hanya ce
 - **Kalkulasi HPP Presisi**: Menghubungkan setiap porsi menu dengan stok bahan baku gram/mililiter riil di gudang.
 - **Transparansi Profit**: Menampilkan Laba Bersih riil (*Net Profit*) setelah dikurangi HPP bahan baku dan biaya operasional kas toko.
 - **Portabilitas Tinggi**: Dapat dioperasikan langsung dari smartphone kasir atau tablet pelayan tanpa perlu instalasi aplikasi khusus dari toko aplikasi.
-- **Kemandirian Sistem**: Bekerja lancar secara offline menggunakan penyimpanan peramban lokal (*LocalStorage Sync* via Zustand Persist), dan siap disinkronkan ke PostgreSQL Supabase untuk analitik terpusat.
+- **Database Server Terpusat & Sinkronisasi Multi-Device**: Menggunakan database lokal server terpusat di PC kasir (`data/pos_database.json`) yang otomatis tersinkronisasi dua arah secara real-time ke smartphone pelayan via Wi-Fi lokal maupun Cloudflare Tunnel tanpa reset database atau password.
+- **Kemandirian Sistem**: Bekerja lancar secara offline menggunakan penyimpanan cache peramban lokal (*LocalStorage Sync* via Zustand Persist), dan siap disinkronkan ke PostgreSQL Supabase untuk analitik terpusat.
 
 ---
 
@@ -61,7 +64,9 @@ Operasional kedai kopi dan restoran membutuhkan sistem kasir yang tidak hanya ce
 | **Library UI** | [React 19](https://react.dev/) | Versi terbaru React untuk manajemen siklus UI yang reaktif |
 | **Bahasa** | [TypeScript](https://www.typescriptlang.org/) | Type-safe code untuk stabilitas dan pemeliharaan jangka panjang |
 | **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first CSS modern, glassmorphism styling, & Dark Mode otomatis |
-| **State Management** | [Zustand v5](https://github.com/pmndrs/zustand) | Global state management ringan dengan middleware `persist` (Local Storage) |
+| **Database Server** | Local JSON Server DB (`data/pos_database.json`) | Penyimpanan terpusat persisten di PC server dengan atomic write & auto-backup |
+| **Sinkronisasi Multi-Device** | Real-Time Sync Engine (`/api/sync`) | Sinkronisasi dua arah instan antar PC kasir, HP pelayan via LAN & Cloudflare Tunnel |
+| **State Management** | [Zustand v5](https://github.com/pmndrs/zustand) | Global state management ringan dengan middleware `persist` (Local Storage cache) |
 | **Ikon UI** | [Lucide React](https://lucide.dev/) | Paket ikon vektor modern, elegan, dan konsisten |
 | **Database Cloud** | [Supabase](https://supabase.com/) | Backend PostgreSQL (Opsional) untuk sinkronisasi cloud multi-cabang |
 | **CSS Print Engine** | `@media print` kustom | Tata letak khusus struk kasir printer thermal (58mm & 80mm) |
@@ -190,6 +195,22 @@ Operasional kedai kopi dan restoran membutuhkan sistem kasir yang tidak hanya ce
 - **Tema Gelap / Terang**: Dukungan Dark Mode dan Light Mode yang nyaman untuk penggunaan siang maupun malam hari.
 - **Manajemen Data**: Tombol muat data demo (*Load Demo Data*) atau reset data toko (*Reset All Data*).
 
+### 13. Database Server Terpusat & Multi-Device Sync (Cloudflare Tunnel Ready)
+- **Penyimpanan Terpusat di PC Kasir**: Seluruh data master toko (akun kasir & password, katalog menu, stok bahan baku, resep HPP, transaksi, open bill meja, dan shift) disimpan langsung di disk komputer server kasir (`data/pos_database.json`).
+- **Kompatibel Penuh dengan Cloudflare Tunnel**:
+  - Mengatasi masalah *origin mismatch* ketika aplikasi diakses dari luar jaringan via Cloudflare Tunnel (`https://xxx.trycloudflare.com` atau domain kustom).
+  - Password kasir/owner yang diubah di PC langsung berlaku di perangkat yang mengakses via Cloudflare Tunnel tanpa me-reset ke bawaan.
+- **Sinkronisasi Otomatis Real-Time**:
+  - Pelayan memasukkan pesanan atau open bill dari smartphone di meja pelanggan $\rightarrow$ langsung muncul seketika di PC kasir utama.
+  - Kasir menambah menu baru di PC $\rightarrow$ otomatis langsung tampil di katalog HP pelayan.
+  - Background polling cerdas (setiap 4 detik) dan event listener saat tab browser kembali aktif (*focus*).
+- **Indikator Status & Kontrol Manual**:
+  - Tombol indikator status 🟢 `Server PC` di Header dan layar login untuk memantau status koneksi real-time.
+  - Opsi **Sinkronkan Sekarang** dan **Unggah ke Server PC** di menu Pengaturan.
+- **Cadangan & Pemulihan (Backup & Restore)**:
+  - Tombol 1-klik **Unduh Cadangan (.json)** di menu Pengaturan untuk menyimpan salinan lengkap database ke komputer atau flashdisk.
+  - Tombol **Pulihkan Cadangan** untuk merestorasi seluruh data toko dari file `.json` secara instan.
+
 ---
 
 ## 🔑 Kredensial Akun Bawaan (Demo)
@@ -203,7 +224,7 @@ Aplikasi telah dilengkapi dengan data demo siap pakai. Anda dapat masuk mengguna
 | **Kasir 2** | `kasir2` | `kasir123` | Akses Operasional Kasir POS, Transaksi, Shift, Kas Laci |
 
 > [!TIP]
-> Anda dapat menambah atau mengubah akun kasir kapan saja melalui menu **Pengaturan & Akun** saat masuk sebagai **Owner**.
+> Anda dapat menambah atau mengubah akun kasir kapan saja melalui menu **Pengaturan & Akun** saat masuk sebagai **Owner**. Perubahan password akan otomatis tersinkron ke semua perangkat.
 
 ---
 
@@ -241,26 +262,55 @@ Aplikasi telah dilengkapi dengan data demo siap pakai. Anda dapat masuk mengguna
 
 ---
 
-## 📱 Akses Jaringan Lokal (Multi-Device / Smartphone)
+## 📱 Akses Jaringan Lokal & Cloudflare Tunnel (Multi-Device)
 
-Server development dijalankan dengan argumen `-H 0.0.0.0`, yang memungkinkan perangkat lain (smartphone kasir, tablet pelayan) dalam satu jaringan Wi-Fi mengakses aplikasi kasir:
+Aplikasi telah dirancang agar komputer kasir utama berfungsi sebagai server pusat. Perangkat lain (smartphone kasir, tablet pelayan di meja pelanggan) dapat mengakses sistem dengan dua cara:
 
-1. Buka Command Prompt / PowerShell di komputer host dan ketik:
+### Cara 1: Akses Jaringan Wi-Fi Lokal (LAN)
+Server development otomatis berjalan dengan argumen `-H 0.0.0.0`:
+1. Buka Command Prompt / PowerShell di komputer kasir dan ketik:
    ```bash
    ipconfig
    ```
 2. Temukan alamat **IPv4 Address** komputer Anda (contoh: `192.168.1.46`).
-3. Buka browser di smartphone atau tablet yang terhubung ke jaringan Wi-Fi yang sama, lalu akses:
+3. Buka browser di smartphone atau tablet yang terhubung ke jaringan Wi-Fi toko yang sama, lalu akses:
    ```
    http://192.168.1.46:3000
    ```
-4. Kasir dan pelayan sekarang dapat memasukkan pesanan langsung dari perangkat genggam mereka!
+
+### Cara 2: Akses Luar Jaringan via Cloudflare Tunnel (Internet Publik)
+Untuk menghubungkan smartphone kasir dari luar jaringan tanpa memerlukan IP publik statis atau port forwarding:
+1. Jalankan Cloudflare Tunnel di komputer kasir:
+   ```bash
+   cloudflared tunnel --url http://localhost:3000
+   ```
+2. Buka URL HTTPS yang diberikan oleh Cloudflare (contoh: `https://kage46-pos.trycloudflare.com`) di smartphone, tablet, atau laptop manapun.
+3. **Database Otomatis Terhubung**:
+   - Seluruh data transaksi, akun, menu baru, dan perubahan password di PC kasir langsung tersinkronisasi 100% secara real-time.
+   - Layar login akan menampilkan penanda hijau 🟢 **"Server Database Terhubung"**.
+
+> [!IMPORTANT]
+> **Wajib Daftarkan Domain Tunnel / IP ke `allowedDevOrigins` di `next.config.ts`**:
+> Server development Next.js memiliki proteksi keamanan asal domain (*Cross-Origin Security Protection*). Agar Next.js mengizinkan akses dari URL Cloudflare Tunnel atau IP LAN tanpa peringatan/blokir:
+> 1. Buka file [next.config.ts](file:///c:/Users/Administrator/Documents/antigravity/kasir%20kage46/next.config.ts).
+> 2. Daftarkan domain Cloudflare Tunnel dan IP lokal Anda ke dalam array `allowedDevOrigins`:
+>    ```typescript
+>    const nextConfig: NextConfig = {
+>      allowedDevOrigins: [
+>        "localhost:3000",
+>        "192.168.1.9", // IP lokal Anda
+>        "audience-pierre-embassy-shanghai.trycloudflare.com", // Domain Cloudflare Tunnel Anda
+>      ],
+>      // ...
+>    };
+>    ```
+> 3. Restart server pengembangan (`npm run dev`) jika baru saja mengubah file tersebut.
 
 ---
 
 ## ☁️ Integrasi Database Cloud Supabase (Opsional)
 
-Secara bawaan, aplikasi bekerja 100% mandiri (*Offline-First*) menggunakan penyimpanan peramban lokal. Jika Anda ingin menghubungkannya ke cloud Supabase:
+Secara bawaan, aplikasi bekerja 100% mandiri menggunakan **Database Server Terpusat** di PC kasir dengan cadangan LocalStorage. Jika Anda ingin menghubungkannya ke cloud PostgreSQL Supabase untuk analitik multi-cabang:
 
 1. Buat proyek baru di [Supabase Dashboard](https://database.new).
 2. Salin file environment contoh:
@@ -280,9 +330,16 @@ Secara bawaan, aplikasi bekerja 100% mandiri (*Offline-First*) menggunakan penyi
 
 ```
 kasir-kage46/
+├── data/                   # Database server lokal terpusat
+│   ├── pos_database.json   # File database master persisten (akun, transaksi, menu, stok)
+│   └── pos_database.bak.json # Salinan cadangan otomatis bergulir (rolling backup)
 ├── public/                 # Aset statis & favicon
 ├── src/
-│   ├── app/                # Next.js App Router Pages
+│   ├── app/                # Next.js App Router Pages & API Routes
+│   │   ├── api/
+│   │   │   └── sync/       # API Route sinkronisasi real-time & backup/restore
+│   │   │       ├── route.ts # GET & POST sinkronisasi data antar perangkat
+│   │   │       └── backup/route.ts # Ekspor & impor file database .json
 │   │   ├── layout.tsx      # Root HTML Layout, Metadata & Theme Loader
 │   │   ├── globals.css     # Tailwind CSS styles & @media print receipt rules
 │   │   ├── page.tsx        # Dashboard Utama, Metrik Penjualan & Top Menu
@@ -292,27 +349,29 @@ kasir-kage46/
 │   │   ├── transactions/   # Riwayat Transaksi, Open Bill & Void Pesanan
 │   │   ├── customers/      # Database Pelanggan, Poin & Kontak WhatsApp
 │   │   ├── reports/        # Laporan Keuangan, Waterfall Laba Bersih & Cetak PDF
-│   │   └── settings/       # Pengaturan Toko, Pajak, Format Struk & Akun Staf
+│   │   └── settings/       # Pengaturan Toko, Sinkronisasi Server, Pajak & Akun Staf
 │   ├── components/         # Komponen Modular Reusable
 │   │   ├── auth/           # LoginScreen, LoginModal, UserFormModal, EditProfileModal
 │   │   ├── inventory/      # IngredientFormModal, StockOpnameModal
-│   │   ├── layout/         # AppShell, Header, Sidebar, MobileBottomNav
+│   │   ├── layout/         # AppShell, Header (Server Status Pill), Sidebar, MobileBottomNav
 │   │   ├── pos/            # ProductGrid, ProductCard, CartPane, CheckoutModal,
 │   │   │                   # ReceiptModal, TablePickerModal, QuickAddProductModal
 │   │   ├── products/       # RecipeModal (HPP Calculator), ProductFormModal
 │   │   ├── shared/         # ShiftModal, ExpenseModal, OpenBillsDrawer, ToastContainer
 │   │   └── transactions/   # TransactionDetailModal, VoidModal
 │   ├── data/
-│   │   └── mockData.ts     # Data awal (Pengguna, Menu Kafe, Bahan Baku, Riwayat)
+│   │   └── mockData.ts     # Data awal bawaan sistem (Template default)
 │   ├── lib/
 │   │   ├── exportUtils.ts  # Mesin ekspor CSV / Excel UTF-8 BOM
-│   │   ├── supabase.ts     # Inisialisasi klien Supabase & deteksi koneksi
+│   │   ├── serverDb.ts     # Engine pembaca & penulis file database server lokal (atomic write)
+│   │   ├── syncService.ts  # Service sinkronisasi background real-time client-server
+│   │   ├── supabase.ts     # Inisialisasi klien Supabase & deteksi koneksi (opsional)
 │   │   ├── translations.ts # Modul dwibahasa (Indonesian & English)
 │   │   └── utils.ts        # Helper mata uang (IDR), format tanggal & generate ID
 │   ├── store/
-│   │   └── usePosStore.ts  # Zustand global store dengan LocalStorage persistensi
+│   │   └── usePosStore.ts  # Zustand global store dengan sinkronisasi server & auto-listener
 │   └── types/
-│       └── pos.ts          # Definisi tipe data komprehensif TypeScript
+│       └── pos.ts          # Definisi tipe data TypeScript & ServerPOSDatabase
 ├── supabase/
 │   └── schema.sql          # Skema PostgreSQL lengkap untuk Supabase
 ├── .env.local.example      # Template konfigurasi environment

@@ -26,7 +26,13 @@ import {
   CheckCircle2,
   Lock,
   Edit2,
-  Languages
+  Languages,
+  Database,
+  UploadCloud,
+  FileDown,
+  FileUp,
+  Globe,
+  RefreshCw
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -41,7 +47,11 @@ export default function SettingsPage() {
     deleteUser, 
     addToast,
     language,
-    setLanguage
+    setLanguage,
+    syncStatus,
+    manualSync,
+    pushLocalToServer,
+    pullServerToLocal
   } = usePosStore();
 
   const { t, isEnglish } = useTranslation();
@@ -124,6 +134,36 @@ export default function SettingsPage() {
         language === "en" ? `Account "${userName}" deleted successfully.` : `Akun kasir "${userName}" berhasil dihapus.`,
         "info"
       );
+    }
+  };
+
+  const handleDownloadBackup = () => {
+    window.open("/api/sync/backup", "_blank");
+  };
+
+  const handleRestoreBackup = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+      if (!confirm(isEnglish ? "Restore database from this backup file? Current data will be replaced." : "Pulihkan database dari file cadangan ini? Data saat ini akan digantikan.")) {
+        return;
+      }
+      const res = await fetch("/api/sync/backup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(json),
+      });
+      if (res.ok) {
+        addToast(isEnglish ? "Database restored successfully from file!" : "Database berhasil dipulihkan dari file!", "success");
+        setTimeout(() => window.location.reload(), 600);
+      } else {
+        addToast(isEnglish ? "Failed to restore database from file" : "Gagal memulihkan database dari file", "error");
+      }
+    } catch (err) {
+      addToast(isEnglish ? "Invalid or corrupted backup JSON file" : "File cadangan tidak valid atau rusak", "error");
     }
   };
 
@@ -272,6 +312,141 @@ export default function SettingsPage() {
                 </div>
               </div>
             </button>
+          </div>
+        </div>
+
+        {/* SECTION: SERVER DATABASE & SINKRONISASI MULTI-DEVICE (CLOUDFLARE TUNNEL / LAN) */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold shadow-md shadow-emerald-600/20 shrink-0">
+                <Database className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>{isEnglish ? "PC Server Database & Multi-Device Sync" : "Database Server PC & Sinkronisasi Multi-Device"}</span>
+                  <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    Cloudflare Tunnel Ready
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {isEnglish 
+                    ? "Central database ensures all devices (local PC, Wi-Fi smartphones, Cloudflare Tunnel) stay 100% in sync."
+                    : "Database terpusat memastikan PC kasir, HP pelayan via Wi-Fi lokal, dan Cloudflare Tunnel membaca data yang sama persis."}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                syncStatus === "synced"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                  : syncStatus === "syncing"
+                  ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
+                  : "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+              }`}>
+                <span className={`h-2 w-2 rounded-full ${
+                  syncStatus === "synced" ? "bg-emerald-500 animate-pulse" : syncStatus === "syncing" ? "bg-amber-500 animate-spin" : "bg-slate-400"
+                }`} />
+                <span>
+                  {syncStatus === "synced"
+                    ? (isEnglish ? "Server Active & Synced" : "Server Aktif & Tersinkron")
+                    : syncStatus === "syncing"
+                    ? (isEnglish ? "Syncing with Server..." : "Menyinkronkan...")
+                    : (isEnglish ? "Offline Mode" : "Mode Offline")}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Sync Now */}
+            <button
+              type="button"
+              onClick={() => manualSync()}
+              className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/40 dark:border-slate-800 dark:hover:border-emerald-700 dark:hover:bg-emerald-950/20 transition text-left cursor-pointer"
+            >
+              <div className="p-2 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
+                <RefreshCw className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900 dark:text-white">
+                  {isEnglish ? "Sync Now" : "Sinkronkan Sekarang"}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                  {isEnglish ? "Pull latest server updates" : "Cek pembaruan server"}
+                </div>
+              </div>
+            </button>
+
+            {/* Push Local to Server */}
+            <button
+              type="button"
+              onClick={() => pushLocalToServer()}
+              className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-sky-500 hover:bg-sky-50/40 dark:border-slate-800 dark:hover:border-sky-700 dark:hover:bg-sky-950/20 transition text-left cursor-pointer"
+            >
+              <div className="p-2 rounded-lg bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-400">
+                <UploadCloud className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900 dark:text-white">
+                  {isEnglish ? "Upload to Server" : "Unggah ke Server PC"}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                  {isEnglish ? "Make this device master" : "Jadikan data perangkat master"}
+                </div>
+              </div>
+            </button>
+
+            {/* Download Backup */}
+            <button
+              type="button"
+              onClick={handleDownloadBackup}
+              className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 dark:border-slate-800 dark:hover:border-indigo-700 dark:hover:bg-indigo-950/20 transition text-left cursor-pointer"
+            >
+              <div className="p-2 rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400">
+                <FileDown className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900 dark:text-white">
+                  {isEnglish ? "Download Backup" : "Unduh Cadangan (.json)"}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                  {isEnglish ? "Save DB snapshot to file" : "Simpan file backup toko"}
+                </div>
+              </div>
+            </button>
+
+            {/* Restore from File */}
+            <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/40 dark:border-slate-800 dark:hover:border-amber-700 dark:hover:bg-amber-950/20 transition text-left cursor-pointer">
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleRestoreBackup}
+                className="hidden"
+              />
+              <div className="p-2 rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400">
+                <FileUp className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900 dark:text-white">
+                  {isEnglish ? "Restore Database" : "Pulihkan Cadangan"}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                  {isEnglish ? "Upload .json backup file" : "Pilih file .json cadangan"}
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed flex items-start gap-2">
+            <Globe className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+            <div>
+              <strong>{isEnglish ? "Multi-Device & Cloudflare Tunnel Architecture:" : "Arsitektur Multi-Device & Cloudflare Tunnel:"}</strong>{" "}
+              {isEnglish
+                ? "Every transaction, new product, and user password is automatically stored on this computer's server disk. Any device opening the Cloudflare Tunnel URL or local Wi-Fi IP connects directly to this server without creating separate databases."
+                : "Setiap transaksi, menu baru, dan password kasir disimpan di disk komputer server ini. Perangkat yang mengakses via URL Cloudflare Tunnel atau IP Wi-Fi lokal otomatis terhubung langsung ke server ini tanpa membuat database terpisah."}
+            </div>
           </div>
         </div>
 

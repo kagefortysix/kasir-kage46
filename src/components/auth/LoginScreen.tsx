@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export const LoginScreen: React.FC = () => {
-  const { login, isDarkMode, toggleDarkMode, settings } = usePosStore();
+  const { login, isDarkMode, toggleDarkMode, settings, syncStatus } = usePosStore();
   const { t } = useTranslation();
 
   const [username, setUsername] = useState("");
@@ -99,8 +99,14 @@ export const LoginScreen: React.FC = () => {
           </p>
 
           <div className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60">
-            <Database className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-            <span>{t.auth.offlineBadge}</span>
+            <Database className={`h-3 w-3 ${syncStatus === "synced" ? "text-emerald-500" : syncStatus === "syncing" ? "text-amber-500 animate-spin" : "text-slate-400"}`} />
+            <span>
+              {syncStatus === "synced" 
+                ? (settings?.language === "en" ? "Server Database Connected" : "Server Database Terhubung")
+                : syncStatus === "syncing"
+                ? (settings?.language === "en" ? "Syncing Server..." : "Menyinkronkan Server...")
+                : t.auth.offlineBadge}
+            </span>
           </div>
         </div>
 

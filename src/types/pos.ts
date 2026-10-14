@@ -181,3 +181,25 @@ export interface StoreSettings {
     holderName: string;
   };
 }
+
+export interface SharedPOSData {
+  users: UserAccount[];
+  settings: StoreSettings;
+  products: Product[];
+  ingredients: Ingredient[];
+  customers: Customer[];
+  orders: Order[];
+  expenses: Expense[];
+  currentShift: Shift | null;
+  shiftHistory: Shift[];
+  stockOpnames: StockOpnameRecord[];
+}
+
+export interface ServerPOSDatabase extends SharedPOSData {
+  version: number;
+  lastModified: number;
+  initialized: boolean;
+}
+
+export type SyncStatus = "idle" | "synced" | "syncing" | "offline" | "error";
+

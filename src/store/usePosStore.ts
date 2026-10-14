@@ -15,8 +15,17 @@ import {
   PaymentMethod,
   ProductCategory,
   UserAccount,
-  AppLanguage
+  AppLanguage,
+  SharedPOSData,
+  SyncStatus
 } from "@/types/pos";
+import { syncService, registerSyncStore } from "@/lib/syncService";
+
+export let isApplyingServerUpdate = false;
+export const setApplyingServerUpdate = (val: boolean) => {
+  isApplyingServerUpdate = val;
+};
+
 import { 
   initialProducts, 
   initialIngredients, 
@@ -147,6 +156,15 @@ interface PosState {
   toasts: ToastItem[];
   addToast: (message: string, type?: ToastItem["type"]) => void;
   removeToast: (id: string) => void;
+
+  // Server Sync & Multi-Device
+  syncStatus: SyncStatus;
+  lastSyncedAt: number | null;
+  setSyncStatus: (status: SyncStatus) => void;
+  applyServerData: (incoming: Partial<SharedPOSData>) => void;
+  manualSync: () => Promise<boolean>;
+  pushLocalToServer: () => Promise<boolean>;
+  pullServerToLocal: () => Promise<boolean>;
 }
 
 export const usePosStore = create<PosState>()(
@@ -963,6 +981,74 @@ export const usePosStore = create<PosState>()(
           toasts: state.toasts.filter((t) => t.id !== id),
         }));
       },
+
+      // Server Sync & Multi-Device
+      syncStatus: "idle",
+      lastSyncedAt: null,
+      setSyncStatus: (status) => set({ syncStatus: status }),
+      applyServerData: (incoming) => {
+        set((state) => {
+          let updatedCurrentUser = state.currentUser;
+          if (state.currentUser && incoming.users) {
+            const found = incoming.users.find((u) => u.id === state.currentUser?.id);
+            if (found) {
+              if (!found.isActive) {
+                updatedCurrentUser = null;
+              } else {
+                updatedCurrentUser = { ...state.currentUser, ...found };
+              }
+            }
+          }
+
+          return {
+            users: incoming.users || state.users,
+            currentUser: updatedCurrentUser,
+            role: updatedCurrentUser ? updatedCurrentUser.role : state.role,
+            settings: incoming.settings || state.settings,
+            taxEnabled: incoming.settings?.taxEnabled !== undefined ? incoming.settings.taxEnabled : state.taxEnabled,
+            products: incoming.products || state.products,
+            ingredients: incoming.ingredients || state.ingredients,
+            customers: incoming.customers || state.customers,
+            orders: incoming.orders || state.orders,
+            expenses: incoming.expenses || state.expenses,
+            currentShift: incoming.currentShift !== undefined ? incoming.currentShift : state.currentShift,
+            shiftHistory: incoming.shiftHistory || state.shiftHistory,
+            stockOpnames: incoming.stockOpnames || state.stockOpnames,
+            lastSyncedAt: Date.now(),
+            syncStatus: "synced",
+          };
+        });
+      },
+      manualSync: async () => {
+        set({ syncStatus: "syncing" });
+        const success = await syncService.pullUpdates(true);
+        if (success) {
+          get().addToast("Database berhasil disinkronkan dengan server PC!", "success");
+        } else {
+          get().addToast("Database sudah dalam kondisi terbaru", "info");
+        }
+        return success;
+      },
+      pushLocalToServer: async () => {
+        set({ syncStatus: "syncing" });
+        const success = await syncService.pushCurrentStoreToServer(true);
+        if (success) {
+          get().addToast("Data perangkat berhasil diunggah ke server PC!", "success");
+        } else {
+          get().addToast("Gagal mengunggah data ke server PC", "error");
+        }
+        return success;
+      },
+      pullServerToLocal: async () => {
+        set({ syncStatus: "syncing" });
+        const success = await syncService.pullUpdates(true);
+        if (success) {
+          get().addToast("Data terbaru berhasil ditarik dari server PC!", "success");
+        } else {
+          get().addToast("Gagal mengambil data dari server PC", "error");
+        }
+        return success;
+      },
     }),
     {
       name: "kage46-pos-storage-v1",
@@ -998,3 +1084,33 @@ export const usePosStore = create<PosState>()(
     }
   )
 );
+
+registerSyncStore(() => usePosStore.getState(), setApplyingServerUpdate);
+
+if (typeof window !== "undefined") {
+  let syncDebounceTimer: any = null;
+
+  usePosStore.subscribe((state, prevState) => {
+    if (isApplyingServerUpdate) return;
+
+    const hasSharedDataChanged =
+      state.users !== prevState.users ||
+      state.products !== prevState.products ||
+      state.orders !== prevState.orders ||
+      state.ingredients !== prevState.ingredients ||
+      state.customers !== prevState.customers ||
+      state.expenses !== prevState.expenses ||
+      state.currentShift !== prevState.currentShift ||
+      state.shiftHistory !== prevState.shiftHistory ||
+      state.stockOpnames !== prevState.stockOpnames ||
+      state.settings !== prevState.settings;
+
+    if (hasSharedDataChanged) {
+      if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+      syncDebounceTimer = setTimeout(() => {
+        syncService.pushCurrentStoreToServer(true);
+      }, 350);
+    }
+  });
+}
+

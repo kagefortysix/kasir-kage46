@@ -5,6 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Zustand](https://img.shields.io/badge/Zustand-v5-443E38?style=for-the-badge)](https://zustand-demo.pmnd.rs/)
+[![Cloudflare Tunnel Ready](https://img.shields.io/badge/Cloudflare_Tunnel-Ready-F38020?style=for-the-badge&logo=cloudflare)](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 [![Supabase Ready](https://img.shields.io/badge/Supabase-Ready-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
@@ -14,7 +15,7 @@
 
 **KASIR POS KAGE46** is a modern, high-performance web-based Point of Sale (POS) system specifically built for the Food & Beverage (F&B) industry, specialty coffee shops, artisan kitchens, and restaurants.
 
-The system embraces an **Offline-First**, **Mobile-Friendly**, and **Cloud-Ready** architecture with a premium SaaS-grade user interface (Glassmorphism, Dark/Light Mode, micro-animations, and full responsiveness on smartphones, tablets, and cashier desktop PCs).
+The system embraces a **Centralized Server Database**, **Offline-First**, **Mobile-Friendly**, and **Cloudflare Tunnel Ready** architecture with a premium SaaS-grade user interface (Glassmorphism, Dark/Light Mode, micro-animations, and full responsiveness on smartphones, tablets, and cashier desktop PCs).
 
 ---
 
@@ -35,9 +36,10 @@ The system embraces an **Offline-First**, **Mobile-Friendly**, and **Cloud-Ready
   - [10. Authentication & Multi-User RBAC](#10-authentication--multi-user-rbac)
   - [11. Data Export to Excel/CSV](#11-data-export-to-excelcsv)
   - [12. Store Settings & Customization](#12-store-settings--customization)
+  - [13. Centralized Server Database & Multi-Device Sync (Cloudflare Tunnel)](#13-centralized-server-database--multi-device-sync-cloudflare-tunnel)
 - [Default Demo Credentials](#-default-demo-credentials)
 - [Installation & Getting Started](#-installation--getting-started)
-- [Local Network Access (Multi-Device / Smartphone)](#-local-network-access-multi-device--smartphone)
+- [Local Network & Cloudflare Tunnel Access (Multi-Device)](#-local-network--cloudflare-tunnel-access-multi-device)
 - [Cloud Supabase Database Integration (Optional)](#-cloud-supabase-database-integration-optional)
 - [Project Directory Structure](#-project-directory-structure)
 
@@ -49,7 +51,8 @@ Coffee shops and culinary businesses demand a cashier system that not only execu
 - **Precision Recipe Costing (COGS/HPP)**: Ties each menu portion directly to warehouse raw materials measured in grams, milliliters, or units.
 - **True Profitability Transparency**: Displays actual Net Profit after deducting raw material costs and operational cash expenses from gross revenues.
 - **High Portability**: Operates natively on a cashier's smartphone or a server's tablet without requiring native app store downloads.
-- **Autonomous System**: Operates seamlessly offline using browser LocalStorage synchronization (via Zustand Persist) and is ready for real-time cloud backup with PostgreSQL Supabase.
+- **Centralized Server Database & Multi-Device Sync**: Master store database stored locally on the PC server (`data/pos_database.json`) and synchronized bi-directionally in real-time across cashier PCs and staff smartphones via local Wi-Fi or Cloudflare Tunnel without database or password resets.
+- **Autonomous System**: Operates seamlessly offline using browser LocalStorage caching (via Zustand Persist) and is ready for real-time cloud backup with PostgreSQL Supabase.
 
 ---
 
@@ -61,6 +64,8 @@ Coffee shops and culinary businesses demand a cashier system that not only execu
 | **UI Library** | [React 19](https://react.dev/) | Modern reactive component lifecycle management |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) | Strict type-safety ensuring runtime stability and maintainability |
 | **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Modern utility-first styling with Glassmorphism and native Dark Mode |
+| **Server Database** | Local JSON Server DB (`data/pos_database.json`) | Persistent centralized storage on PC server with atomic write & auto-backup |
+| **Multi-Device Sync** | Real-Time Sync Engine (`/api/sync`) | Instant two-way sync across cashier PC, waiter phones via LAN & Cloudflare Tunnel |
 | **State Management** | [Zustand v5](https://github.com/pmndrs/zustand) | Lightweight global store with `persist` middleware for LocalStorage caching |
 | **Icons** | [Lucide React](https://lucide.dev/) | Clean, consistent, and scalable vector icons |
 | **Cloud Database** | [Supabase](https://supabase.com/) | Optional PostgreSQL backend for centralized multi-branch data synchronization |
@@ -190,6 +195,22 @@ Coffee shops and culinary businesses demand a cashier system that not only execu
 - **Dark Mode / Light Mode**: Seamless theme switching for day and night shifts.
 - **Data Utilities**: One-click demo data reset or total store factory reset.
 
+### 13. Centralized Server Database & Multi-Device Sync (Cloudflare Tunnel Ready)
+- **Centralized On-Premise Storage**: Complete store master data (staff accounts, passwords, catalog, raw material stocks, HPP recipes, orders, open bills, and shifts) is stored directly on the host computer disk (`data/pos_database.json`).
+- **Fully Compatible with Cloudflare Tunnel**:
+  - Resolves browser origin mismatches when accessing the POS remotely via Cloudflare Tunnel (`https://xxx.trycloudflare.com` or custom domains).
+  - Staff and owner password changes made on the host PC immediately apply across all remote tunnel devices without resetting to defaults.
+- **Real-Time Automated Synchronization**:
+  - Waiters take orders or open bills on smartphones at customer tables $\rightarrow$ instantaneously appears on the central cashier PC.
+  - Cashier adds new menu items on PC $\rightarrow$ instantly populated on waiter smartphones.
+  - Intelligent background polling (every 4 seconds) and tab focus event triggers.
+- **Sync Status & Manual Controls**:
+  - Status pill 🟢 `Server PC` in the header bar and login screen to inspect live connection health.
+  - One-click **Sync Now** and **Upload to Server** controls in Store Settings.
+- **Backup & Restore**:
+  - One-click **Download Backup (.json)** in Settings to archive store database snapshots to local disk or USB.
+  - **Restore Database** button to restore store data from any `.json` backup file instantly.
+
 ---
 
 ## 🔑 Default Demo Credentials
@@ -203,7 +224,7 @@ The application is pre-loaded with comprehensive demo data. You can log in using
 | **Cashier 2** | `kasir2` | `kasir123` | Operational Cashier POS, Transactions, Shifts, Drawer Expenses |
 
 > [!TIP]
-> You can create or modify cashier accounts at any time from the **Settings & Accounts** screen while logged in as **Owner**.
+> You can create or modify cashier accounts at any time from the **Settings & Accounts** screen while logged in as **Owner**. Password changes automatically sync to all devices.
 
 ---
 
@@ -241,26 +262,55 @@ The application is pre-loaded with comprehensive demo data. You can log in using
 
 ---
 
-## 📱 Local Network Access (Multi-Device / Smartphone)
+## 📱 Local Network & Cloudflare Tunnel Access (Multi-Device)
 
-The development server runs with `-H 0.0.0.0`, enabling other devices (cashier smartphones, server tablets) on the same Wi-Fi network to access the POS:
+The system is architected so that the primary cashier PC serves as the central server. Other devices (waiter smartphones, order tablets) can access the POS through two methods:
 
-1. Open a terminal on your host machine and find your local IP address:
+### Method 1: Local Wi-Fi Network Access (LAN)
+The server runs with `-H 0.0.0.0` by default:
+1. Open a terminal on your host cashier PC and check your local IP:
    ```bash
    ipconfig
    ```
 2. Note your **IPv4 Address** (e.g., `192.168.1.46`).
-3. Open a browser on any smartphone or tablet connected to the same Wi-Fi, and navigate to:
+3. Open a browser on any phone or tablet connected to the same store Wi-Fi:
    ```
    http://192.168.1.46:3000
    ```
-4. Staff can now take orders directly from their mobile devices!
+
+### Method 2: Remote Access via Cloudflare Tunnel (Public Internet)
+To connect staff smartphones or remote managers securely over the internet without static public IPs or router port forwarding:
+1. Run Cloudflare Tunnel on the cashier host machine:
+   ```bash
+   cloudflared tunnel --url http://localhost:3000
+   ```
+2. Open the generated HTTPS URL (e.g., `https://kage46-pos.trycloudflare.com`) on any smartphone, tablet, or external laptop.
+3. **Automatic Centralized Database**:
+   - All transactions, staff logins, menu additions, and password updates sync directly to the host PC server in real-time.
+   - The login screen will display a green 🟢 **"Server Database Connected"** indicator.
+
+> [!IMPORTANT]
+> **Whitelisting Tunnel Domain / IP in `allowedDevOrigins` (`next.config.ts`)**:
+> Next.js development server enforces cross-origin security protection. To ensure Next.js allows incoming requests from your Cloudflare Tunnel hostname or local LAN IP without warnings or blocks:
+> 1. Open [next.config.ts](file:///c:/Users/Administrator/Documents/antigravity/kasir%20kage46/next.config.ts).
+> 2. Add your Cloudflare Tunnel domain and local LAN IP into the `allowedDevOrigins` array:
+>    ```typescript
+>    const nextConfig: NextConfig = {
+>      allowedDevOrigins: [
+>        "localhost:3000",
+>        "192.168.1.9", // Your local LAN IP
+>        "audience-pierre-embassy-shanghai.trycloudflare.com", // Your Cloudflare Tunnel domain
+>      ],
+>      // ...
+>    };
+>    ```
+> 3. Restart the development server (`npm run dev`) if you just modified the configuration.
 
 ---
 
 ## ☁️ Cloud Supabase Database Integration (Optional)
 
-By default, the application runs 100% autonomously (**Offline-First**) using browser LocalStorage. To connect to a cloud Supabase backend:
+By default, the application runs 100% autonomously using the **Centralized Server Database** on the host PC with local browser caching. To connect to a cloud Supabase PostgreSQL backend for multi-branch sync:
 
 1. Create a new project on the [Supabase Dashboard](https://database.new).
 2. Copy the example environment file:
@@ -280,9 +330,16 @@ By default, the application runs 100% autonomously (**Offline-First**) using bro
 
 ```
 kasir-kage46/
+├── data/                   # Centralized local server database
+│   ├── pos_database.json   # Persistent master database (accounts, orders, menu, inventory)
+│   └── pos_database.bak.json # Automatic rolling backup snapshot
 ├── public/                 # Static assets & icons
 ├── src/
-│   ├── app/                # Next.js App Router Pages
+│   ├── app/                # Next.js App Router Pages & API Routes
+│   │   ├── api/
+│   │   │   └── sync/       # Real-time synchronization & backup/restore API
+│   │   │       ├── route.ts # Bi-directional data sync endpoint
+│   │   │       └── backup/route.ts # Database .json export & import
 │   │   ├── layout.tsx      # Root HTML Layout, Metadata & Theme Loader
 │   │   ├── globals.css     # Tailwind CSS styles & @media print rules
 │   │   ├── page.tsx        # Dashboard, Sales Analytics & Top Selling Menu
@@ -292,27 +349,29 @@ kasir-kage46/
 │   │   ├── transactions/   # Transaction History, Open Bills & Void Orders
 │   │   ├── customers/      # Customer Database, Loyalty Points & WhatsApp
 │   │   ├── reports/        # Financial Statement, Net Profit & PDF Print
-│   │   └── settings/       # Store Settings, Taxes, Receipt & Staff Accounts
+│   │   └── settings/       # Store Settings, Server Sync, Taxes & Staff Accounts
 │   ├── components/         # Reusable UI Components
 │   │   ├── auth/           # LoginScreen, LoginModal, UserFormModal, EditProfileModal
 │   │   ├── inventory/      # IngredientFormModal, StockOpnameModal
-│   │   ├── layout/         # AppShell, Header, Sidebar, MobileBottomNav
+│   │   ├── layout/         # AppShell, Header (Server Status Pill), Sidebar, MobileBottomNav
 │   │   ├── pos/            # ProductGrid, ProductCard, CartPane, CheckoutModal,
 │   │   │                   # ReceiptModal, TablePickerModal, QuickAddProductModal
 │   │   ├── products/       # RecipeModal (HPP Calculator), ProductFormModal
 │   │   ├── shared/         # ShiftModal, ExpenseModal, OpenBillsDrawer, ToastContainer
 │   │   └── transactions/   # TransactionDetailModal, VoidModal
 │   ├── data/
-│   │   └── mockData.ts     # Initial seed data (Users, Products, Ingredients, Orders)
+│   │   └── mockData.ts     # Initial seed template data
 │   ├── lib/
 │   │   ├── exportUtils.ts  # CSV / Excel export engine with UTF-8 BOM
-│   │   ├── supabase.ts     # Supabase client setup & connection check
+│   │   ├── serverDb.ts     # Local server database reader/writer (atomic write engine)
+│   │   ├── syncService.ts  # Client-side real-time background synchronization engine
+│   │   ├── supabase.ts     # Supabase client setup & connection check (optional)
 │   │   ├── translations.ts # Bilingual dictionary (Indonesian & English)
 │   │   └── utils.ts        # IDR Currency formatting, dates & ID generator
 │   ├── store/
-│   │   └── usePosStore.ts  # Zustand global store with LocalStorage persistence
+│   │   └── usePosStore.ts  # Zustand global store with server sync & auto-subscribers
 │   └── types/
-│       └── pos.ts          # Comprehensive TypeScript data models
+│       └── pos.ts          # Comprehensive TypeScript models & ServerPOSDatabase
 ├── supabase/
 │   └── schema.sql          # Complete PostgreSQL schema for Supabase
 ├── .env.local.example      # Environment variables template
